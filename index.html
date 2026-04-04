@@ -692,24 +692,34 @@
       // Build the wave surface path
       const surfacePts = buildSeaSurface(t, waveAmp);
 
-      // --- Wet sand shadow: a STATIC polygon anchored to the base tide curve ---
-      // Uses interpolateSeaY (no animation) so the damp-sand band stays still
-      // while the animated wave slides over it.
+      // --- Wet sand shadow ---
+      // Top edge: static base tide line shifted up by wetBand (stays still — tidal stain)
+      // Bottom edge: animated wave surface (so no gap between wet sand and sea)
+      // Build a lookup of surfacePts by x for fast access
+      const surfaceByX = new Float32Array(W + 1);
+      for (let i = 0; i < surfacePts.length; i++) {
+        const sx = Math.round(surfacePts[i].x);
+        if (sx >= 0 && sx <= W) surfaceByX[sx] = surfacePts[i].y;
+      }
+      // Fill any gaps in the lookup by linear interpolation
+      for (let x = 1; x < surfaceByX.length; x++) {
+        if (surfaceByX[x] === 0) surfaceByX[x] = surfaceByX[x - 1];
+      }
       const wetBand = 28;
-      const wetStep = 4; // sample every 4px — smooth enough, cheap
+      const wetStep = 2;
       ctx.save();
       ctx.beginPath();
-      // Top edge: base tide line shifted up by wetBand
+      // Top edge: static base tide line shifted up by wetBand
       ctx.moveTo(0, interpolateSeaY(0) - wetBand);
       for (let x = wetStep; x <= W; x += wetStep) {
         ctx.lineTo(x, interpolateSeaY(x) - wetBand);
       }
-      // Bottom edge: base tide line itself, traced right-to-left
+      // Bottom edge: animated wave surface traced right-to-left (no gap with sea)
       for (let x = W; x >= 0; x -= wetStep) {
-        ctx.lineTo(x, interpolateSeaY(x));
+        const sx = Math.min(W, Math.round(x));
+        ctx.lineTo(x, surfaceByX[sx]);
       }
       ctx.closePath();
-      // Gradient: transparent at top, damp-sand tint at the waterline
       const minBaseY = Math.min(...seaYPoints);
       const wetGrad = ctx.createLinearGradient(0, minBaseY - wetBand, 0, minBaseY + 4);
       wetGrad.addColorStop(0, 'rgba(130,105,35,0)');
