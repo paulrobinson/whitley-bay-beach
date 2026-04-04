@@ -7,15 +7,10 @@
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     :root {
       --bg: #F5E6D3;
       --navy: #1B2631;
-      --sea-deep: #1a5276;
-      --sea-surface: #3498db;
-      --sea-shallow: #85c1e9;
-      --sand-light: #F4D03F;
-      --sand-mid: #D4AC0D;
       --coral: #E74C3C;
       --coral-light: #F39C12;
       --white: #FFFFFF;
@@ -23,6 +18,10 @@
       --border: #D4C5B0;
       --card-bg: rgba(255,255,255,0.55);
       --font: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      /* Each hour column is 52px wide — both strip and canvas use this */
+      --col-w: 52px;
+      --col-count: 15;
+      --total-w: calc(var(--col-w) * var(--col-count));
     }
 
     html { font-size: 16px; }
@@ -32,6 +31,7 @@
       color: var(--navy);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
     /* HEADER */
@@ -40,23 +40,10 @@
       color: var(--white);
       padding: 16px 20px 14px;
     }
-    .header-top {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+    .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
     .header-logo svg { width: 34px; height: 34px; }
-    .header-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-    .day-tabs {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
+    .header-title { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
+    .day-tabs { display: flex; gap: 6px; margin-bottom: 14px; }
     .day-tab {
       padding: 7px 16px;
       border-radius: 20px;
@@ -70,33 +57,28 @@
       transition: all 0.2s ease;
       white-space: nowrap;
     }
-    .day-tab:hover {
-      border-color: rgba(255,255,255,0.45);
-      color: var(--white);
-    }
-    .day-tab.active {
-      background: var(--white);
-      color: var(--navy);
-      border-color: var(--white);
+    .day-tab:hover { border-color: rgba(255,255,255,0.45); color: var(--white); }
+    .day-tab.active { background: var(--white); color: var(--navy); border-color: var(--white); font-weight: 700; }
+
+    /* Right now label + conditions */
+    .now-label {
+      font-size: 0.65rem;
       font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 4px;
     }
     .current-conditions {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
       font-size: 0.85rem;
       color: rgba(255,255,255,0.75);
       flex-wrap: wrap;
     }
-    .condition-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .condition-value {
-      font-weight: 700;
-      color: var(--white);
-    }
+    .condition-item { display: flex; align-items: center; gap: 5px; }
+    .condition-value { font-weight: 700; color: var(--white); }
 
     /* BEST TIME BANNER */
     .best-time-banner {
@@ -110,13 +92,35 @@
       text-shadow: 0 1px 2px rgba(0,0,0,0.12);
     }
     .best-time-banner.visible { display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .best-time-banner .label {
-      font-weight: 500;
-      opacity: 0.92;
+    .best-time-banner .label { font-weight: 500; opacity: 0.92; }
+    .best-time-banner .time-range { font-weight: 800; letter-spacing: 0.01em; }
+
+    /* =============================================
+       SHARED HORIZONTAL SCROLL WRAPPER
+       Both the weather strip and the beach canvas
+       share one scroll container so they stay in sync.
+       ============================================= */
+    .scroll-wrapper {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border) transparent;
+      /* prevent double scrollbar flicker */
+      overscroll-behavior-x: contain;
     }
-    .best-time-banner .time-range {
-      font-weight: 800;
-      letter-spacing: 0.01em;
+    .scroll-wrapper::-webkit-scrollbar { height: 4px; }
+    .scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
+    .scroll-wrapper::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    /* Inner container that spans the full logical width */
+    .scroll-inner {
+      width: var(--total-w);
+      min-width: 100%; /* never narrower than viewport */
+    }
+
+    /* On wide screens expand so content fills */
+    @media (min-width: 780px) {
+      :root { --col-w: calc(100vw / 15); --total-w: 100vw; }
     }
 
     /* WEATHER STRIP */
@@ -124,34 +128,25 @@
       background: var(--card-bg);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin;
-      scrollbar-color: var(--border) transparent;
     }
-    .weather-strip-container::-webkit-scrollbar { height: 4px; }
-    .weather-strip-container::-webkit-scrollbar-track { background: transparent; }
-    .weather-strip-container::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-    
     .weather-strip {
       display: grid;
-      grid-template-columns: repeat(15, 1fr);
-      min-width: 620px;
+      grid-template-columns: repeat(15, var(--col-w));
+      width: var(--total-w);
     }
     .weather-col {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      /* Fixed rows: temp | wind | gust | icon | precip | time */
+      grid-template-rows: 18px 16px 14px 26px 14px 18px;
       align-items: center;
-      padding: 10px 2px 8px;
-      gap: 2px;
+      justify-items: center;
+      padding: 8px 0 6px;
       position: relative;
       border-right: 1px solid rgba(0,0,0,0.04);
       transition: background 0.3s ease;
     }
     .weather-col:last-child { border-right: none; }
-    .weather-col.best-hour {
-      background: rgba(243, 156, 18, 0.13);
-    }
+    .weather-col.best-hour { background: rgba(243, 156, 18, 0.13); }
     .weather-col.best-hour::after {
       content: '';
       position: absolute;
@@ -165,107 +160,85 @@
       font-weight: 700;
       color: var(--navy);
       font-variant-numeric: tabular-nums;
+      line-height: 1;
     }
     .weather-wind {
       font-size: 0.62rem;
       color: var(--text-muted);
       font-weight: 500;
       font-variant-numeric: tabular-nums;
+      line-height: 1;
     }
     .weather-wind small { font-size: 0.5rem; opacity: 0.7; }
-    .weather-icon { font-size: 1.15rem; line-height: 1.2; }
+    .weather-gust {
+      font-size: 0.58rem;
+      color: #c0392b;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+    .weather-gust-empty { /* placeholder to hold row height */ }
+    .weather-icon { font-size: 1.2rem; line-height: 1; }
     .weather-precip {
       font-size: 0.58rem;
       color: #2980b9;
       font-weight: 600;
+      line-height: 1;
     }
+    .weather-precip-empty { /* placeholder */ }
     .weather-hour {
       font-size: 0.62rem;
       color: var(--text-muted);
       font-weight: 600;
-      margin-top: 1px;
+      line-height: 1;
     }
 
     /* BEACH CANVAS */
     .beach-container {
       position: relative;
-      width: 100%;
-      overflow: hidden;
+      width: var(--total-w);
+      /* height set by JS */
     }
-    #beachCanvas { display: block; width: 100%; height: auto; }
+    #beachCanvas { display: block; width: var(--total-w); height: auto; }
 
     /* LOADING */
     .loading-overlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: var(--bg);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      transition: opacity 0.5s ease;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 1000; transition: opacity 0.5s ease;
     }
     .loading-overlay.hidden { opacity: 0; pointer-events: none; }
     .loading-wave { width: 64px; height: 64px; margin-bottom: 18px; }
     .loading-text { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
 
     /* ERROR */
-    .error-state {
-      text-align: center;
-      padding: 60px 20px;
-      display: none;
-    }
+    .error-state { text-align: center; padding: 60px 20px; display: none; }
     .error-state.visible { display: block; }
     .error-state h2 { font-size: 1.15rem; margin-bottom: 8px; font-weight: 700; }
     .error-state p { color: var(--text-muted); font-size: 0.88rem; max-width: 340px; margin: 0 auto; line-height: 1.5; }
     .error-state button {
-      margin-top: 20px;
-      padding: 10px 28px;
-      border-radius: 24px;
-      border: none;
-      background: var(--navy);
-      color: var(--white);
-      font-family: var(--font);
-      font-weight: 600;
-      font-size: 0.85rem;
-      cursor: pointer;
+      margin-top: 20px; padding: 10px 28px; border-radius: 24px; border: none;
+      background: var(--navy); color: var(--white); font-family: var(--font);
+      font-weight: 600; font-size: 0.85rem; cursor: pointer;
       transition: transform 0.15s, box-shadow 0.15s;
     }
     .error-state button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 
     /* FOOTER */
-    .footer {
-      text-align: center;
-      padding: 24px 20px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      line-height: 1.6;
-    }
+    .footer { text-align: center; padding: 24px 20px; font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; }
     .footer a { color: #2980b9; text-decoration: none; font-weight: 500; }
     .footer a:hover { text-decoration: underline; }
-    .footer .location {
-      font-weight: 700;
-      color: var(--navy);
-      display: block;
-      margin-bottom: 4px;
-      font-size: 0.8rem;
-    }
+    .footer .location { font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px; font-size: 0.8rem; }
 
     /* SKELETON */
     .skeleton-strip {
       display: grid;
-      grid-template-columns: repeat(15, 1fr);
-      min-width: 620px;
+      grid-template-columns: repeat(15, var(--col-w));
+      width: var(--total-w);
       padding: 10px 0;
     }
-    .skeleton-col {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      padding: 0 4px;
-    }
+    .skeleton-col { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 4px; }
     .skeleton-block {
       background: linear-gradient(90deg, #e0d5c8 25%, #ede3d6 50%, #e0d5c8 75%);
       background-size: 200% 100%;
@@ -275,23 +248,6 @@
     @keyframes shimmer {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
-    }
-
-    @media (min-width: 768px) {
-      .header { padding: 20px 32px 16px; }
-      .header-title { font-size: 1.5rem; }
-      .day-tab { padding: 8px 20px; font-size: 0.85rem; }
-      .weather-strip { min-width: auto; }
-      .weather-col { padding: 12px 4px 10px; gap: 3px; }
-      .weather-temp { font-size: 0.85rem; }
-      .weather-wind { font-size: 0.7rem; }
-      .weather-icon { font-size: 1.35rem; }
-      .weather-hour { font-size: 0.7rem; }
-    }
-    @media (min-width: 1024px) {
-      .header { padding: 24px 48px 18px; }
-      .weather-strip-container { overflow-x: visible; }
-      .weather-col { padding: 14px 6px 12px; gap: 4px; }
     }
   </style>
 </head>
@@ -332,6 +288,7 @@
     <h1 class="header-title">Whitley Bay Beach</h1>
   </div>
   <div class="day-tabs" id="dayTabs"></div>
+  <div class="now-label">Right now</div>
   <div class="current-conditions" id="currentConditions"></div>
 </header>
 
@@ -344,11 +301,14 @@
 </div>
 
 <main id="mainContent">
-  <div class="weather-strip-container" id="weatherStripContainer">
-    <div class="weather-strip skeleton-strip" id="weatherStrip"></div>
-  </div>
-  <div class="beach-container" id="beachContainer">
-    <canvas id="beachCanvas"></canvas>
+  <!-- Single shared scroll wrapper — weather strip + canvas scroll together -->
+  <div class="scroll-wrapper" id="scrollWrapper">
+    <div class="weather-strip-container">
+      <div class="weather-strip skeleton-strip" id="weatherStrip"></div>
+    </div>
+    <div class="beach-container" id="beachContainer">
+      <canvas id="beachCanvas"></canvas>
+    </div>
   </div>
 </main>
 
@@ -365,6 +325,38 @@
   const HOURS_START = 5, HOURS_END = 19;
   const HOUR_COUNT = HOURS_END - HOURS_START + 1;
   const KMH_TO_MPH = 0.621371;
+
+  // Approximate sunrise/sunset for Whitley Bay (55.05°N) using a simplified formula.
+  // Returns {sunrise, sunset} as decimal hours in local time.
+  function getSunTimes(dateStr) {
+    const date = new Date(dateStr + 'T12:00:00');
+    const dayOfYear = Math.floor((date - new Date(date.getFullYear(), 0, 0)) / 86400000);
+    // Simple astronomical approximation
+    const latRad = LAT * Math.PI / 180;
+    const decl = -23.45 * Math.PI / 180 * Math.cos(2 * Math.PI / 365 * (dayOfYear + 10));
+    const cosHa = -Math.tan(latRad) * Math.tan(decl);
+    if (cosHa >= 1) return { sunrise: 12, sunset: 12 }; // polar night
+    if (cosHa <= -1) return { sunrise: 0, sunset: 24 }; // midnight sun
+    const ha = Math.acos(cosHa) * 180 / Math.PI / 15; // hours from noon
+    return { sunrise: 12 - ha, sunset: 12 + ha };
+  }
+
+  // Returns darkness alpha [0..1] for a given hour and sun times.
+  // 0 = full daylight, 1 = full dark. Fades over 1.5h around dawn/dusk.
+  function darknessAlpha(hour, sunTimes) {
+    const { sunrise, sunset } = sunTimes;
+    const fadeDur = 1.5; // hours for full fade
+    if (hour <= sunrise - fadeDur || hour >= sunset + fadeDur) return 0.72;
+    if (hour >= sunrise + fadeDur && hour <= sunset - fadeDur) return 0;
+    // Dawn fade
+    if (hour < sunrise + fadeDur) {
+      const t = (hour - (sunrise - fadeDur)) / (2 * fadeDur);
+      return 0.72 * (1 - Math.max(0, Math.min(1, t)));
+    }
+    // Dusk fade
+    const t = (hour - (sunset - fadeDur)) / (2 * fadeDur);
+    return 0.72 * Math.max(0, Math.min(1, t));
+  }
 
   let allData = null;
   let selectedDayIndex = 0;
@@ -424,7 +416,7 @@
   async function fetchAllData() {
     if (memCache && Date.now() - memCache.ts < 30 * 60 * 1000) return memCache;
     const [wRes, mRes] = await Promise.all([
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,weather_code,wind_speed_10m,precipitation&timezone=Europe/London&forecast_days=4`),
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&hourly=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=Europe/London&forecast_days=4`),
       fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${LAT}&longitude=${LON}&hourly=sea_level_height_msl,wave_height&timezone=Europe/London&forecast_days=4`)
     ]);
     if (!wRes.ok || !mRes.ok) throw new Error('API error');
@@ -447,12 +439,20 @@
       const wi = w.time.indexOf(ts);
       const mi = m.time.indexOf(ts);
       if (wi === -1) continue;
+      const windKmh = w.wind_speed_10m[wi];
+      const gustKmh = w.wind_gusts_10m ? (w.wind_gusts_10m[wi] || windKmh) : windKmh;
+      const windMph = Math.round(windKmh * KMH_TO_MPH);
+      const gustMph = Math.round(gustKmh * KMH_TO_MPH);
+      // Show gusts only when they are significantly higher than sustained wind
+      const showGust = gustMph >= 25 && gustMph > windMph + 8;
       hours.push({
         hour: h,
         temp: w.temperature_2m[wi],
         weatherCode: w.weather_code[wi],
-        windKmh: w.wind_speed_10m[wi],
-        windMph: Math.round(w.wind_speed_10m[wi] * KMH_TO_MPH),
+        windKmh,
+        windMph,
+        gustMph,
+        showGust,
         precip: w.precipitation[wi] || 0,
         seaLevel: mi !== -1 ? (m.sea_level_height_msl[mi] ?? 0) : 0,
         waveHeight: mi !== -1 ? (m.wave_height[mi] ?? 0) : 0,
@@ -508,6 +508,7 @@
       <div class="condition-item">${info.icon} <span class="condition-value">${info.desc}</span></div>
       <div class="condition-item">🌡️ <span class="condition-value">${Math.round(h.temp)}°C</span></div>
       <div class="condition-item">💨 <span class="condition-value">${h.windMph} mph</span></div>
+      ${h.showGust ? `<div class="condition-item">⚠️ <span class="condition-value" style="color:#F39C12">Gusts ${h.gustMph} mph</span></div>` : ''}
     `;
   }
 
@@ -521,11 +522,20 @@
     el.innerHTML = dayData.hours.map((h, i) => {
       const info = weatherCodeToInfo(h.weatherCode);
       const isBest = best && i >= best.startIdx && i <= best.endIdx;
+      // Precipitation: always render the slot, blank when none
+      const precipHtml = h.precip > 0.1
+        ? `<div class="weather-precip">${h.precip.toFixed(1)}mm</div>`
+        : `<div class="weather-precip-empty"></div>`;
+      // Gust: always render slot, blank when not significant
+      const gustHtml = h.showGust
+        ? `<div class="weather-gust">G:${h.gustMph}</div>`
+        : `<div class="weather-gust-empty"></div>`;
       return `<div class="weather-col${isBest ? ' best-hour' : ''}">
         <div class="weather-temp">${Math.round(h.temp)}°</div>
         <div class="weather-wind">${h.windMph}<small>mph</small></div>
+        ${gustHtml}
         <div class="weather-icon">${info.icon}</div>
-        ${h.precip > 0.1 ? `<div class="weather-precip">${h.precip.toFixed(1)}mm</div>` : ''}
+        ${precipHtml}
         <div class="weather-hour">${formatHour(h.hour)}</div>
       </div>`;
     }).join('');
@@ -543,8 +553,10 @@
     const canvas = document.getElementById('beachCanvas');
     const container = document.getElementById('beachContainer');
     const dpr = window.devicePixelRatio || 1;
+
+    // Canvas width matches the scroll-inner width
     const W = container.clientWidth;
-    const H = Math.max(280, Math.min(440, W * 0.45));
+    const H = Math.max(280, Math.min(460, W * 0.55));
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     canvas.style.width = W + 'px';
@@ -566,43 +578,68 @@
 
     // Sea level Y mapping: high tide = sea goes near top, low tide = sea drops to bottom
     const SEA_Y_HIGH = H * 0.08;
-    const SEA_Y_LOW = H * 0.88;
+    const SEA_Y_LOW = H * 0.90;
 
     const seaYPoints = hours.map(h => {
       const norm = (h.seaLevel - seaMin) / seaRange;
       return SEA_Y_LOW - norm * (SEA_Y_LOW - SEA_Y_HIGH);
     });
 
+    // Sun times for darkness overlay
+    const sunTimes = getSunTimes(dayData.date);
+
     // Seeded random for consistent placement
     const dateSeed = parseInt(dayData.date.replace(/-/g, ''));
-    
-    // Pre-compute beach items
-    const items = ['🦀', '🐚', '🏖️', '⭐', '🪣', '🦶', '🐕', '🐚', '⭐', '🦀'];
+
+    // Pre-compute beach items with x/y positions in canvas space
+    const items = ['🦀', '🐚', '⭐', '🪣', '🦀', '🐚', '⭐', '🦶', '🐕', '🐚'];
     const itemRng = seededRandom(dateSeed + 42);
     const beachItems = [];
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 30; i++) {
       const colIdx = Math.floor(itemRng() * hours.length);
-      const xFrac = itemRng();
-      const yFrac = itemRng();
+      const xFrac = itemRng(); // 0..1 within that column
+      const yFrac = itemRng(); // 0..1 within exposed sand
       const item = items[Math.floor(itemRng() * items.length)];
-      const size = 12 + itemRng() * 12;
+      const size = 14 + itemRng() * 10;
       beachItems.push({ colIdx, xFrac, yFrac, item, size });
     }
 
+    // Smooth interpolation of sea Y at any x pixel
     function interpolateSeaY(x) {
       const cf = (x / W) * (hours.length - 1);
       const ci = Math.min(Math.floor(cf), hours.length - 2);
       const frac = cf - ci;
-      const sf = frac * frac * (3 - 2 * frac); // smoothstep
+      // Cubic smoothstep for smooth curve (no jagged steps)
+      const sf = frac * frac * (3 - 2 * frac);
       return seaYPoints[ci] + (seaYPoints[ci + 1] - seaYPoints[ci]) * sf;
+    }
+
+    // Build the smooth sea-surface path points (reused for fill, foam, and wet-sand clipping)
+    function buildSeaSurface(t, amp) {
+      const waveFreq = 0.016;
+      const pts = [];
+      for (let x = 0; x <= W; x += 2) {
+        const baseY = interpolateSeaY(x);
+        const wave = Math.sin(x * waveFreq + t * 1.3) * amp +
+                     Math.sin(x * waveFreq * 2.1 + t * 0.8 + 2) * (amp * 0.35);
+        pts.push({ x, y: baseY + wave });
+      }
+      return pts;
+    }
+
+    function applyPath(pts) {
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
     }
 
     function drawFrame(time) {
       ctx.clearRect(0, 0, W, H);
       const t = time * 0.001;
+      const waveAmp = 4;
 
       // === SKY ===
-      const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.35);
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, H * 0.3);
       skyGrad.addColorStop(0, '#94c9e2');
       skyGrad.addColorStop(0.6, '#b8d9ea');
       skyGrad.addColorStop(1, '#d4e8f0');
@@ -610,7 +647,7 @@
       ctx.fillRect(0, 0, W, H);
 
       // === SAND BASE ===
-      const SAND_TOP = H * 0.05;
+      const SAND_TOP = H * 0.04;
       const sandGrad = ctx.createLinearGradient(0, SAND_TOP, 0, H);
       sandGrad.addColorStop(0, '#F7E18C');
       sandGrad.addColorStop(0.2, '#EFD06A');
@@ -620,172 +657,132 @@
       ctx.fillStyle = sandGrad;
       ctx.fillRect(0, SAND_TOP, W, H - SAND_TOP);
 
-      // Sand texture - small dots
+      // Sand texture dots (seeded, drawn once per frame but cheap)
       const texRng = seededRandom(dateSeed);
-      for (let i = 0; i < 350; i++) {
-        const x = texRng() * W;
-        const y = SAND_TOP + texRng() * (H - SAND_TOP);
-        const r = texRng() * 1.8 + 0.3;
+      for (let i = 0; i < 280; i++) {
+        const tx = texRng() * W;
+        const ty = SAND_TOP + texRng() * (H - SAND_TOP);
+        const tr = texRng() * 1.6 + 0.3;
         const bright = texRng() > 0.5;
-        ctx.fillStyle = bright ? 'rgba(255, 240, 180, 0.1)' : 'rgba(160, 120, 40, 0.07)';
+        ctx.fillStyle = bright ? 'rgba(255,240,180,0.10)' : 'rgba(160,120,40,0.07)';
         ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.arc(tx, ty, tr, 0, Math.PI * 2);
         ctx.fill();
       }
 
-      // Wet sand near water line
-      for (let x = 0; x < W; x += 3) {
-        const seaY = interpolateSeaY(x);
-        const wetZoneTop = seaY - 18;
-        const wetZoneBottom = seaY;
-        if (wetZoneTop > SAND_TOP) {
-          const wetGrad = ctx.createLinearGradient(0, wetZoneTop, 0, wetZoneBottom);
-          wetGrad.addColorStop(0, 'rgba(160, 130, 50, 0)');
-          wetGrad.addColorStop(1, 'rgba(140, 115, 45, 0.35)');
-          ctx.fillStyle = wetGrad;
-          ctx.fillRect(x, wetZoneTop, 3, wetZoneBottom - wetZoneTop);
-        }
-      }
-
-      // === BEACH ITEMS ===
+      // === BEACH ITEMS — drawn BEFORE sea so they go behind it ===
+      // Use plain fillText without any globalAlpha shadow trick
+      // (globalAlpha shadow approach causes iOS to show only a shadow)
+      ctx.save();
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       beachItems.forEach(bi => {
         const x = Math.max(bi.size, Math.min(W - bi.size, bi.colIdx * colW + bi.xFrac * colW));
         const seaY = seaYPoints[bi.colIdx];
-        const sandHeight = seaY - SAND_TOP - 20;
-        if (sandHeight < 30) return;
-        const y = SAND_TOP + 16 + bi.yFrac * Math.max(0, sandHeight - 14);
-        if (y < seaY - 12) {
-          ctx.font = bi.size + 'px sans-serif';
-          ctx.globalAlpha = 0.12;
-          ctx.fillText(bi.item, x + 1.5, y + 2.5);
-          ctx.globalAlpha = 0.92;
-          ctx.fillText(bi.item, x, y);
-          ctx.globalAlpha = 1;
-        }
+        const sandHeight = seaY - SAND_TOP - 14;
+        if (sandHeight < 28) return; // no room
+        const y = SAND_TOP + 10 + bi.yFrac * Math.max(0, sandHeight - 10);
+        if (y >= seaY - 10) return; // underwater
+        ctx.font = bi.size + 'px sans-serif';
+        ctx.globalAlpha = 1;
+        ctx.fillText(bi.item, x, y);
       });
+      ctx.restore();
 
       // === SEA ===
-      const waveAmp = 5;
-      const waveFreq = 0.016;
+      // Build the wave surface path
+      const surfacePts = buildSeaSurface(t, waveAmp);
 
-      // Main sea fill
-      ctx.beginPath();
-      ctx.moveTo(0, H);
-      for (let x = 0; x <= W; x += 1) {
-        const baseY = interpolateSeaY(x);
-        const wave = Math.sin(x * waveFreq + t * 1.3) * waveAmp +
-                     Math.sin(x * waveFreq * 2.1 + t * 0.8 + 2) * (waveAmp * 0.35);
-        ctx.lineTo(x, baseY + wave);
+      // --- Wet sand shadow: a semi-transparent band just above the waterline ---
+      // Draw it BEFORE the sea fill so it shows on sand (not on sea)
+      ctx.save();
+      // Clip to everything ABOVE the wave surface
+      applyPath(surfacePts);
+      ctx.lineTo(W, 0);
+      ctx.lineTo(0, 0);
+      ctx.closePath();
+      ctx.clip();
+
+      // Now draw the wet-sand gradient band
+      for (let x = 0; x <= W; x += 4) {
+        const sy = interpolateSeaY(x);
+        const bandTop = sy - 22;
+        if (bandTop < SAND_TOP) continue;
+        const wg = ctx.createLinearGradient(0, bandTop, 0, sy);
+        wg.addColorStop(0, 'rgba(130,105,35,0)');
+        wg.addColorStop(1, 'rgba(115,92,28,0.30)');
+        ctx.fillStyle = wg;
+        ctx.fillRect(x, bandTop, 4, 22);
       }
+      ctx.restore();
+
+      // --- Main sea fill ---
+      ctx.save();
+      applyPath(surfacePts);
       ctx.lineTo(W, H);
+      ctx.lineTo(0, H);
       ctx.closePath();
 
       const minSeaY = Math.min(...seaYPoints);
       const seaGrad = ctx.createLinearGradient(0, minSeaY - 10, 0, H);
-      seaGrad.addColorStop(0, 'rgba(66, 165, 220, 0.8)');
-      seaGrad.addColorStop(0.1, 'rgba(46, 134, 193, 0.88)');
-      seaGrad.addColorStop(0.35, 'rgba(26, 82, 118, 0.93)');
-      seaGrad.addColorStop(0.7, 'rgba(18, 60, 90, 0.96)');
+      seaGrad.addColorStop(0, 'rgba(66,165,220,0.82)');
+      seaGrad.addColorStop(0.10, 'rgba(46,134,193,0.90)');
+      seaGrad.addColorStop(0.35, 'rgba(26,82,118,0.94)');
+      seaGrad.addColorStop(0.70, 'rgba(18,60,90,0.97)');
       seaGrad.addColorStop(1, '#0e2f47');
       ctx.fillStyle = seaGrad;
       ctx.fill();
+      ctx.restore();
 
-      // Foam at the water edge - bright white line
+      // --- Foam lines (drawn on top of sea fill) ---
       ctx.save();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+
+      // Primary foam line — bright white
+      ctx.strokeStyle = 'rgba(255,255,255,0.65)';
       ctx.lineWidth = 2.5;
-      ctx.beginPath();
-      for (let x = 0; x <= W; x += 1) {
-        const baseY = interpolateSeaY(x);
-        const wave = Math.sin(x * waveFreq + t * 1.3) * waveAmp +
-                     Math.sin(x * waveFreq * 2.1 + t * 0.8 + 2) * (waveAmp * 0.35);
-        if (x === 0) ctx.moveTo(x, baseY + wave);
-        else ctx.lineTo(x, baseY + wave);
-      }
+      applyPath(surfacePts);
       ctx.stroke();
 
-      // Second foam line  
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      // Second foam line — offset slightly below
+      const surfacePts2 = buildSeaSurface(t * 1.0 + 1.2, waveAmp * 0.65);
+      ctx.strokeStyle = 'rgba(255,255,255,0.28)';
       ctx.lineWidth = 1.5;
       ctx.beginPath();
-      for (let x = 0; x <= W; x += 1.5) {
-        const baseY = interpolateSeaY(x);
-        const wave = Math.sin(x * waveFreq * 0.9 + t * 1.0 + 1.2) * (waveAmp * 0.7);
-        if (x === 0) ctx.moveTo(x, baseY + 10 + wave);
-        else ctx.lineTo(x, baseY + 10 + wave);
-      }
+      ctx.moveTo(surfacePts2[0].x, surfacePts2[0].y + 9);
+      for (let i = 1; i < surfacePts2.length; i++) ctx.lineTo(surfacePts2[i].x, surfacePts2[i].y + 9);
       ctx.stroke();
 
-      // Underwater wave highlights
-      for (let w = 0; w < 5; w++) {
-        const offY = 20 + w * 18;
+      // Underwater ripple lines (inside sea only — clip to sea area)
+      applyPath(surfacePts);
+      ctx.lineTo(W, H);
+      ctx.lineTo(0, H);
+      ctx.closePath();
+      ctx.clip();
+      for (let wi = 0; wi < 5; wi++) {
+        const offY = 18 + wi * 17;
+        const ripAmp = waveAmp * 0.4;
+        const ripFreq = 0.013;
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.10 - w * 0.017})`;
+        ctx.strokeStyle = `rgba(255,255,255,${0.09 - wi * 0.015})`;
         ctx.lineWidth = 1;
         for (let x = 0; x <= W; x += 2) {
           const baseY = interpolateSeaY(x);
-          const wave = Math.sin(x * waveFreq * 0.65 + t * (0.9 - w * 0.15) + w * 2.5) * (waveAmp * 0.45);
-          if (x === 0) ctx.moveTo(x, baseY + offY + wave);
-          else ctx.lineTo(x, baseY + offY + wave);
+          const rip = Math.sin(x * ripFreq + t * (0.85 - wi * 0.12) + wi * 2.3) * ripAmp;
+          if (x === 0) ctx.moveTo(x, baseY + offY + rip);
+          else ctx.lineTo(x, baseY + offY + rip);
         }
         ctx.stroke();
       }
       ctx.restore();
 
-      // === HOUR MARKERS (subtle vertical gridlines in the sand) ===
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.04)';
-      ctx.lineWidth = 1;
+      // === DARKNESS OVERLAY (per-column) ===
       hours.forEach((h, i) => {
-        if (i === 0) return;
+        const alpha = darknessAlpha(h.hour, sunTimes);
+        if (alpha < 0.01) return;
         const x = i * colW;
-        ctx.beginPath();
-        ctx.moveTo(x, SAND_TOP);
-        ctx.lineTo(x, seaYPoints[i] - 5);
-        ctx.stroke();
+        ctx.fillStyle = `rgba(10,20,40,${alpha})`;
+        ctx.fillRect(x, 0, colW, H);
       });
-
-      // === HOUR LABELS ===
-      ctx.fillStyle = 'rgba(27, 38, 49, 0.3)';
-      ctx.font = '600 10px Satoshi, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'bottom';
-      hours.forEach((h, i) => {
-        ctx.fillText(formatHour(h.hour), (i + 0.5) * colW, H - 4);
-      });
-
-      // === TIDE LABELS ===
-      let minIdx = 0, maxIdx = 0;
-      hours.forEach((h, i) => {
-        if (h.seaLevel < hours[minIdx].seaLevel) minIdx = i;
-        if (h.seaLevel > hours[maxIdx].seaLevel) maxIdx = i;
-      });
-
-      // Helper: draw pill label
-      function drawLabel(text, x, y, bgColor, textColor) {
-        ctx.font = '700 10px Satoshi, sans-serif';
-        const metrics = ctx.measureText(text);
-        const pw = metrics.width + 12;
-        const ph = 18;
-        ctx.fillStyle = bgColor;
-        ctx.beginPath();
-        const r = 9;
-        ctx.roundRect(x - pw/2, y - ph/2, pw, ph, r);
-        ctx.fill();
-        ctx.fillStyle = textColor;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(text, x, y);
-      }
-
-      const htX = (maxIdx + 0.5) * colW;
-      const htY = seaYPoints[maxIdx] - 16;
-      drawLabel('HIGH TIDE', htX, htY, 'rgba(255,255,255,0.75)', 'rgba(26,82,118,0.9)');
-
-      const ltX = (minIdx + 0.5) * colW;
-      const ltY = seaYPoints[minIdx] - 16;
-      drawLabel('LOW TIDE', ltX, ltY, 'rgba(27,38,49,0.5)', 'rgba(255,255,255,0.9)');
 
       animFrame = requestAnimationFrame(drawFrame);
     }
@@ -826,7 +823,7 @@
       this.moveTo(x + r[0], y);
       this.arcTo(x + w, y, x + w, y + h, r[1]);
       this.arcTo(x + w, y + h, x, y + h, r[2]);
-      this.arcTo(x, y + h, x, y, r[3]);
+      this.arcTo(x, y + h, x, y, r[0]);
       this.arcTo(x, y, x + w, y, r[0]);
     };
   }
