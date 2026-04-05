@@ -275,12 +275,22 @@
     }
 
     /* BEACH CANVAS */
+    .beach-outer {
+      position: relative;
+    }
     .beach-container {
       position: relative;
       width: var(--total-w);
       /* height set by JS */
     }
     #beachCanvas { display: block; width: var(--total-w); height: auto; }
+    .tide-axis {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      /* width/height set by JS to match the beach canvas */
+    }
 
     /* LOADING */
     .loading-overlay {
@@ -540,14 +550,18 @@
 </div>
 
 <main id="mainContent">
-  <!-- Single shared scroll wrapper — weather strip + canvas scroll together -->
-  <div class="scroll-wrapper" id="scrollWrapper">
-    <div class="weather-strip-container">
-      <div class="weather-strip skeleton-strip" id="weatherStrip"></div>
+  <!-- Wrapper gives the axis canvas a position:absolute anchor outside the scroll -->
+  <div class="beach-outer" id="beachOuter">
+    <div class="scroll-wrapper" id="scrollWrapper">
+      <div class="weather-strip-container">
+        <div class="weather-strip skeleton-strip" id="weatherStrip"></div>
+      </div>
+      <div class="beach-container" id="beachContainer">
+        <canvas id="beachCanvas"></canvas>
+      </div>
     </div>
-    <div class="beach-container" id="beachContainer">
-      <canvas id="beachCanvas"></canvas>
-    </div>
+    <!-- Tide axis: floats over the left edge, never scrolls -->
+    <canvas id="tideAxis" class="tide-axis"></canvas>
   </div>
 </main>
 
@@ -1719,6 +1733,102 @@ const BATHING_WATERS = [
     animFrame = requestAnimationFrame(drawFrame);
   }
 
+  function renderTideAxis(dayData) {
+    const axisCanvas = document.getElementById('tideAxis');
+    const beachContainer = document.getElementById('beachContainer');
+    const beachOuter = document.getElementById('beachOuter');
+    if (!axisCanvas || !beachContainer) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    const AXIS_W = 38;
+    // Match beach canvas height exactly
+    const beachCanvas = document.getElementById('beachCanvas');
+    const H = beachCanvas ? beachCanvas.offsetHeight : 300;
+
+    // Position the axis over the beach canvas (below the weather strip)
+    const beachTop = beachContainer.offsetTop; // relative to beachOuter
+    axisCanvas.style.top = beachTop + 'px';
+    axisCanvas.style.width = AXIS_W + 'px';
+    axisCanvas.style.height = H + 'px';
+    axisCanvas.width = AXIS_W * dpr;
+    axisCanvas.height = H * dpr;
+
+    const ctx = axisCanvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, AXIS_W, H);
+
+    if (!dayData || !dayData.hours.length) return;
+
+    // Replicate the same Y-mapping used in renderBeachCanvas
+    const SEA_Y_HIGH = H * 0.08;
+    const SEA_Y_LOW  = H * 0.90;
+    const seaMin = dayData.seaMin;
+    const seaMax = dayData.seaMax;
+    const seaRange = seaMax - seaMin || 1;
+
+    // Decide tick values — round to nearest 0.5m, cover seaMin→seaMax
+    const tickStep = seaRange <= 2 ? 0.5 : 1.0;
+    const firstTick = Math.ceil(seaMin / tickStep) * tickStep;
+    const ticks = [];
+    for (let v = firstTick; v <= seaMax + 0.001; v += tickStep) {
+      ticks.push(parseFloat(v.toFixed(2)));
+    }
+
+    // Background panel — semi-transparent dark pill
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0,   'rgba(15,25,45,0.82)');
+    grad.addColorStop(1,   'rgba(15,25,45,0.55)');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.roundRect(0, 0, AXIS_W, H, [0, 6, 6, 0]);
+    ctx.fill();
+
+    // Right-edge separator line
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(AXIS_W - 0.5, 0);
+    ctx.lineTo(AXIS_W - 0.5, H);
+    ctx.stroke();
+
+    // Draw ticks + labels
+    ticks.forEach(v => {
+      const norm = (v - seaMin) / seaRange;
+      const y = SEA_Y_LOW - norm * (SEA_Y_LOW - SEA_Y_HIGH);
+
+      // Tick mark
+      ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(AXIS_W - 7, y);
+      ctx.lineTo(AXIS_W - 1, y);
+      ctx.stroke();
+
+      // Label
+      const label = v % 1 === 0 ? v.toFixed(0) + 'm' : v.toFixed(1) + 'm';
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.font = `600 9px -apple-system, sans-serif`;
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      // Don't draw if too close to the edge
+      if (y > 8 && y < H - 8) {
+        ctx.fillText(label, AXIS_W - 9, y);
+      }
+    });
+
+    // "TIDE HEIGHT" label rotated vertically, centred on left strip
+    ctx.save();
+    ctx.translate(8, H / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillStyle = 'rgba(255,255,255,0.28)';
+    ctx.font = '600 7.5px -apple-system, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.letterSpacing = '0.06em';
+    ctx.fillText('TIDE HEIGHT', 0, 0);
+    ctx.restore();
+  }
+
   function renderDay(data, doScrollToNow) {
     const dayData = extractDayData(data, selectedDayIndex);
     if (!dayData) return;
@@ -1727,6 +1837,8 @@ const BATHING_WATERS = [
     renderWeatherStrip(dayData, best);
     renderBestTimeBanner(best);
     renderBeachCanvas(dayData);
+    // Axis needs to run after canvas paint so offsetHeight is set
+    requestAnimationFrame(() => renderTideAxis(dayData));
 
     // Scroll to current hour on Today tab if requested
     if (doScrollToNow && selectedDayIndex === 0) {
