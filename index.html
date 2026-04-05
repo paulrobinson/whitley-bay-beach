@@ -45,29 +45,37 @@
     .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
     .header-tabs-row { display: flex; align-items: center; gap: 0; margin-bottom: 14px; }
     .updated-time {
-      padding-left: 10px;
-      font-size: 0.62rem;
-      font-weight: 500;
-      color: rgba(255,255,255,0.4);
-      white-space: nowrap;
+      padding-left: 8px;
       display: flex;
       align-items: center;
       gap: 4px;
       flex-shrink: 0;
+      color: rgba(255,255,255,0.4);
+      white-space: nowrap;
+      cursor: default;
     }
-    .updated-time .updated-label { display: flex; align-items: center; gap: 3px; }
-    .updated-time .updated-ts { font-size: 0.62rem; font-weight: 600; color: rgba(255,255,255,0.55); }
-    .refresh-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #3498db;
-      display: none;
-      animation: refreshPulse 1s ease-in-out infinite;
+    .updated-icon {
+      width: 14px; height: 14px;
+      flex-shrink: 0;
+      opacity: 0.45;
+      transition: opacity 0.2s;
     }
-    .refresh-dot.active { display: inline-block; }
-    @keyframes refreshPulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.7); }
+    .updated-icon.spinning {
+      animation: iconSpin 1s linear infinite;
+      opacity: 0.75;
+    }
+    @keyframes iconSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .updated-ts {
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+    }
+    @media (max-width: 480px) {
+      .updated-ts { display: none; }
+      .updated-icon { opacity: 0.5; }
     }
     .header-logo svg { width: 34px; height: 34px; }
     .header-title { font-size: 1.3rem; font-weight: 700; letter-spacing: -0.02em; }
@@ -434,8 +442,11 @@
   </div>
   <div class="header-tabs-row">
     <div class="day-tabs" id="dayTabs"></div>
-    <div class="updated-time" id="updatedTime">
-      <div class="updated-label">Updated <span class="refresh-dot" id="refreshDot"></span></div>
+    <div class="updated-time" id="updatedTime" title="Data last updated">
+      <svg class="updated-icon" id="updatedIcon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M13.5 8A5.5 5.5 0 1 1 8 2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        <polyline points="8,0.5 10.5,2.5 8,4.5" fill="currentColor"/>
+      </svg>
       <span class="updated-ts" id="updatedTs">—</span>
     </div>
   </div>
@@ -1144,8 +1155,8 @@ const BATHING_WATERS = [
   }
 
   function setRefreshing(active) {
-    const dot = document.getElementById('refreshDot');
-    if (dot) dot.classList.toggle('active', active);
+    const icon = document.getElementById('updatedIcon');
+    if (icon) icon.classList.toggle('spinning', active);
   }
 
   async function fetchAllData(force) {
@@ -1165,6 +1176,8 @@ const BATHING_WATERS = [
     const timeStr = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
     const tsEl = document.getElementById('updatedTs');
     if (tsEl) tsEl.textContent = timeStr;
+    const timeContainer = document.getElementById('updatedTime');
+    if (timeContainer) timeContainer.title = 'Updated ' + timeStr;
     return data;
   }
 
