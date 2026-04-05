@@ -43,7 +43,7 @@
       padding: 16px 20px 14px;
     }
     .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-    .header-tabs-row { display: flex; align-items: center; gap: 0; margin-bottom: 14px; }
+    .header-tabs-row { display: flex; align-items: center; gap: 0; margin-top: 14px; margin-bottom: 4px; }
     .updated-time {
       padding-left: 8px;
       display: flex;
@@ -107,6 +107,7 @@
       text-transform: uppercase;
       color: rgba(255,255,255,0.4);
       margin-bottom: 4px;
+      margin-top: 14px;
     }
     .current-conditions {
       display: flex;
@@ -497,6 +498,8 @@
       </svg>
     </button>
   </div>
+  <div class="now-label">Right now</div>
+  <div class="current-conditions" id="currentConditions"></div>
   <div class="header-tabs-row">
     <div class="day-tabs" id="dayTabs"></div>
     <div class="updated-time" id="updatedTime" title="Data last updated">
@@ -507,8 +510,6 @@
       <span class="updated-ts" id="updatedTs">—</span>
     </div>
   </div>
-  <div class="now-label">Right now</div>
-  <div class="current-conditions" id="currentConditions"></div>
 </header>
 
 <div class="best-time-banner" id="bestTimeBanner"></div>
@@ -1348,11 +1349,13 @@ const BATHING_WATERS = [
     });
   }
 
-  function renderCurrentConditions(dayData) {
+  function renderCurrentConditions(data) {
     const el = document.getElementById('currentConditions');
-    if (!dayData || !dayData.hours.length) { el.innerHTML = ''; return; }
+    // Always show today's conditions regardless of selected day tab
+    const todayData = extractDayData(data, 0);
+    if (!todayData || !todayData.hours.length) { el.innerHTML = ''; return; }
     const now = new Date();
-    const h = dayData.hours.find(x => x.hour === now.getHours()) || dayData.hours[0];
+    const h = todayData.hours.find(x => x.hour === now.getHours()) || todayData.hours[0];
     const info = weatherCodeToInfo(h.weatherCode);
     el.innerHTML = `
       <div class="condition-item">${info.icon} <span class="condition-value">${info.desc}</span></div>
@@ -1833,7 +1836,7 @@ const BATHING_WATERS = [
     const dayData = extractDayData(data, selectedDayIndex);
     if (!dayData) return;
     const best = computeBestWindow(dayData.hours, dayData.seaMin, dayData.seaMax);
-    renderCurrentConditions(dayData);
+    renderCurrentConditions(data);
     renderWeatherStrip(dayData, best);
     renderBestTimeBanner(best);
     renderBeachCanvas(dayData);
