@@ -133,6 +133,45 @@
     .best-time-banner.visible { display: flex; align-items: center; justify-content: center; gap: 8px; }
     .best-time-banner .label { font-weight: 500; opacity: 0.92; }
     .best-time-banner .time-range { font-weight: 800; letter-spacing: 0.01em; }
+    .best-time-info-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,0.6);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.65rem; font-weight: 700; font-family: var(--font);
+      cursor: pointer; flex-shrink: 0; line-height: 1;
+      transition: background 0.15s;
+    }
+    .best-time-info-btn:hover { background: rgba(255,255,255,0.2); }
+    .best-time-popover {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #1a2535;
+      border-radius: 16px 16px 0 0;
+      padding: 20px 24px 28px;
+      z-index: 200;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.4);
+      transform: translateY(100%);
+      transition: transform 0.25s ease;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .best-time-popover.open { transform: translateY(0); }
+    .best-time-popover h3 { font-size: 0.95rem; font-weight: 700; color: var(--white); margin: 0 0 10px; }
+    .best-time-popover p { font-size: 0.8rem; color: rgba(255,255,255,0.65); line-height: 1.5; margin: 0 0 12px; }
+    .best-time-factors { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+    .best-time-factors li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 0.8rem; color: rgba(255,255,255,0.8);
+    }
+    .factor-bar-wrap { flex: 1; height: 4px; background: rgba(255,255,255,0.12); border-radius: 2px; }
+    .factor-bar { height: 4px; border-radius: 2px; background: #3498db; }
+    .factor-pct { font-size: 0.7rem; color: rgba(255,255,255,0.45); width: 30px; text-align: right; }
+    .best-time-popover-close {
+      position: absolute; top: 14px; right: 18px;
+      background: none; border: none; color: rgba(255,255,255,0.5);
+      font-size: 1.3rem; cursor: pointer; line-height: 1;
+    }
 
     /* =============================================
        SHARED HORIZONTAL SCROLL WRAPPER
@@ -271,15 +310,15 @@
     .location-btn {
       display: flex;
       align-items: center;
-      gap: 5px;
-      background: rgba(255,255,255,0.1);
-      border: 1.5px solid rgba(255,255,255,0.2);
-      border-radius: 16px;
-      color: rgba(255,255,255,0.8);
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 20px;
+      color: var(--white);
       font-family: var(--font);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 4px 10px 4px 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 6px 10px 6px 10px;
       cursor: pointer;
       transition: background 0.2s, border-color 0.2s;
       white-space: nowrap;
@@ -287,13 +326,14 @@
       margin-left: auto;
       flex-shrink: 0;
     }
-    .location-btn:hover { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.4); }
+    .location-btn:hover { background: rgba(255,255,255,0.25); border-color: rgba(255,255,255,0.6); }
     .location-btn .loc-name {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    .location-btn svg { flex-shrink: 0; opacity: 0.75; }
+    .location-btn .loc-chevron { opacity: 0.6; flex-shrink: 0; }
+    .location-btn svg.loc-pin { flex-shrink: 0; opacity: 0.8; }
 
     /* LOCATION PICKER MODAL */
     .loc-overlay {
@@ -438,10 +478,13 @@
       <p class="header-tagline">Find the best time to walk on your local beach</p>
     </div>
     <button class="location-btn" id="locationBtn" onclick="openLocationPicker()">
-      <svg width="12" height="14" viewBox="0 0 12 14" fill="none">
+      <svg class="loc-pin" width="11" height="14" viewBox="0 0 12 14" fill="none">
         <path d="M6 0C3.79 0 2 1.79 2 4c0 3 4 8 4 8s4-5 4-8c0-2.21-1.79-4-4-4zm0 5.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z" fill="currentColor"/>
       </svg>
       <span class="loc-name" id="locationBtnName">Whitley Bay</span>
+      <svg class="loc-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path d="M3 2l4 3-4 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
     </button>
   </div>
   <div class="header-tabs-row">
@@ -459,6 +502,36 @@
 </header>
 
 <div class="best-time-banner" id="bestTimeBanner"></div>
+
+<!-- Best time info popover -->
+<div class="best-time-popover" id="bestTimePopover">
+  <button class="best-time-popover-close" onclick="closeBestTimeInfo()" aria-label="Close">&times;</button>
+  <h3>How is the best time chosen?</h3>
+  <p>Each hour is scored using a combination of four factors. The window with the highest average score wins.</p>
+  <ul class="best-time-factors">
+    <li>
+      <span>🏖 Exposed sand</span>
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:30%"></div></div>
+      <span class="factor-pct">30%</span>
+    </li>
+    <li>
+      <span>🌤 Weather</span>
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:25%"></div></div>
+      <span class="factor-pct">25%</span>
+    </li>
+    <li>
+      <span>💨 Wind speed</span>
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:25%"></div></div>
+      <span class="factor-pct">25%</span>
+    </li>
+    <li>
+      <span>🌡 Temperature</span>
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:20%"></div></div>
+      <span class="factor-pct">20%</span>
+    </li>
+  </ul>
+</div>
+<div id="bestTimeOverlay" onclick="closeBestTimeInfo()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:199"></div>
 
 <div class="error-state" id="errorState">
   <h2>Unable to load beach data</h2>
@@ -1309,11 +1382,21 @@ const BATHING_WATERS = [
     }).join('');
   }
 
+  window.openBestTimeInfo = function(e) {
+    e.stopPropagation();
+    document.getElementById('bestTimePopover').classList.add('open');
+    document.getElementById('bestTimeOverlay').style.display = 'block';
+  };
+  window.closeBestTimeInfo = function() {
+    document.getElementById('bestTimePopover').classList.remove('open');
+    document.getElementById('bestTimeOverlay').style.display = 'none';
+  };
+
   function renderBestTimeBanner(best) {
     const el = document.getElementById('bestTimeBanner');
     if (!best) { el.classList.remove('visible'); return; }
     el.classList.add('visible');
-    el.innerHTML = `<span class="label">🚶 Best time for a walk</span><span class="time-range">${formatHour(best.startHour)} – ${formatHour(best.endHour + 1)}</span>`;
+    el.innerHTML = `<span class="label">🚶 Best time for a walk</span><span class="time-range">${formatHour(best.startHour)} – ${formatHour(best.endHour + 1)}</span><button class="best-time-info-btn" onclick="openBestTimeInfo(event)" aria-label="How is this calculated?">i</button>`;
   }
 
   // ============ BEACH CANVAS ============
