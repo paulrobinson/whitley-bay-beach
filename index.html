@@ -1357,10 +1357,12 @@ const BATHING_WATERS = [
     return { hours, date: targetDate, seaMin: Math.min(...allSea), seaMax: Math.max(...allSea), dates, hoursStart: HOURS_START, hoursEnd: HOURS_END, avgSST };
   }
 
-  function computeBestWindow(hours, seaMin, seaMax) {
+  function computeBestWindow(hours, seaMin, seaMax, sunTimes) {
     if (!hours || hours.length < 2) return null;
     const seaRange = seaMax - seaMin || 1;
     const scores = hours.map(h => {
+      // Exclude hours that are dark — darknessAlpha returns max (0.88) when fully dark
+      if (sunTimes && darknessAlpha(h.hour, sunTimes) >= 0.8) return 0;
       const sand = 1 - ((h.seaLevel - seaMin) / seaRange);
       const wx = weatherScore(h.weatherCode);
       const wind = Math.max(0, 1 - (h.windMph / 35));
@@ -1370,12 +1372,15 @@ const BATHING_WATERS = [
     let bestScore = -1, bestStart = 0, bestLen = 2;
     for (let len = 2; len <= 3; len++) {
       for (let i = 0; i <= scores.length - len; i++) {
-        let sum = 0;
-        for (let j = i; j < i + len; j++) sum += scores[j];
+        // Skip windows that contain any dark hour (score === 0)
+        const windowScores = scores.slice(i, i + len);
+        if (windowScores.some(s => s === 0)) continue;
+        let sum = windowScores.reduce((a, b) => a + b, 0);
         const adj = (sum / len) * (len === 3 ? 1.03 : 1.0);
         if (adj > bestScore) { bestScore = adj; bestStart = i; bestLen = len; }
       }
     }
+    if (bestScore < 0) return null; // no valid daylight window found
     return { startIdx: bestStart, endIdx: bestStart + bestLen - 1, startHour: hours[bestStart].hour, endHour: hours[bestStart + bestLen - 1].hour, scores };
   }
 
@@ -1882,7 +1887,8 @@ const BATHING_WATERS = [
   function renderDay(data, doScrollToNow) {
     const dayData = extractDayData(data, selectedDayIndex);
     if (!dayData) return;
-    const best = computeBestWindow(dayData.hours, dayData.seaMin, dayData.seaMax);
+    const sunTimes = getSunTimes(dayData.date);
+    const best = computeBestWindow(dayData.hours, dayData.seaMin, dayData.seaMax, sunTimes);
     renderCurrentConditions(data);
     renderWeatherStrip(dayData, best);
     renderBestTimeBanner(best);
