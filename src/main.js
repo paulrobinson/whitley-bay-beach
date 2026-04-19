@@ -47,9 +47,16 @@ import BATHING_WATERS from '../data/bathing-waters.json';
     const overlay = document.getElementById('locOverlay');
     const sheet = overlay.querySelector('.loc-sheet');
     const vvHeight = window.visualViewport.height;
-    const keyboardHeight = window.innerHeight - window.visualViewport.offsetTop - vvHeight;
-    overlay.style.paddingBottom = Math.max(0, keyboardHeight) + 'px';
-    sheet.style.maxHeight = Math.floor(vvHeight * 0.9) + 'px';
+    if (window.innerWidth <= 640) {
+      // Mobile: sheet is top-anchored; shrink from bottom as keyboard appears
+      overlay.style.paddingBottom = '';
+      sheet.style.maxHeight = Math.max(100, vvHeight - 68) + 'px';
+    } else {
+      // Desktop: push sheet up above keyboard with paddingBottom
+      const keyboardHeight = window.innerHeight - window.visualViewport.offsetTop - vvHeight;
+      overlay.style.paddingBottom = Math.max(0, keyboardHeight) + 'px';
+      sheet.style.maxHeight = Math.floor(vvHeight * 0.9) + 'px';
+    }
   }
 
   window.openLocationPicker = function () {
