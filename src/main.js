@@ -459,7 +459,7 @@ import BATHING_WATERS from '../data/bathing-waters.json';
       if (dayData && dayData.avgSST != null) {
         const sstTempEl = sstBadge.querySelector('.sst-temp');
         if (sstTempEl) sstTempEl.textContent = Math.round(dayData.avgSST) + '\u00B0C';
-        sstBadge.style.bottom = Math.round(H * 0.20) + 'px';
+        sstBadge.style.bottom = '14px';
         sstBadge.style.display = 'flex';
       } else {
         sstBadge.style.display = 'none';
@@ -840,8 +840,14 @@ import BATHING_WATERS from '../data/bathing-waters.json';
       document.getElementById('loadingOverlay').classList.add('hidden');
       renderDayTabs(data);
       renderDay(data, true);
-      let rt;
-      window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => renderDay(allData, false), 100); });
+      let rt, lastW = window.innerWidth;
+      window.addEventListener('resize', () => {
+        const w = window.innerWidth;
+        if (w === lastW) return; // ignore height-only changes (mobile browser chrome)
+        lastW = w;
+        clearTimeout(rt);
+        rt = setTimeout(() => renderDay(allData, false), 100);
+      });
 
       // Background refresh every 5 minutes if data is >30 minutes old
       setInterval(async () => {

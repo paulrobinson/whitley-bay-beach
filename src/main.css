@@ -448,10 +448,13 @@ body {
 .footer .location { font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px; font-size: 0.8rem; }
 .build-time { display: block; margin-top: 6px; font-size: 0.65rem; color: var(--border); }
 
-/* WATER TEMP FLOATING BADGE */
+/* WATER TEMP FLOATING BADGE
+   position:absolute inside .beach-outer (position:relative) so it scrolls
+   with the beach graphic. left:50vw is viewport-relative, keeping it
+   horizontally centred on-screen regardless of horizontal canvas scroll. */
 .sst-badge {
-  position: fixed;
-  left: 50%;
+  position: absolute;
+  left: 50vw;
   transform: translateX(-50%);
   z-index: 10;
   pointer-events: none;

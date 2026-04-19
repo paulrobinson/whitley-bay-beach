@@ -126,18 +126,17 @@
       </div>
     </div>
     <canvas id="tideAxis" class="tide-axis"></canvas>
-  </div>
-</div>
-
-<!-- Water temp floating badge (fixed-position, always viewport-centred) -->
-<div id="sstBadge" class="sst-badge" style="display:none" aria-hidden="true">
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path d="M0 4 Q2.5 0.5 5 4 Q7.5 7.5 10 4 Q11.5 2.5 13 4" stroke="rgba(100,200,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-    <path d="M0 10 Q2.5 6.5 5 10 Q7.5 13.5 10 10 Q11.5 8.5 13 10" stroke="rgba(100,200,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
-  </svg>
-  <div class="sst-text">
-    <span class="sst-temp"></span>
-    <span class="sst-label">WATER TEMP</span>
+    <!-- Water temp badge — absolute inside beachOuter so it scrolls with the graphic -->
+    <div id="sstBadge" class="sst-badge" style="display:none" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M0 4 Q2.5 0.5 5 4 Q7.5 7.5 10 4 Q11.5 2.5 13 4" stroke="rgba(100,200,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M0 10 Q2.5 6.5 5 10 Q7.5 13.5 10 10 Q11.5 8.5 13 10" stroke="rgba(100,200,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="sst-text">
+        <span class="sst-temp"></span>
+        <span class="sst-label">WATER TEMP</span>
+      </div>
+    </div>
   </div>
 </div>
 
