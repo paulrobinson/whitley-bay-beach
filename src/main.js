@@ -40,16 +40,40 @@ import BATHING_WATERS from '../data/bathing-waters.json';
   let allLocationsFiltered = [];
 
   // ── Location picker modal ────────────────────────────────────────────────
+  let vpResizeHandler = null;
+
+  function syncSheetToViewport() {
+    if (!window.visualViewport) return;
+    const overlay = document.getElementById('locOverlay');
+    const sheet = overlay.querySelector('.loc-sheet');
+    const vvHeight = window.visualViewport.height;
+    const keyboardHeight = window.innerHeight - window.visualViewport.offsetTop - vvHeight;
+    overlay.style.paddingBottom = Math.max(0, keyboardHeight) + 'px';
+    sheet.style.maxHeight = Math.floor(vvHeight * 0.9) + 'px';
+  }
+
   window.openLocationPicker = function () {
     document.getElementById('locOverlay').classList.add('open');
     document.getElementById('locSearch').value = '';
     allLocationsFiltered = bathingWaters;
     renderLocList(bathingWaters);
+    if (window.visualViewport) {
+      syncSheetToViewport();
+      vpResizeHandler = syncSheetToViewport;
+      window.visualViewport.addEventListener('resize', vpResizeHandler);
+    }
     setTimeout(() => document.getElementById('locSearch').focus(), 50);
   };
 
   window.closeLocationPicker = function () {
     document.getElementById('locOverlay').classList.remove('open');
+    if (window.visualViewport && vpResizeHandler) {
+      window.visualViewport.removeEventListener('resize', vpResizeHandler);
+      vpResizeHandler = null;
+    }
+    const overlay = document.getElementById('locOverlay');
+    overlay.style.paddingBottom = '';
+    overlay.querySelector('.loc-sheet').style.maxHeight = '';
   };
 
   window.handleOverlayClick = function (e) {
