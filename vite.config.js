@@ -11,4 +11,8 @@ export default defineConfig({
     outDir: 'dist',
     assetsInlineLimit: 4096,
   },
+
+  test: {
+    environment: 'node',
+  },
 });
