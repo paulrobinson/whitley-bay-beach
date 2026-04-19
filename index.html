@@ -11,8 +11,8 @@
   <script async src="https://tally.so/widgets/embed.js"></script>
   <!-- Satoshi font -->
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
-  <script type="module" crossorigin src="/assets/index-QGpFYW5Y.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-0KzMNxEH.css">
+  <script type="module" crossorigin src="/assets/index-bN0m7k0z.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DOWvxLTs.css">
 </head>
 <body>
 
@@ -66,7 +66,7 @@
   <div class="header-tabs-row">
     <div class="day-tabs" id="dayTabs"></div>
     <div class="updated-time" id="updatedTime" title="Data last updated">
-      <svg class="updated-icon" id="updatedIcon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg class="updated-icon" id="updatedIcon" viewBox="-1 -1 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
         <path d="M13.65 2.35A8 8 0 1 0 15 8h-2a6 6 0 1 1-1.07-3.43L10 6h5V1l-1.35 1.35z" fill="currentColor"/>
       </svg>
       <span class="updated-ts" id="updatedTs">—</span>
@@ -128,6 +128,17 @@
       </div>
     </div>
     <canvas id="tideAxis" class="tide-axis"></canvas>
+    <!-- Water temp badge — absolute inside beachOuter so it scrolls with the graphic -->
+    <div id="sstBadge" class="sst-badge" style="display:none" aria-hidden="true">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M0 4 Q2.5 0.5 5 4 Q7.5 7.5 10 4 Q11.5 2.5 13 4" stroke="rgba(100,200,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        <path d="M0 10 Q2.5 6.5 5 10 Q7.5 13.5 10 10 Q11.5 8.5 13 10" stroke="rgba(100,200,255,0.85)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="sst-text">
+        <span class="sst-temp"></span>
+        <span class="sst-label">WATER TEMP</span>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -144,6 +155,7 @@
   <span class="location" id="footerLocation">Whitley Bay</span>
   Weather &amp; marine data: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> &bull;
   Bathing water locations: <a href="https://environment.agency.gov.uk" target="_blank" rel="noopener">Environment Agency</a>
+  <span class="build-time" id="buildTime"></span>
 </footer>
 
 <!-- Location picker modal -->
