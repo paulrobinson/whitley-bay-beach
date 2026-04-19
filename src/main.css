@@ -344,14 +344,22 @@ body {
 .loc-overlay.open { display: flex; }
 .loc-sheet {
   background: var(--white);
-  border-radius: 20px 20px 0 0;
+  border-radius: 20px;
   width: 100%;
   max-width: 560px;
-  max-height: 80vh;
+  max-height: 92vh;
   display: flex;
   flex-direction: column;
   padding-bottom: env(safe-area-inset-bottom, 0);
   animation: sheetUp 0.25s ease;
+}
+@media (min-width: 641px) {
+  .loc-sheet { border-radius: 20px 20px 0 0; }
+  .loc-overlay { align-items: flex-end; }
+}
+@media (max-width: 640px) {
+  .loc-overlay { align-items: flex-start; padding-top: 60px; }
+  .loc-sheet { height: calc(92vh - 60px); }
 }
 @keyframes sheetUp {
   from { transform: translateY(40px); opacity: 0; }
@@ -380,7 +388,7 @@ body {
   border-radius: 10px;
   border: 1.5px solid var(--border);
   font-family: var(--font);
-  font-size: 0.88rem;
+  font-size: 1rem;
   background: var(--bg);
   color: var(--navy);
   outline: none;
