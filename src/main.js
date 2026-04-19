@@ -48,9 +48,11 @@ import BATHING_WATERS from '../data/bathing-waters.json';
     const sheet = overlay.querySelector('.loc-sheet');
     const vvHeight = window.visualViewport.height;
     if (window.innerWidth <= 640) {
-      // Mobile: sheet is top-anchored; shrink from bottom as keyboard appears
+      // Mobile: fixed height so the search box never moves as results change
       overlay.style.paddingBottom = '';
-      sheet.style.maxHeight = Math.max(100, vvHeight - 68) + 'px';
+      const h = Math.max(100, vvHeight - 68) + 'px';
+      sheet.style.height = h;
+      sheet.style.maxHeight = h;
     } else {
       // Desktop: push sheet up above keyboard with paddingBottom
       const keyboardHeight = window.innerHeight - window.visualViewport.offsetTop - vvHeight;
@@ -80,7 +82,9 @@ import BATHING_WATERS from '../data/bathing-waters.json';
     }
     const overlay = document.getElementById('locOverlay');
     overlay.style.paddingBottom = '';
-    overlay.querySelector('.loc-sheet').style.maxHeight = '';
+    const sheet = overlay.querySelector('.loc-sheet');
+    sheet.style.maxHeight = '';
+    sheet.style.height = '';
   };
 
   window.handleOverlayClick = function (e) {

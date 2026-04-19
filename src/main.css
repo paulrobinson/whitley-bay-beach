@@ -359,6 +359,7 @@ body {
 }
 @media (max-width: 640px) {
   .loc-overlay { align-items: flex-start; padding-top: 60px; }
+  .loc-sheet { height: calc(92vh - 60px); }
 }
 @keyframes sheetUp {
   from { transform: translateY(40px); opacity: 0; }
