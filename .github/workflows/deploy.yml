@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish to gh-pages root
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          SHA=${{ github.sha }}
+
+          mkdir /tmp/site
+          cp index.html /tmp/site/
+          cp CNAME /tmp/site/
+
+          git fetch origin gh-pages 2>/dev/null || true
+          if git show-ref --quiet refs/remotes/origin/gh-pages; then
+            git worktree add /tmp/gh-pages origin/gh-pages
+          else
+            git worktree add --orphan -b gh-pages /tmp/gh-pages
+          fi
+
+          # Update root files without touching pr-* preview directories
+          cp /tmp/site/index.html /tmp/gh-pages/index.html
+          cp /tmp/site/CNAME /tmp/gh-pages/CNAME
+
+          cd /tmp/gh-pages
+          git add index.html CNAME
+          git diff --staged --quiet || git commit -m "Deploy ${SHA:0:7} to gh-pages"
+          git push origin HEAD:gh-pages
