@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Beach Walk UK</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34' fill='none'%3E%3Cpath d='M2 23 Q9 16 16 23 Q23 30 30 23' stroke='%2385c1e9' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3Cpath d='M2 27.5 Q9 20.5 16 27.5 Q23 34.5 30 27.5' stroke='%233498db' stroke-width='2' fill='none' stroke-linecap='round' opacity='0.7'/%3E%3Ccircle cx='26' cy='8' r='5.5' fill='%23F39C12' opacity='0.9'/%3E%3Cg stroke='%23F39C12' stroke-width='1.5' stroke-linecap='round' opacity='0.7'%3E%3Cline x1='26' y1='0' x2='26' y2='2'/%3E%3Cline x1='33' y1='8' x2='31' y2='8'/%3E%3Cline x1='19' y1='8' x2='21' y2='8'/%3E%3Cline x1='30.9' y1='3.1' x2='29.5' y2='4.5'/%3E%3Cline x1='21.1' y1='3.1' x2='22.5' y2='4.5'/%3E%3Cline x1='30.9' y1='12.9' x2='29.5' y2='11.5'/%3E%3Cline x1='21.1' y1='12.9' x2='22.5' y2='11.5'/%3E%3C/g%3E%3C/svg%3E">
+  <!-- Analytics (Umami — swap website-id or remove for local dev) -->
+  <script defer src="https://cloud.umami.is/script.js" data-website-id="fd82135a-d6e2-409f-b8a0-05aa590168ba"></script>
+  <!-- Tally feedback widget -->
+  <script async src="https://tally.so/widgets/embed.js"></script>
+  <!-- Satoshi font -->
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <script type="module" crossorigin src="/previews/pr-2/assets/index-QGpFYW5Y.js"></script>
+  <link rel="stylesheet" crossorigin href="/previews/pr-2/assets/index-0KzMNxEH.css">
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <svg class="loading-wave" viewBox="0 0 64 64" fill="none">
+    <path d="M4 40 Q16 28 28 40 Q40 52 52 40 Q56 36 60 40" stroke="#3498db" stroke-width="3" stroke-linecap="round" fill="none">
+      <animate attributeName="d" dur="1.5s" repeatCount="indefinite"
+        values="M4 40 Q16 28 28 40 Q40 52 52 40 Q56 36 60 40;
+                M4 40 Q16 52 28 40 Q40 28 52 40 Q56 44 60 40;
+                M4 40 Q16 28 28 40 Q40 52 52 40 Q56 36 60 40"/>
+    </path>
+  </svg>
+  <div class="loading-text">Loading beach conditions…</div>
+</div>
+
+<!-- Header -->
+<header class="header" id="header">
+  <div class="header-top">
+    <div class="header-logo">
+      <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M2 23 Q9 16 16 23 Q23 30 30 23" stroke="#85c1e9" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M2 27.5 Q9 20.5 16 27.5 Q23 34.5 30 27.5" stroke="#3498db" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+        <circle cx="26" cy="8" r="5.5" fill="#F39C12" opacity="0.9"/>
+        <g stroke="#F39C12" stroke-width="1.5" stroke-linecap="round" opacity="0.7">
+          <line x1="26" y1="0" x2="26" y2="2"/><line x1="33" y1="8" x2="31" y2="8"/>
+          <line x1="19" y1="8" x2="21" y2="8"/><line x1="30.9" y1="3.1" x2="29.5" y2="4.5"/>
+          <line x1="21.1" y1="3.1" x2="22.5" y2="4.5"/><line x1="30.9" y1="12.9" x2="29.5" y2="11.5"/>
+          <line x1="21.1" y1="12.9" x2="22.5" y2="11.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="header-title-wrap">
+      <h1 class="header-title">Beach Walk UK</h1>
+      <p class="header-tagline">Know before you go</p>
+    </div>
+    <button class="location-btn" id="locationBtn" onclick="openLocationPicker()">
+      <svg class="loc-pin" width="11" height="14" viewBox="0 0 12 14" fill="none">
+        <path d="M6 0C3.24 0 1 2.24 1 5c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5zm0 6.75A1.75 1.75 0 1 1 6 3.25a1.75 1.75 0 0 1 0 3.5z" fill="currentColor"/>
+      </svg>
+      <span class="loc-name" id="locationBtnName">Whitley Bay</span>
+      <svg class="loc-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none">
+        <path d="M2.5 4L5 6.5L7.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="now-label">Right now</div>
+  <div class="current-conditions" id="currentConditions"></div>
+
+  <div class="header-tabs-row">
+    <div class="day-tabs" id="dayTabs"></div>
+    <div class="updated-time" id="updatedTime" title="Data last updated">
+      <svg class="updated-icon" id="updatedIcon" viewBox="-1 -1 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M13.65 2.35A8 8 0 1 0 15 8h-2a6 6 0 1 1-1.07-3.43L10 6h5V1l-1.35 1.35z" fill="currentColor"/>
+      </svg>
+      <span class="updated-ts" id="updatedTs">—</span>
+    </div>
+  </div>
+</header>
+
+<!-- Best time banner -->
+<div class="best-time-banner" id="bestTimeBanner"></div>
+
+<!-- Best time info popover -->
+<div class="best-time-popover" id="bestTimePopover">
+  <button class="best-time-popover-close" onclick="closeBestTimeInfo()" aria-label="Close">&times;</button>
+  <h3>How we pick the best time</h3>
+  <p>We score every hour of the day and find the best 2–3 hour window for a beach walk using four factors:</p>
+  <ul class="best-time-factors">
+    <li>
+      🌊 Low tide (more sand exposed)
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:30%"></div></div>
+      <span class="factor-pct">30%</span>
+    </li>
+    <li>
+      ☀️ Weather (clear &gt; cloudy &gt; rain)
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:25%"></div></div>
+      <span class="factor-pct">25%</span>
+    </li>
+    <li>
+      💨 Low wind speed
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:25%"></div></div>
+      <span class="factor-pct">25%</span>
+    </li>
+    <li>
+      🌡️ Comfortable temperature (~18°C)
+      <div class="factor-bar-wrap"><div class="factor-bar" style="width:20%"></div></div>
+      <span class="factor-pct">20%</span>
+    </li>
+  </ul>
+</div>
+<!-- Overlay behind popover -->
+<div id="bestTimeOverlay" onclick="closeBestTimeInfo()" style="display:none;position:fixed;inset:0;z-index:199;"></div>
+
+<!-- Error state -->
+<div class="error-state" id="errorState">
+  <h2>Unable to load beach data</h2>
+  <p>We couldn't fetch the latest conditions. The most likely cause is an outage with the Open-Meteo weather service.</p>
+  <p style="margin-top:10px">Check <a href="https://status.open-meteo.com" target="_blank" rel="noopener">status.open-meteo.com</a> for updates &mdash; if there&rsquo;s an active incident you&rsquo;ll need to wait for it to recover before the data will load.</p>
+  <button onclick="location.reload()">Try Again</button>
+</div>
+
+<!-- Main content: weather strip + beach canvas -->
+<div id="mainContent">
+  <div class="beach-outer" id="beachOuter">
+    <div class="scroll-wrapper" id="scrollWrapper">
+      <div class="weather-strip-container">
+        <div class="weather-strip skeleton-strip" id="weatherStrip"></div>
+      </div>
+      <div class="beach-container" id="beachContainer">
+        <canvas id="beachCanvas"></canvas>
+      </div>
+    </div>
+    <canvas id="tideAxis" class="tide-axis"></canvas>
+  </div>
+</div>
+
+<!-- Feedback -->
+<div class="feedback-section">
+  <button class="feedback-btn" data-tally-open="GxD4Zj" data-tally-emoji-text="👋" data-tally-emoji-animation="wave">
+    Share feedback
+  </button>
+  <p class="feedback-hint">Help us improve Beach Walk UK</p>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <span class="location" id="footerLocation">Whitley Bay</span>
+  Weather &amp; marine data: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> &bull;
+  Bathing water locations: <a href="https://environment.agency.gov.uk" target="_blank" rel="noopener">Environment Agency</a>
+</footer>
+
+<!-- Location picker modal -->
+<div class="loc-overlay" id="locOverlay" onclick="handleOverlayClick(event)">
+  <div class="loc-sheet">
+    <div class="loc-sheet-header">
+      <h2>Choose a beach</h2>
+      <button class="loc-close" onclick="closeLocationPicker()" aria-label="Close">&times;</button>
+    </div>
+    <div class="loc-search-wrap">
+      <input class="loc-search" id="locSearch" type="search" placeholder="Search beaches…" autocomplete="off" oninput="filterLocations(this.value)">
+    </div>
+    <div class="loc-list" id="locList">
+      <div class="loc-loading">Loading beaches…</div>
+    </div>
+  </div>
+</div>
+
+<!-- App entry point -->
+</body>
+</html>
