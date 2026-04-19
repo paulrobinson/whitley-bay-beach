@@ -333,8 +333,10 @@ import {
     const seaRange = seaMax - seaMin || 1;
     const colW = W / hours.length;
 
-    const SEA_Y_HIGH = H * 0.08;
-    const SEA_Y_LOW = H * 0.90;
+    const minSand = currentLocation.minSand ?? 0;
+    const maxSand = currentLocation.maxSand ?? 1;
+    const SEA_Y_HIGH = H * (0.08 + 0.82 * minSand);
+    const SEA_Y_LOW = H * (0.08 + 0.82 * maxSand);
 
     const seaYPoints = hours.map(h => {
       const norm = (h.seaLevel - seaMin) / seaRange;
@@ -620,7 +622,7 @@ import {
     const dayData = extractDayData(data, selectedDayIndex, getLat());
     if (!dayData) return;
     const sunTimes = getSunTimes(dayData.date, getLat());
-    const best = computeBestWindow(dayData.hours, dayData.seaMin, dayData.seaMax, sunTimes);
+    const best = computeBestWindow(dayData.hours, dayData.seaMin, dayData.seaMax, sunTimes, currentLocation);
     renderCurrentConditions(data);
     renderWeatherStrip(dayData, best);
     renderBestTimeBanner(best);

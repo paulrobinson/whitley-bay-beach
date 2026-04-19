@@ -4,7 +4,8 @@
     "lat": 53.6079,
     "lon": -3.064,
     "type": "Coastal",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "minSand": 0.35
   },
   {
     "name": "Allonby",
@@ -46,7 +47,8 @@
     "lat": 55.611,
     "lon": -1.7079,
     "type": "Coastal",
-    "region": "North East"
+    "region": "North East",
+    "minSand": 0.35
   },
   {
     "name": "Bantham",
@@ -382,7 +384,8 @@
     "lat": 50.9332,
     "lon": 0.7963,
     "type": "Coastal",
-    "region": "Kent South London and East Sussex"
+    "region": "Kent South London and East Sussex",
+    "minSand": 0.40
   },
   {
     "name": "Carbis Bay",
@@ -746,14 +749,16 @@
     "lat": 55.2911,
     "lon": -1.5685,
     "type": "Coastal",
-    "region": "North East"
+    "region": "North East",
+    "minSand": 0.30
   },
   {
     "name": "Druridge Bay South",
     "lat": 55.2402,
     "lon": -1.5439,
     "type": "Coastal",
-    "region": "North East"
+    "region": "North East",
+    "minSand": 0.30
   },
   {
     "name": "Dunster Beach",
@@ -914,7 +919,8 @@
     "lat": 53.5482,
     "lon": -3.1062,
     "type": "Coastal",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "minSand": 0.30
   },
   {
     "name": "Fraisthorpe",
@@ -2216,7 +2222,8 @@
     "lat": 51.1165,
     "lon": -4.2223,
     "type": "Coastal",
-    "region": "Devon Cornwall and the Isles of Scilly"
+    "region": "Devon Cornwall and the Isles of Scilly",
+    "minSand": 0.40
   },
   {
     "name": "Scarborough North Bay",
@@ -2804,14 +2811,16 @@
     "lat": 55.0304,
     "lon": -1.4287,
     "type": "Coastal",
-    "region": "North East"
+    "region": "North East",
+    "minSand": 0.40
   },
   {
     "name": "Tynemouth Long Sands South",
     "lat": 55.0241,
     "lon": -1.4233,
     "type": "Coastal",
-    "region": "North East"
+    "region": "North East",
+    "minSand": 0.40
   },
   {
     "name": "Upton Towans",
@@ -3063,7 +3072,8 @@
     "lat": 55.0489,
     "lon": -1.4451,
     "type": "Coastal",
-    "region": "North East"
+    "region": "North East",
+    "minSand": 0.25
   },
   {
     "name": "Widemouth Sand",
@@ -3133,7 +3143,8 @@
     "lat": 51.1716,
     "lon": -4.2097,
     "type": "Coastal",
-    "region": "Devon Cornwall and the Isles of Scilly"
+    "region": "Devon Cornwall and the Isles of Scilly",
+    "minSand": 0.25
   },
   {
     "name": "Worthing",

@@ -84,12 +84,14 @@ export function darknessAlpha(hour, sunTimes) {
   return maxDark * Math.max(0, Math.min(1, t));
 }
 
-export function computeBestWindow(hours, seaMin, seaMax, sunTimes) {
+export function computeBestWindow(hours, seaMin, seaMax, sunTimes, beachProfile = {}) {
   if (!hours || hours.length < 2) return null;
   const seaRange = seaMax - seaMin || 1;
+  const { minSand = 0, maxSand = 1 } = beachProfile;
   const scores = hours.map(h => {
     if (sunTimes && darknessAlpha(h.hour, sunTimes) >= 0.8) return 0;
-    const sand = 1 - ((h.seaLevel - seaMin) / seaRange);
+    const tideFraction = (h.seaLevel - seaMin) / seaRange;
+    const sand = minSand + (maxSand - minSand) * (1 - tideFraction);
     const wx = weatherScore(h.weatherCode);
     const wind = Math.max(0, 1 - (h.windMph / 35));
     const temp = Math.max(0, 1 - Math.abs(h.temp - 18) / 20);
