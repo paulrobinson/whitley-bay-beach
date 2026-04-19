@@ -439,13 +439,32 @@ import BATHING_WATERS from '../data/bathing-waters.json';
     const dpr = window.devicePixelRatio || 1;
 
     const W = container.clientWidth;
-    const H = Math.max(280, Math.min(460, W * 0.55));
+    const headerEl = document.getElementById('header');
+    const bannerEl = document.getElementById('bestTimeBanner');
+    const stripEl = document.querySelector('.weather-strip-container');
+    const aboveH = (headerEl ? headerEl.offsetHeight : 0) +
+                   (bannerEl ? bannerEl.offsetHeight : 0) +
+                   (stripEl ? stripEl.offsetHeight : 0);
+    const H = Math.max(180, Math.min(600, window.innerHeight - aboveH));
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     canvas.style.width = W + 'px';
     canvas.style.height = H + 'px';
     const ctx = canvas.getContext('2d');
     ctx.scale(dpr, dpr);
+
+    // Update floating SST badge (fixed to viewport centre)
+    const sstBadge = document.getElementById('sstBadge');
+    if (sstBadge) {
+      if (dayData && dayData.avgSST != null) {
+        const sstTempEl = sstBadge.querySelector('.sst-temp');
+        if (sstTempEl) sstTempEl.textContent = Math.round(dayData.avgSST) + '\u00B0C';
+        sstBadge.style.bottom = '14px';
+        sstBadge.style.display = 'flex';
+      } else {
+        sstBadge.style.display = 'none';
+      }
+    }
 
     if (!dayData || !dayData.hours.length) {
       ctx.fillStyle = '#F5E6D3';
@@ -632,63 +651,6 @@ import BATHING_WATERS from '../data/bathing-waters.json';
       ctx.fillStyle = darkGrad;
       ctx.fillRect(0, 0, W, H);
 
-      // Sea surface temperature badge
-      if (dayData.avgSST != null) {
-        const sstTemp = Math.round(dayData.avgSST);
-        const font = 'Satoshi, -apple-system, BlinkMacSystemFont, sans-serif';
-        const badgeX = W / 2;
-        const badgeY = H * 0.80;
-        const padX = 14, padY = 7;
-        ctx.save();
-        ctx.font = `700 15px ${font}`;
-        const tempText = sstTemp + '\u00B0C';
-        const tw1 = ctx.measureText(tempText).width;
-        ctx.font = `500 10px ${font}`;
-        const labelText = 'WATER TEMP';
-        const tw2 = ctx.measureText(labelText).width;
-        const innerW = Math.max(tw1, tw2);
-        const waveGap = 18;
-        const bw = innerW + padX * 2 + waveGap;
-        const bh = 38;
-        const bx = badgeX - bw / 2;
-        const by = badgeY - bh / 2;
-        ctx.fillStyle = 'rgba(8, 32, 70, 0.65)';
-        ctx.beginPath();
-        ctx.roundRect(bx, by, bw, bh, bh / 2);
-        ctx.fill();
-        ctx.strokeStyle = 'rgba(100, 170, 255, 0.3)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.roundRect(bx, by, bw, bh, bh / 2);
-        ctx.stroke();
-        const wx = bx + 14;
-        const wy = badgeY;
-        ctx.strokeStyle = 'rgba(100,200,255,0.85)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(wx - 5, wy - 2);
-        ctx.quadraticCurveTo(wx - 2, wy - 7, wx + 1, wy - 2);
-        ctx.quadraticCurveTo(wx + 4, wy + 3, wx + 7, wy - 2);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(wx - 5, wy + 4);
-        ctx.quadraticCurveTo(wx - 2, wy - 1, wx + 1, wy + 4);
-        ctx.quadraticCurveTo(wx + 4, wy + 9, wx + 7, wy + 4);
-        ctx.stroke();
-        const textX = bx + waveGap + padX + innerW / 2;
-        ctx.fillStyle = 'rgba(255,255,255,0.96)';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = `700 15px ${font}`;
-        ctx.fillText(tempText, textX, badgeY - 7);
-        ctx.fillStyle = 'rgba(150,210,255,0.80)';
-        ctx.font = `500 9.5px ${font}`;
-        ctx.letterSpacing = '0.04em';
-        ctx.fillText(labelText, textX, badgeY + 8);
-        ctx.letterSpacing = '0';
-        ctx.restore();
-      }
-
       // Current hour indicator line (today only)
       if (selectedDayIndex === 0) {
         const nowH = new Date().getHours();
@@ -854,6 +816,20 @@ import BATHING_WATERS from '../data/bathing-waters.json';
     };
   }
 
+  // ── Build time ────────────────────────────────────────────────────────────
+  (function setBuildTime() {
+    const el = document.getElementById('buildTime');
+    if (!el) return;
+    try {
+      const d = new Date(__BUILD_TIME__);
+      el.textContent = 'Built ' + new Intl.DateTimeFormat(undefined, {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: '2-digit', minute: '2-digit',
+        timeZoneName: 'short'
+      }).format(d);
+    } catch (e) {}
+  })();
+
   // ── Init ──────────────────────────────────────────────────────────────────
   async function init() {
     applyLocationUI();
@@ -864,8 +840,14 @@ import BATHING_WATERS from '../data/bathing-waters.json';
       document.getElementById('loadingOverlay').classList.add('hidden');
       renderDayTabs(data);
       renderDay(data, true);
-      let rt;
-      window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => renderDay(allData, false), 100); });
+      let rt, lastW = window.innerWidth;
+      window.addEventListener('resize', () => {
+        const w = window.innerWidth;
+        if (w === lastW) return; // ignore height-only changes (mobile browser chrome)
+        lastW = w;
+        clearTimeout(rt);
+        rt = setTimeout(() => renderDay(allData, false), 100);
+      });
 
       // Background refresh every 5 minutes if data is >30 minutes old
       setInterval(async () => {

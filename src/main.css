@@ -446,6 +446,44 @@ body {
 .footer a { color: #2980b9; text-decoration: none; font-weight: 500; }
 .footer a:hover { text-decoration: underline; }
 .footer .location { font-weight: 700; color: var(--navy); display: block; margin-bottom: 4px; font-size: 0.8rem; }
+.build-time { display: block; margin-top: 6px; font-size: 0.65rem; color: var(--border); }
+
+/* WATER TEMP FLOATING BADGE
+   position:absolute inside .beach-outer (position:relative) so it scrolls
+   with the beach graphic. left:50vw is viewport-relative, keeping it
+   horizontally centred on-screen regardless of horizontal canvas scroll. */
+.sst-badge {
+  position: absolute;
+  left: 50vw;
+  transform: translateX(-50%);
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(8, 32, 70, 0.65);
+  border: 1px solid rgba(100, 170, 255, 0.3);
+  border-radius: 20px;
+  padding: 8px 14px 8px 12px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  white-space: nowrap;
+}
+.sst-text { display: flex; flex-direction: column; gap: 3px; }
+.sst-temp {
+  font-size: 15px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.96);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.sst-label {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: rgba(150, 210, 255, 0.80);
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
 
 /* SKELETON */
 .skeleton-strip {
