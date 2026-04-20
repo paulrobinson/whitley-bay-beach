@@ -209,21 +209,38 @@ def _discover_coverage(session: requests.Session, debug: bool = False) -> tuple[
             r.raise_for_status()
             if debug:
                 print(f"  GetCapabilities {version} ({len(r.content)} bytes):")
-                print("  " + r.text[:800].replace("\n", " "))
+                print("  " + r.text[:2000].replace("\n", " "))
             root = ET.fromstring(r.content)
             if version == "1.0.0":
-                # <name> inside <CoverageOfferingBrief>
-                el = root.find(".//{http://www.opengis.net/wcs}name")
+                # Must search inside CoverageOfferingBrief to avoid picking up
+                # the service-level <wcs:name> element.
+                WCS_NS = "http://www.opengis.net/wcs"
+                el = root.find(
+                    f".//{{{WCS_NS}}}CoverageOfferingBrief/{{{WCS_NS}}}name"
+                )
                 if el is None:
-                    el = root.find(".//name")
+                    # No-namespace fallback
+                    el = root.find(".//CoverageOfferingBrief/name")
                 if el is not None and el.text:
                     cov_100 = el.text.strip()
             else:
-                ns = {"wcs": "http://www.opengis.net/wcs/2.0", "ows": "http://www.opengis.net/ows/1.1"}
-                for tag in ("wcs:CoverageSummary/wcs:Identifier", "wcs:CoverageSummary/ows:Identifier"):
-                    el = root.find(f".//{tag}", ns)
-                    if el is not None and el.text:
-                        cov_201 = el.text.strip()
+                # ows namespace varies between 1.1 and 2.0 depending on server
+                ns_variants = [
+                    {"wcs": "http://www.opengis.net/wcs/2.0", "ows": "http://www.opengis.net/ows/2.0"},
+                    {"wcs": "http://www.opengis.net/wcs/2.0", "ows": "http://www.opengis.net/ows/1.1"},
+                ]
+                id_tags = (
+                    "wcs:CoverageSummary/wcs:CoverageId",
+                    "wcs:CoverageSummary/wcs:Identifier",
+                    "wcs:CoverageSummary/ows:Identifier",
+                )
+                for ns in ns_variants:
+                    for tag in id_tags:
+                        el = root.find(f".//{tag}", ns)
+                        if el is not None and el.text:
+                            cov_201 = el.text.strip()
+                            break
+                    if cov_201:
                         break
         except Exception as exc:
             print(f"  GetCapabilities {version} failed: {exc}")
