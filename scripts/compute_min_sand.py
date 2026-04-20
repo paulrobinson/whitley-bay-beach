@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+from __future__ import annotations
 """
 compute_min_sand.py  —  Populate minSand values in bathing-waters.json
 
