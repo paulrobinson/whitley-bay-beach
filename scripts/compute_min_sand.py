@@ -96,9 +96,9 @@ LIDAR_NODATA     = -9999.0
 REQUEST_DELAY_S  = 0.2    # Pause between LIDAR requests
 
 # Candidate field names (shapefile DBF names vary between EA releases)
-HAT_CANDIDATES  = ["HAT",  "Hat",  "HAT_M",  "hat",  "Hat2017",  "HAT2017"]
-MHWS_CANDIDATES = ["MHWS", "Mhws", "MHWS_M", "mhws", "Mhws2017", "MHWS2017"]
-MLWS_CANDIDATES = ["MLWS", "Mlws", "MLWS_M", "mlws", "Mlws2017", "MLWS2017"]
+HAT_CANDIDATES  = ["hat_od", "HAT",  "Hat",  "HAT_M",  "hat",  "Hat2017",  "HAT2017"]
+MHWS_CANDIDATES = ["mhws_od", "MHWS", "Mhws", "MHWS_M", "mhws", "Mhws2017", "MHWS2017"]
+MLWS_CANDIDATES = ["mlws_od", "MLWS", "Mlws", "MLWS_M", "mlws", "Mlws2017", "MLWS2017"]
 
 
 # ── Coordinate transform ───────────────────────────────────────────────────────
