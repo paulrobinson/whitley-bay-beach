@@ -257,7 +257,8 @@ def fetch_lidar_patch(
             r = session.get(LIDAR_WCS, params=params, timeout=45)
             ct = r.headers.get("Content-Type", "")
             if debug:
-                print(f"    WCS attempt: subset={x_sub!r} status={r.status_code} ct={ct!r} bytes={len(r.content)}")
+                body_preview = r.content[:300].decode("utf-8", errors="replace").replace("\n", " ")
+                print(f"    WCS attempt: subset={x_sub!r} status={r.status_code} ct={ct!r} body={body_preview!r}")
             if r.status_code == 200 and ("tiff" in ct or "octet" in ct):
                 with rasterio.open(BytesIO(r.content)) as ds:
                     arr = ds.read(1).astype(np.float32)
@@ -346,6 +347,8 @@ def main() -> None:
             continue
 
         easting, northing = to_bng(lon, lat)
+        if args.debug:
+            print(f"  BNG: E={easting:.0f} N={northing:.0f}")
         patch = fetch_lidar_patch(easting, northing, coverage_id, x_axis, y_axis, session, debug=args.debug)
 
         if patch is None:
