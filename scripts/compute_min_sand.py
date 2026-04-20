@@ -191,43 +191,58 @@ def nearest_datums(
 
 # ── LIDAR WCS helpers ──────────────────────────────────────────────────────────
 
-def _discover_coverage(session: requests.Session) -> tuple[str, str, str]:
+def _discover_coverage(session: requests.Session, debug: bool = False) -> tuple[str, str]:
     """
-    Query GetCapabilities to find coverage ID and axis labels.
-    Returns (coverage_id, x_axis, y_axis).
+    Query WCS 1.0.0 GetCapabilities to find the coverage name.
+    Returns (coverage_name_1_0, coverage_id_2_0_1).
     """
-    try:
-        r = session.get(
-            LIDAR_WCS,
-            params={"service": "WCS", "version": "2.0.1", "request": "GetCapabilities"},
-            timeout=30,
-        )
-        r.raise_for_status()
-        root = ET.fromstring(r.content)
-        ns = {
-            "wcs": "http://www.opengis.net/wcs/2.0",
-            "ows": "http://www.opengis.net/ows/1.1",
-        }
-        # First <wcs:Identifier> or <ows:Identifier> inside CoverageSummary
-        for tag in ("wcs:CoverageSummary/wcs:Identifier", "wcs:CoverageSummary/ows:Identifier"):
-            el = root.find(f".//{tag}", ns)
-            if el is not None and el.text:
-                return el.text.strip(), "E", "N"
-    except Exception as exc:
-        print(f"  GetCapabilities failed ({exc}), using defaults")
+    cov_100  = None
+    cov_201  = None
 
-    return "LidarComposite_DTM_1m", "E", "N"
+    for version in ("1.0.0", "2.0.1"):
+        try:
+            r = session.get(
+                LIDAR_WCS,
+                params={"service": "WCS", "version": version, "request": "GetCapabilities"},
+                timeout=30,
+            )
+            r.raise_for_status()
+            if debug:
+                print(f"  GetCapabilities {version} ({len(r.content)} bytes):")
+                print("  " + r.text[:800].replace("\n", " "))
+            root = ET.fromstring(r.content)
+            if version == "1.0.0":
+                # <name> inside <CoverageOfferingBrief>
+                el = root.find(".//{http://www.opengis.net/wcs}name")
+                if el is None:
+                    el = root.find(".//name")
+                if el is not None and el.text:
+                    cov_100 = el.text.strip()
+            else:
+                ns = {"wcs": "http://www.opengis.net/wcs/2.0", "ows": "http://www.opengis.net/ows/1.1"}
+                for tag in ("wcs:CoverageSummary/wcs:Identifier", "wcs:CoverageSummary/ows:Identifier"):
+                    el = root.find(f".//{tag}", ns)
+                    if el is not None and el.text:
+                        cov_201 = el.text.strip()
+                        break
+        except Exception as exc:
+            print(f"  GetCapabilities {version} failed: {exc}")
+
+    print(f"  WCS 1.0.0 coverage name: {cov_100!r}")
+    print(f"  WCS 2.0.1 coverage ID:   {cov_201!r}")
+    return (cov_100 or "LidarComposite_DTM_1m"), (cov_201 or "LidarComposite_DTM_1m")
 
 
 def fetch_lidar_patch(
     easting: float, northing: float,
-    coverage_id: str, x_axis: str, y_axis: str,
+    cov_100: str, cov_201: str,
     session: requests.Session,
     debug: bool = False,
 ) -> np.ndarray | None:
     """
     Fetch a PATCH_SIZE_M × PATCH_SIZE_M LIDAR elevation tile (BNG).
     Returns float32 array or None if no data.
+    cov_100 is the coverage name for WCS 1.0.0; cov_201 for WCS 2.0.1.
     """
     half  = PATCH_SIZE_M / 2
     e_min, e_max = easting - half,  easting + half
@@ -242,7 +257,7 @@ def fetch_lidar_patch(
             ("service",  "WCS"),
             ("version",  "1.0.0"),
             ("request",  "GetCoverage"),
-            ("coverage", coverage_id),
+            ("coverage", cov_100),
             ("BBOX",     f"{e_min:.0f},{n_min:.0f},{e_max:.0f},{n_max:.0f}"),
             ("CRS",      "EPSG:27700"),
             ("RESPONSE_CRS", "EPSG:27700"),
@@ -254,7 +269,7 @@ def fetch_lidar_patch(
             ("service",  "WCS"),
             ("version",  "1.0.0"),
             ("request",  "GetCoverage"),
-            ("coverage", coverage_id),
+            ("coverage", cov_100),
             ("BBOX",     f"{e_min:.0f},{n_min:.0f},{e_max:.0f},{n_max:.0f}"),
             ("CRS",      "EPSG:27700"),
             ("FORMAT",   "image/tiff"),
@@ -266,7 +281,7 @@ def fetch_lidar_patch(
             ("service",    "WCS"),
             ("version",    "2.0.1"),
             ("request",    "GetCoverage"),
-            ("CoverageID", coverage_id),
+            ("CoverageID", cov_201),
             ("subset",     f"E({e_min:.0f},{e_max:.0f})"),
             ("subset",     f"N({n_min:.0f},{n_max:.0f})"),
             ("format",     "image/tiff"),
@@ -348,8 +363,8 @@ def main() -> None:
     session.headers["User-Agent"] = "beach-walk-uk/compute-min-sand"
 
     print("Querying LIDAR WCS coverage…")
-    coverage_id, x_axis, y_axis = _discover_coverage(session)
-    print(f"  Coverage: '{coverage_id}'  axes: {x_axis}, {y_axis}")
+    cov_100, cov_201 = _discover_coverage(session, debug=args.debug)
+    print(f"  WCS 1.0.0: {cov_100!r}   WCS 2.0.1: {cov_201!r}")
 
     subset   = beaches[: args.limit] if args.limit else beaches
     total    = len(subset)
@@ -370,7 +385,7 @@ def main() -> None:
         easting, northing = to_bng(lon, lat)
         if args.debug:
             print(f"  BNG: E={easting:.0f} N={northing:.0f}")
-        patch = fetch_lidar_patch(easting, northing, coverage_id, x_axis, y_axis, session, debug=args.debug)
+        patch = fetch_lidar_patch(easting, northing, cov_100, cov_201, session, debug=args.debug)
 
         if patch is None:
             print(f"{label}  — no LIDAR data")
