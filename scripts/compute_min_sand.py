@@ -233,32 +233,53 @@ def fetch_lidar_patch(
     e_min, e_max = easting - half,  easting + half
     n_min, n_max = northing - half, northing + half
 
-    OGC_BNG = "http://www.opengis.net/def/crs/EPSG/0/27700"
+    px = PATCH_SIZE_M  # e.g. 400 pixels at 1m/pixel
 
-    # Try progressively different subset syntaxes and format strings
+    # Attempt list: (version, params_dict_or_list, description)
     attempts = [
-        (f"{x_axis},{OGC_BNG}({e_min:.0f},{e_max:.0f})",   f"{y_axis},{OGC_BNG}({n_min:.0f},{n_max:.0f})",   "image/tiff"),
-        (f"{x_axis},EPSG:27700({e_min:.0f},{e_max:.0f})",  f"{y_axis},EPSG:27700({n_min:.0f},{n_max:.0f})",  "image/tiff"),
-        (f"{x_axis}({e_min:.0f},{e_max:.0f})",             f"{y_axis}({n_min:.0f},{n_max:.0f})",             "image/tiff"),
-        (f"{x_axis}({e_min:.0f},{e_max:.0f})",             f"{y_axis}({n_min:.0f},{n_max:.0f})",             "image/geotiff"),
-    ]
-
-    for x_sub, y_sub, fmt in attempts:
-        params = [
+        # WCS 1.0.0 — simpler, widely supported by EA services
+        ("1.0.0", [
+            ("service",  "WCS"),
+            ("version",  "1.0.0"),
+            ("request",  "GetCoverage"),
+            ("coverage", coverage_id),
+            ("BBOX",     f"{e_min:.0f},{n_min:.0f},{e_max:.0f},{n_max:.0f}"),
+            ("CRS",      "EPSG:27700"),
+            ("RESPONSE_CRS", "EPSG:27700"),
+            ("FORMAT",   "GeoTIFF"),
+            ("WIDTH",    str(px)),
+            ("HEIGHT",   str(px)),
+        ], "WCS 1.0.0 GeoTIFF"),
+        ("1.0.0", [
+            ("service",  "WCS"),
+            ("version",  "1.0.0"),
+            ("request",  "GetCoverage"),
+            ("coverage", coverage_id),
+            ("BBOX",     f"{e_min:.0f},{n_min:.0f},{e_max:.0f},{n_max:.0f}"),
+            ("CRS",      "EPSG:27700"),
+            ("FORMAT",   "image/tiff"),
+            ("WIDTH",    str(px)),
+            ("HEIGHT",   str(px)),
+        ], "WCS 1.0.0 image/tiff"),
+        # WCS 2.0.1 — subset syntax variants
+        ("2.0.1", [
             ("service",    "WCS"),
             ("version",    "2.0.1"),
             ("request",    "GetCoverage"),
             ("CoverageID", coverage_id),
-            ("subset",     x_sub),
-            ("subset",     y_sub),
-            ("format",     fmt),
-        ]
+            ("subset",     f"E({e_min:.0f},{e_max:.0f})"),
+            ("subset",     f"N({n_min:.0f},{n_max:.0f})"),
+            ("format",     "image/tiff"),
+        ], "WCS 2.0.1 bare axes"),
+    ]
+
+    for ver, params, desc in attempts:
         try:
             r = session.get(LIDAR_WCS, params=params, timeout=45)
             ct = r.headers.get("Content-Type", "")
             if debug:
-                body_preview = r.content[:300].decode("utf-8", errors="replace").replace("\n", " ")
-                print(f"    WCS attempt: subset={x_sub!r} status={r.status_code} ct={ct!r} body={body_preview!r}")
+                body_preview = r.content[:200].decode("utf-8", errors="replace").replace("\n", " ")
+                print(f"    [{desc}] status={r.status_code} ct={ct!r} body={body_preview!r}")
             if r.status_code == 200 and ("tiff" in ct or "octet" in ct):
                 with rasterio.open(BytesIO(r.content)) as ds:
                     arr = ds.read(1).astype(np.float32)
@@ -267,7 +288,7 @@ def fetch_lidar_patch(
                 return arr
         except Exception as exc:
             if debug:
-                print(f"    WCS exception: {exc}")
+                print(f"    [{desc}] exception: {exc}")
 
     return None
 
