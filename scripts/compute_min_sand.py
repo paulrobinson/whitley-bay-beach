@@ -147,7 +147,7 @@ def load_cfb() -> tuple[gpd.GeoDataFrame, str, str, str | None]:
     chosen = esl_files[0] if esl_files else shapefiles[0]
     print(f"  Loading {chosen.name}…")
 
-    gdf = gpd.read_file(chosen).to_crs("EPSG:4326")
+    gdf = gpd.read_file(chosen).to_crs("EPSG:27700")  # keep in BNG for accurate distance
     cols = list(gdf.columns)
 
     hat_field  = _find_field(cols, HAT_CANDIDATES)
@@ -167,15 +167,18 @@ def load_cfb() -> tuple[gpd.GeoDataFrame, str, str, str | None]:
 
 def nearest_datums(
     lon: float, lat: float,
-    cfb: gpd.GeoDataFrame,
+    cfb_bng: gpd.GeoDataFrame,
     hat_field: str, mhws_field: str | None, mlws_field: str | None
 ) -> tuple[float, float]:
     """
     Return (hat, mlws) for the nearest CFB point to (lon, lat).
+    cfb_bng must be in EPSG:27700 so distance is in metres.
     MLWS is derived as −MHWS if not directly available (ODN ≈ MSL assumption).
     """
-    idx  = cfb.geometry.distance(Point(lon, lat)).idxmin()
-    row  = cfb.loc[idx]
+    easting, northing = to_bng(lon, lat)
+    pt   = Point(easting, northing)
+    idx  = cfb_bng.geometry.distance(pt).idxmin()
+    row  = cfb_bng.loc[idx]
     hat  = float(row[hat_field])
     if mlws_field:
         mlws = float(row[mlws_field])
@@ -220,6 +223,7 @@ def fetch_lidar_patch(
     easting: float, northing: float,
     coverage_id: str, x_axis: str, y_axis: str,
     session: requests.Session,
+    debug: bool = False,
 ) -> np.ndarray | None:
     """
     Fetch a PATCH_SIZE_M × PATCH_SIZE_M LIDAR elevation tile (BNG).
@@ -229,29 +233,40 @@ def fetch_lidar_patch(
     e_min, e_max = easting - half,  easting + half
     n_min, n_max = northing - half, northing + half
 
-    # Try both WCS 2.0.1 subset syntaxes (with and without CRS URI)
-    for crs_prefix in ("EPSG:27700", ""):
-        sep = "," if crs_prefix else ""
+    OGC_BNG = "http://www.opengis.net/def/crs/EPSG/0/27700"
+
+    # Try progressively different subset syntaxes and format strings
+    attempts = [
+        (f"{x_axis},{OGC_BNG}({e_min:.0f},{e_max:.0f})",   f"{y_axis},{OGC_BNG}({n_min:.0f},{n_max:.0f})",   "image/tiff"),
+        (f"{x_axis},EPSG:27700({e_min:.0f},{e_max:.0f})",  f"{y_axis},EPSG:27700({n_min:.0f},{n_max:.0f})",  "image/tiff"),
+        (f"{x_axis}({e_min:.0f},{e_max:.0f})",             f"{y_axis}({n_min:.0f},{n_max:.0f})",             "image/tiff"),
+        (f"{x_axis}({e_min:.0f},{e_max:.0f})",             f"{y_axis}({n_min:.0f},{n_max:.0f})",             "image/geotiff"),
+    ]
+
+    for x_sub, y_sub, fmt in attempts:
         params = [
             ("service",    "WCS"),
             ("version",    "2.0.1"),
             ("request",    "GetCoverage"),
             ("CoverageID", coverage_id),
-            ("subset",     f"{x_axis}{sep}{crs_prefix}({e_min:.0f},{e_max:.0f})"),
-            ("subset",     f"{y_axis}{sep}{crs_prefix}({n_min:.0f},{n_max:.0f})"),
-            ("format",     "image/tiff"),
+            ("subset",     x_sub),
+            ("subset",     y_sub),
+            ("format",     fmt),
         ]
         try:
             r = session.get(LIDAR_WCS, params=params, timeout=45)
             ct = r.headers.get("Content-Type", "")
-            if r.status_code == 200 and "tiff" in ct:
+            if debug:
+                print(f"    WCS attempt: subset={x_sub!r} status={r.status_code} ct={ct!r} bytes={len(r.content)}")
+            if r.status_code == 200 and ("tiff" in ct or "octet" in ct):
                 with rasterio.open(BytesIO(r.content)) as ds:
                     arr = ds.read(1).astype(np.float32)
                     if ds.nodata is not None:
                         arr[arr == float(ds.nodata)] = LIDAR_NODATA
                 return arr
-        except Exception:
-            pass
+        except Exception as exc:
+            if debug:
+                print(f"    WCS exception: {exc}")
 
     return None
 
@@ -286,6 +301,8 @@ def main() -> None:
                         help="Process only the first N beaches (for testing)")
     parser.add_argument("--list-fields", action="store_true",
                         help="Print CFB shapefile columns and exit")
+    parser.add_argument("--debug", action="store_true",
+                        help="Print raw WCS response details for each request")
     args = parser.parse_args()
 
     CACHE_DIR.mkdir(exist_ok=True)
@@ -329,7 +346,7 @@ def main() -> None:
             continue
 
         easting, northing = to_bng(lon, lat)
-        patch = fetch_lidar_patch(easting, northing, coverage_id, x_axis, y_axis, session)
+        patch = fetch_lidar_patch(easting, northing, coverage_id, x_axis, y_axis, session, debug=args.debug)
 
         if patch is None:
             print(f"{label}  — no LIDAR data")
