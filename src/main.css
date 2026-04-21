@@ -111,6 +111,23 @@ body {
 .condition-value { font-weight: 700; color: var(--white); }
 
 /* BEST TIME BANNER */
+.non-coastal-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #EAF4FB;
+  border-left: 4px solid #2980B9;
+  color: #1A3A4A;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  margin: 0;
+}
+.non-coastal-notice[hidden] { display: none; }
+.non-coastal-notice strong { display: block; font-weight: 700; margin-bottom: 3px; font-size: 0.9rem; }
+.non-coastal-notice p { margin: 0; opacity: 0.85; }
+.non-coastal-icon { font-size: 1.4rem; flex-shrink: 0; line-height: 1; margin-top: 1px; }
+
 .best-time-banner {
   background: linear-gradient(135deg, #F39C12 0%, #E67E22 50%, #E74C3C 100%);
   color: var(--white);
