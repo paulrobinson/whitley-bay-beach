@@ -48,7 +48,6 @@ import {
     const type = currentLocation.type;
     const isNonCoastal = type === 'River' || type === 'Lake';
     const notice = document.getElementById('nonCoastalNotice');
-    const beachOuter = document.getElementById('beachOuter');
     if (notice) {
       notice.hidden = !isNonCoastal;
       if (isNonCoastal) {
@@ -57,7 +56,10 @@ import {
           type === 'River' ? 'River bathing water' : 'Lake bathing water';
       }
     }
-    if (beachOuter) beachOuter.style.display = isNonCoastal ? 'none' : '';
+    const beachContainer = document.getElementById('beachContainer');
+    const tideAxis = document.getElementById('tideAxis');
+    if (beachContainer) beachContainer.style.display = isNonCoastal ? 'none' : '';
+    if (tideAxis) tideAxis.style.display = isNonCoastal ? 'none' : '';
   }
 
   // ── Location list ────────────────────────────────────────────────────────
@@ -284,9 +286,7 @@ import {
 
   function renderBestTimeBanner(best) {
     const el = document.getElementById('bestTimeBanner');
-    const type = currentLocation && currentLocation.type;
-    const isNonCoastal = type === 'River' || type === 'Lake';
-    if (!best || isNonCoastal) { el.classList.remove('visible'); return; }
+    if (!best) { el.classList.remove('visible'); return; }
     el.classList.add('visible');
     el.innerHTML = `<span class="label">🚶 Best time for a walk</span><span class="time-range">${formatHour(best.startHour)} – ${formatHour(best.endHour + 1)}</span><button class="best-time-info-btn" onclick="openBestTimeInfo(event)" aria-label="How is this calculated?">i</button>`;
   }
