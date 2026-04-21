@@ -570,6 +570,44 @@ describe('computeBestWindow', () => {
     expect(() => computeBestWindow(hours, 1, 1, null)).not.toThrow();
   });
 
+  it('defaults to minSand=0, maxSand=1 when beachProfile omitted', () => {
+    const hours = [perfectHour(10), perfectHour(11)];
+    const result = computeBestWindow(hours, 0, 2, null);
+    expect(result.scores[0]).toBeCloseTo(1.0);
+  });
+
+  it('uses beachProfile.minSand as sand floor at high tide', () => {
+    const highTide = { hour: 10, temp: 18, weatherCode: 0, windMph: 0, seaLevel: 2 };
+    const r = computeBestWindow([highTide, { ...highTide, hour: 11 }], 0, 2, null, { minSand: 0.5 });
+    // tideFraction=1, sand = 0.5 + (1-0.5)*(1-1) = 0.5
+    // score = 0.5*0.30 + 1*0.25 + 1*0.25 + 1*0.20 = 0.85
+    expect(r.scores[0]).toBeCloseTo(0.85);
+  });
+
+  it('uses beachProfile.maxSand as sand ceiling at low tide', () => {
+    const lowTide = { hour: 10, temp: 18, weatherCode: 0, windMph: 0, seaLevel: 0 };
+    const r = computeBestWindow([lowTide, { ...lowTide, hour: 11 }], 0, 2, null, { maxSand: 0.5 });
+    // tideFraction=0, sand = 0 + (0.5-0)*(1-0) = 0.5
+    // score = 0.5*0.30 + 1*0.25 + 1*0.25 + 1*0.20 = 0.85
+    expect(r.scores[0]).toBeCloseTo(0.85);
+  });
+
+  it('beach with minSand=0.4 scores higher at high tide than default beach', () => {
+    const highTide = { hour: 10, temp: 18, weatherCode: 0, windMph: 0, seaLevel: 2 };
+    const rDefault = computeBestWindow([highTide, { ...highTide, hour: 11 }], 0, 2, null);
+    const rWide = computeBestWindow([highTide, { ...highTide, hour: 11 }], 0, 2, null, { minSand: 0.4 });
+    expect(rWide.scores[0]).toBeGreaterThan(rDefault.scores[0]);
+  });
+
+  it('beach with minSand=0.4 at high tide still scores lower than at low tide', () => {
+    const lowTide = { hour: 10, temp: 18, weatherCode: 0, windMph: 0, seaLevel: 0 };
+    const highTide = { hour: 10, temp: 18, weatherCode: 0, windMph: 0, seaLevel: 2 };
+    const profile = { minSand: 0.4 };
+    const rLow = computeBestWindow([lowTide, { ...lowTide, hour: 11 }], 0, 2, null, profile);
+    const rHigh = computeBestWindow([highTide, { ...highTide, hour: 11 }], 0, 2, null, profile);
+    expect(rLow.scores[0]).toBeGreaterThan(rHigh.scores[0]);
+  });
+
   it('picks the best window among multiple candidates', () => {
     // First 2 hours are bad (stormy), last 3 are perfect
     const bad = (hour) => ({ hour, temp: 0, weatherCode: 95, windMph: 35, seaLevel: 2 });

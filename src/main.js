@@ -44,6 +44,22 @@ import {
     if (btnEl) btnEl.textContent = name;
     const footerEl = document.getElementById('footerLocation');
     if (footerEl) footerEl.textContent = name;
+
+    const type = currentLocation.type;
+    const isNonCoastal = type === 'River' || type === 'Lake';
+    const notice = document.getElementById('nonCoastalNotice');
+    if (notice) {
+      notice.hidden = !isNonCoastal;
+      if (isNonCoastal) {
+        document.getElementById('nonCoastalIcon').textContent = type === 'River' ? '🏞️' : '🏊';
+        document.getElementById('nonCoastalLabel').textContent =
+          type === 'River' ? 'River bathing water' : 'Lake bathing water';
+      }
+    }
+    const beachContainer = document.getElementById('beachContainer');
+    const tideAxis = document.getElementById('tideAxis');
+    if (beachContainer) beachContainer.style.display = isNonCoastal ? 'none' : '';
+    if (tideAxis) tideAxis.style.display = isNonCoastal ? 'none' : '';
   }
 
   // ── Location list ────────────────────────────────────────────────────────
@@ -333,8 +349,10 @@ import {
     const seaRange = seaMax - seaMin || 1;
     const colW = W / hours.length;
 
-    const SEA_Y_HIGH = H * 0.08;
-    const SEA_Y_LOW = H * 0.90;
+    const minSand = currentLocation.minSand ?? 0;
+    const maxSand = currentLocation.maxSand ?? 1;
+    const SEA_Y_HIGH = H * (0.08 + 0.82 * minSand);
+    const SEA_Y_LOW = H * (0.08 + 0.82 * maxSand);
 
     const seaYPoints = hours.map(h => {
       const norm = (h.seaLevel - seaMin) / seaRange;
@@ -620,7 +638,7 @@ import {
     const dayData = extractDayData(data, selectedDayIndex, getLat());
     if (!dayData) return;
     const sunTimes = getSunTimes(dayData.date, getLat());
-    const best = computeBestWindow(dayData.hours, dayData.seaMin, dayData.seaMax, sunTimes);
+    const best = computeBestWindow(dayData.hours, dayData.seaMin, dayData.seaMax, sunTimes, currentLocation);
     renderCurrentConditions(data);
     renderWeatherStrip(dayData, best);
     renderBestTimeBanner(best);
