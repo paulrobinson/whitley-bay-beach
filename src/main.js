@@ -144,9 +144,20 @@ import {
     if (active) active.scrollIntoView({ block: 'nearest' });
   }
 
+  function trackBeach(loc) {
+    try {
+      window.umami?.track('beach_view', {
+        beach: loc.name,
+        region: loc.region || 'Unknown',
+        type: loc.type || 'Coastal',
+      });
+    } catch (e) { /* ignore tracking errors */ }
+  }
+
   window.selectLocation = async function (loc) {
     currentLocation = loc;
     saveLocation(loc);
+    trackBeach(loc);
     applyLocationUI();
     closeLocationPicker();
     memCache = null;
@@ -713,6 +724,7 @@ import {
       document.getElementById('loadingOverlay').classList.add('hidden');
       renderDayTabs(data);
       renderDay(data, true);
+      trackBeach(currentLocation);
       let rt, lastW = window.innerWidth;
       window.addEventListener('resize', () => {
         const w = window.innerWidth;
