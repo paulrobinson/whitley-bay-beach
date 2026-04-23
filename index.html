@@ -660,6 +660,7 @@
   'use strict';
 
   const KMH_TO_MPH = 0.621371;
+  const DEMO_FRETT = new URLSearchParams(window.location.search).has('frett');
 
   // ── Location state ────────────────────────────────────────────────────────
   const DEFAULT_LOCATION = { name: 'Whitley Bay', lat: 55.0464, lon: -1.4444, type: 'Coastal' };
@@ -1422,7 +1423,7 @@ const BATHING_WATERS = [
         seaLevel: mi !== -1 ? (m.sea_level_height_msl[mi] ?? 0) : 0,
         waveHeight: mi !== -1 ? (m.wave_height[mi] ?? 0) : 0,
         seaSurfaceTemp: sst,
-        seaFrettPct: computeSeaFrettPct(temp, dewPoint, windDir, windKmh, sst, h, month),
+        seaFrettPct: (DEMO_FRETT && h >= 7 && h <= 9) ? 75 : computeSeaFrettPct(temp, dewPoint, windDir, windKmh, sst, h, month),
       });
     }
     const allSea = m.sea_level_height_msl.filter(v => v != null);
