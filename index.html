@@ -135,6 +135,21 @@
     .best-time-banner.visible { display: flex; align-items: center; justify-content: center; gap: 8px; }
     .best-time-banner .label { font-weight: 500; opacity: 0.92; }
     .best-time-banner .time-range { font-weight: 800; letter-spacing: 0.01em; }
+
+    /* SEA FRETT WARNING BANNER */
+    .sea-frett-banner {
+      background: linear-gradient(135deg, #4a7a94 0%, #3d6678 50%, #2f5163 100%);
+      color: var(--white);
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: none;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    }
+    .sea-frett-banner.visible { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .sea-frett-banner .label { font-weight: 500; opacity: 0.92; }
+    .sea-frett-banner .time-range { font-weight: 800; letter-spacing: 0.01em; }
     .best-time-info-btn {
       display: inline-flex; align-items: center; justify-content: center;
       width: 18px; height: 18px; border-radius: 50%;
@@ -215,8 +230,8 @@
     }
     .weather-col {
       display: grid;
-      /* Fixed rows: temp | wind | gust | icon | precip | time */
-      grid-template-rows: 18px 16px 14px 26px 14px 18px;
+      /* Fixed rows: temp | wind | gust | frett | icon | precip | time */
+      grid-template-rows: 18px 16px 14px 14px 26px 14px 18px;
       align-items: center;
       justify-items: center;
       padding: 8px 0 6px;
@@ -261,6 +276,14 @@
       line-height: 1;
     }
     .weather-gust-empty { /* placeholder to hold row height */ }
+    .weather-frett {
+      font-size: 0.55rem;
+      color: #5d8a9e;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.01em;
+    }
+    .weather-frett-empty { /* placeholder */ }
     .weather-icon { font-size: 1.2rem; line-height: 1; }
     .weather-precip {
       font-size: 0.58rem;
@@ -546,6 +569,7 @@
 </header>
 
 <div class="best-time-banner" id="bestTimeBanner"></div>
+<div class="sea-frett-banner" id="seaFrettBanner"></div>
 
 <!-- Best time info popover -->
 <div class="best-time-popover" id="bestTimePopover">
@@ -1299,7 +1323,7 @@ const BATHING_WATERS = [
     if (!force && memCache && Date.now() - memCache.ts < 30 * 60 * 1000) return memCache;
     const lat = getLat(), lon = getLon();
     const [wRes, mRes] = await Promise.all([
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=Europe/London&forecast_days=4`),
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,dew_point_2m,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,precipitation&timezone=Europe/London&forecast_days=4`),
       fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=sea_level_height_msl,wave_height,sea_surface_temperature&timezone=Europe/London&forecast_days=4`)
     ]);
     if (!wRes.ok || !mRes.ok) throw new Error('API error');
@@ -1317,6 +1341,49 @@ const BATHING_WATERS = [
     return data;
   }
 
+  function computeSeaFrettPct(temp, dewPoint, windDirDeg, windKmh, sst, hour, month) {
+    if (dewPoint === null || dewPoint === undefined) return 0;
+    let score = 0;
+
+    // Temperature-dew point depression — most critical indicator (max 40 pts)
+    const tdd = temp - dewPoint;
+    if (tdd <= 2) score += 40;
+    else if (tdd <= 4) score += 20;
+
+    // SST ≤ dew point means sea is cold enough to trigger condensation (max 30 pts)
+    if (sst !== null && sst !== undefined) {
+      const sstDiff = sst - dewPoint;
+      if (sstDiff <= 0) score += 30;
+      else if (sstDiff <= 2) score += 15;
+    }
+
+    // Easterly/onshore wind required for haar advection (max 20 pts)
+    if (windDirDeg !== null && windDirDeg !== undefined) {
+      if (windDirDeg >= 45 && windDirDeg <= 180) score += 20;       // NE–S: ideal
+      else if (windDirDeg > 315 || windDirDeg < 45) score += 8;    // N–NE: marginal
+    }
+
+    // Moderate wind speed — enough to advect fog, not so strong it mixes out (max 10 pts)
+    const windMph = windKmh * KMH_TO_MPH;
+    if (windMph >= 5 && windMph <= 25) score += 10;
+    else if (windMph > 25 && windMph <= 35) score += 5;
+
+    // Seasonal multiplier: Apr–Jun peak season along UK east coast
+    let seasonMult;
+    if (month >= 4 && month <= 6) seasonMult = 1.3;
+    else if (month >= 7 && month <= 9) seasonMult = 1.0;
+    else seasonMult = 0.5;
+
+    // Time-of-day multiplier: sea frett most common in the morning
+    let timeMult;
+    if (hour >= 5 && hour <= 9) timeMult = 1.2;
+    else if (hour >= 10 && hour <= 14) timeMult = 1.0;
+    else if (hour >= 15 && hour <= 20) timeMult = 0.7;
+    else timeMult = 0.6;
+
+    return Math.min(100, Math.round(score * seasonMult * timeMult));
+  }
+
   function extractDayData(data, dayIdx) {
     const w = data.weather.hourly;
     const m = data.marine.hourly;
@@ -1324,6 +1391,7 @@ const BATHING_WATERS = [
     const targetDate = dates[dayIdx];
     if (!targetDate) return null;
     const { start: HOURS_START, end: HOURS_END } = getDayHourRange(targetDate);
+    const month = parseInt(targetDate.split('-')[1], 10);
     const hours = [];
     for (let h = HOURS_START; h <= HOURS_END; h++) {
       const ts = targetDate + 'T' + String(h).padStart(2, '0') + ':00';
@@ -1336,18 +1404,25 @@ const BATHING_WATERS = [
       const gustMph = Math.round(gustKmh * KMH_TO_MPH);
       // Show gusts only when they are significantly higher than sustained wind
       const showGust = gustMph >= 25 && gustMph > windMph + 8;
+      const temp = w.temperature_2m[wi];
+      const dewPoint = w.dew_point_2m ? (w.dew_point_2m[wi] ?? null) : null;
+      const windDir = w.wind_direction_10m ? (w.wind_direction_10m[wi] ?? null) : null;
+      const sst = mi !== -1 ? (m.sea_surface_temperature ? (m.sea_surface_temperature[mi] ?? null) : null) : null;
       hours.push({
         hour: h,
-        temp: w.temperature_2m[wi],
+        temp,
+        dewPoint,
         weatherCode: w.weather_code[wi],
         windKmh,
+        windDir,
         windMph,
         gustMph,
         showGust,
         precip: w.precipitation[wi] || 0,
         seaLevel: mi !== -1 ? (m.sea_level_height_msl[mi] ?? 0) : 0,
         waveHeight: mi !== -1 ? (m.wave_height[mi] ?? 0) : 0,
-        seaSurfaceTemp: mi !== -1 ? (m.sea_surface_temperature ? (m.sea_surface_temperature[mi] ?? null) : null) : null,
+        seaSurfaceTemp: sst,
+        seaFrettPct: computeSeaFrettPct(temp, dewPoint, windDir, windKmh, sst, h, month),
       });
     }
     const allSea = m.sea_level_height_msl.filter(v => v != null);
@@ -1406,11 +1481,13 @@ const BATHING_WATERS = [
     const now = new Date();
     const h = todayData.hours.find(x => x.hour === now.getHours()) || todayData.hours[0];
     const info = weatherCodeToInfo(h.weatherCode);
+    const frettLabel = h.seaFrettPct >= 70 ? 'Sea frett likely' : h.seaFrettPct >= 40 ? 'Sea frett possible' : '';
     el.innerHTML = `
       <div class="condition-item">${info.icon} <span class="condition-value">${info.desc}</span></div>
       <div class="condition-item">🌡️ <span class="condition-value">${Math.round(h.temp)}°C</span></div>
       <div class="condition-item">💨 <span class="condition-value">${h.windMph} mph</span></div>
       ${h.showGust ? `<div class="condition-item">⚠️ <span class="condition-value" style="color:#F39C12">Gusts ${h.gustMph} mph</span></div>` : ''}
+      ${frettLabel ? `<div class="condition-item">🌫️ <span class="condition-value" style="color:#8ab8cc">${frettLabel}</span></div>` : ''}
     `;
   }
 
@@ -1437,10 +1514,15 @@ const BATHING_WATERS = [
       const gustHtml = h.showGust
         ? `<div class="weather-gust">Gusts:${h.gustMph}</div>`
         : `<div class="weather-gust-empty"></div>`;
+      // Sea frett: show indicator when probability reaches advisory threshold
+      const frettHtml = h.seaFrettPct >= 40
+        ? `<div class="weather-frett">🌫 Frett</div>`
+        : `<div class="weather-frett-empty"></div>`;
       return `<div class="weather-col${isBest ? ' best-hour' : ''}${isCurrent ? ' current-hour' : ''}">
         <div class="weather-temp">${Math.round(h.temp)}°</div>
         <div class="weather-wind">${h.windMph}<small>mph</small></div>
         ${gustHtml}
+        ${frettHtml}
         <div class="weather-icon">${info.icon}</div>
         ${precipHtml}
         <div class="weather-hour">${formatHour(h.hour)}</div>
@@ -1457,6 +1539,22 @@ const BATHING_WATERS = [
     document.getElementById('bestTimePopover').classList.remove('open');
     document.getElementById('bestTimeOverlay').style.display = 'none';
   };
+
+  function renderSeaFrettBanner(dayData) {
+    const el = document.getElementById('seaFrettBanner');
+    if (!dayData || !dayData.hours.length) { el.classList.remove('visible'); return; }
+    const frettHours = dayData.hours.filter(h => h.seaFrettPct >= 40);
+    if (!frettHours.length) { el.classList.remove('visible'); return; }
+    const maxPct = Math.max(...frettHours.map(h => h.seaFrettPct));
+    const firstHour = frettHours[0].hour;
+    const lastHour = frettHours[frettHours.length - 1].hour;
+    const label = maxPct >= 70 ? 'Sea frett likely' : 'Sea frett possible';
+    const timeRange = firstHour === lastHour
+      ? formatHour(firstHour)
+      : `${formatHour(firstHour)} – ${formatHour(lastHour + 1)}`;
+    el.classList.add('visible');
+    el.innerHTML = `<span class="label">🌫️ ${label}</span><span class="time-range">${timeRange}</span>`;
+  }
 
   function renderBestTimeBanner(best) {
     const el = document.getElementById('bestTimeBanner');
@@ -1892,6 +1990,7 @@ const BATHING_WATERS = [
     renderCurrentConditions(data);
     renderWeatherStrip(dayData, best);
     renderBestTimeBanner(best);
+    renderSeaFrettBanner(dayData);
     renderBeachCanvas(dayData);
     // Axis needs to run after canvas paint so offsetHeight is set
     requestAnimationFrame(() => renderTideAxis(dayData));
