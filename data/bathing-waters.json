@@ -5,7 +5,8 @@
     "lon": -3.064,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.33
+    "minSand": 0.33,
+    "country": "England"
   },
   {
     "name": "Allonby",
@@ -13,7 +14,8 @@
     "lon": -3.4346,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.161
+    "minSand": 0.161,
+    "country": "England"
   },
   {
     "name": "Amble Links",
@@ -21,7 +23,8 @@
     "lon": -1.5524,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.015
+    "minSand": 0.015,
+    "country": "England"
   },
   {
     "name": "Anderby",
@@ -29,7 +32,8 @@
     "lon": 0.3255,
     "type": "Coastal",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.324
+    "minSand": 0.324,
+    "country": "England"
   },
   {
     "name": "Anstey's Cove (Torquay)",
@@ -37,7 +41,8 @@
     "lon": -3.5011,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.049
+    "minSand": 0.049,
+    "country": "England"
   },
   {
     "name": "Babbacombe",
@@ -45,7 +50,8 @@
     "lon": -3.5094,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.044
+    "minSand": 0.044,
+    "country": "England"
   },
   {
     "name": "Bamburgh Castle",
@@ -53,7 +59,8 @@
     "lon": -1.7079,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.092
+    "minSand": 0.092,
+    "country": "England"
   },
   {
     "name": "Bantham",
@@ -61,7 +68,8 @@
     "lon": -3.8788,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.157
+    "minSand": 0.157,
+    "country": "England"
   },
   {
     "name": "Beachlands Central",
@@ -69,7 +77,8 @@
     "lon": -0.9893,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.7
+    "minSand": 0.7,
+    "country": "England"
   },
   {
     "name": "Beachlands West",
@@ -77,7 +86,8 @@
     "lon": -1.0013,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.276
+    "minSand": 0.276,
+    "country": "England"
   },
   {
     "name": "Beacon Cove",
@@ -85,7 +95,8 @@
     "lon": -3.5235,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.131
+    "minSand": 0.131,
+    "country": "England"
   },
   {
     "name": "Beadnell",
@@ -93,7 +104,8 @@
     "lon": -1.6323,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.121
+    "minSand": 0.121,
+    "country": "England"
   },
   {
     "name": "Beer",
@@ -101,7 +113,8 @@
     "lon": -3.0899,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.491
+    "minSand": 0.491,
+    "country": "England"
   },
   {
     "name": "Bembridge",
@@ -109,7 +122,8 @@
     "lon": -1.0697,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.03
+    "minSand": 0.03,
+    "country": "England"
   },
   {
     "name": "Berrow North of Unity Farm",
@@ -117,7 +131,8 @@
     "lon": -3.0177,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.079
+    "minSand": 0.079,
+    "country": "England"
   },
   {
     "name": "Bexhill",
@@ -125,7 +140,8 @@
     "lon": 0.4703,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.215
+    "minSand": 0.215,
+    "country": "England"
   },
   {
     "name": "Bigbury-on-Sea North",
@@ -133,7 +149,8 @@
     "lon": -3.8969,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.048
+    "minSand": 0.048,
+    "country": "England"
   },
   {
     "name": "Bigbury-on-Sea South",
@@ -141,7 +158,8 @@
     "lon": -3.895,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.031
+    "minSand": 0.031,
+    "country": "England"
   },
   {
     "name": "Birling Gap",
@@ -149,7 +167,8 @@
     "lon": 0.2007,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.041
+    "minSand": 0.041,
+    "country": "England"
   },
   {
     "name": "Bispham",
@@ -157,7 +176,8 @@
     "lon": -3.0549,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.007
+    "minSand": 0.007,
+    "country": "England"
   },
   {
     "name": "Blackpool Central",
@@ -165,7 +185,8 @@
     "lon": -3.0562,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.304
+    "minSand": 0.304,
+    "country": "England"
   },
   {
     "name": "Blackpool North",
@@ -173,7 +194,8 @@
     "lon": -3.0566,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.053
+    "minSand": 0.053,
+    "country": "England"
   },
   {
     "name": "Blackpool Sands",
@@ -181,7 +203,8 @@
     "lon": -3.6097,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.568
+    "minSand": 0.568,
+    "country": "England"
   },
   {
     "name": "Blackpool South",
@@ -189,7 +212,8 @@
     "lon": -3.0591,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.329
+    "minSand": 0.329,
+    "country": "England"
   },
   {
     "name": "Blue Anchor West",
@@ -197,7 +221,8 @@
     "lon": -3.4012,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.106
+    "minSand": 0.106,
+    "country": "England"
   },
   {
     "name": "Blyth South Beach",
@@ -205,7 +230,8 @@
     "lon": -1.4968,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.152
+    "minSand": 0.152,
+    "country": "England"
   },
   {
     "name": "Bognor Regis (Aldwick)",
@@ -213,7 +239,8 @@
     "lon": -0.6913,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.306
+    "minSand": 0.306,
+    "country": "England"
   },
   {
     "name": "Bognor Regis East",
@@ -221,7 +248,8 @@
     "lon": -0.6694,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.542
+    "minSand": 0.542,
+    "country": "England"
   },
   {
     "name": "Booby's Bay",
@@ -229,7 +257,8 @@
     "lon": -5.0258,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.045
+    "minSand": 0.045,
+    "country": "England"
   },
   {
     "name": "Botany Bay, Broadstairs",
@@ -237,7 +266,8 @@
     "lon": 1.4353,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.078
+    "minSand": 0.078,
+    "country": "England"
   },
   {
     "name": "Bournemouth Alum Chine",
@@ -245,7 +275,8 @@
     "lon": -1.8954,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.439
+    "minSand": 0.439,
+    "country": "England"
   },
   {
     "name": "Bournemouth Boscombe Pier",
@@ -253,7 +284,8 @@
     "lon": -1.844,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.718
+    "minSand": 0.718,
+    "country": "England"
   },
   {
     "name": "Bournemouth Durley Chine",
@@ -261,7 +293,8 @@
     "lon": -1.8887,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.512
+    "minSand": 0.512,
+    "country": "England"
   },
   {
     "name": "Bournemouth Fisherman`s Walk",
@@ -269,7 +302,8 @@
     "lon": -1.8169,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.732
+    "minSand": 0.732,
+    "country": "England"
   },
   {
     "name": "Bournemouth Hengistbury West",
@@ -277,7 +311,8 @@
     "lon": -1.7711,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.394
+    "minSand": 0.394,
+    "country": "England"
   },
   {
     "name": "Bournemouth Manor Steps",
@@ -285,7 +320,8 @@
     "lon": -1.8323,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.766
+    "minSand": 0.766,
+    "country": "England"
   },
   {
     "name": "Bournemouth Pier",
@@ -293,7 +329,8 @@
     "lon": -1.8759,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.57
+    "minSand": 0.57,
+    "country": "England"
   },
   {
     "name": "Bournemouth Southbourne",
@@ -301,7 +338,8 @@
     "lon": -1.7917,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.55
+    "minSand": 0.55,
+    "country": "England"
   },
   {
     "name": "Bovisand",
@@ -309,7 +347,8 @@
     "lon": -4.1195,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.056
+    "minSand": 0.056,
+    "country": "England"
   },
   {
     "name": "Bowleaze Cove",
@@ -317,7 +356,8 @@
     "lon": -2.4222,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.18
+    "minSand": 0.18,
+    "country": "England"
   },
   {
     "name": "Bracklesham Bay",
@@ -325,7 +365,8 @@
     "lon": -0.8606,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.363
+    "minSand": 0.363,
+    "country": "England"
   },
   {
     "name": "Breakwater Beach (Shoalstone)",
@@ -333,7 +374,8 @@
     "lon": -3.5045,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.318
+    "minSand": 0.318,
+    "country": "England"
   },
   {
     "name": "Brean",
@@ -341,7 +383,8 @@
     "lon": -3.0116,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.103
+    "minSand": 0.103,
+    "country": "England"
   },
   {
     "name": "Bridlington North Beach",
@@ -349,7 +392,8 @@
     "lon": -0.1827,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.034
+    "minSand": 0.034,
+    "country": "England"
   },
   {
     "name": "Bridlington South Beach",
@@ -357,7 +401,8 @@
     "lon": -0.1987,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.144
+    "minSand": 0.144,
+    "country": "England"
   },
   {
     "name": "Brightlingsea",
@@ -365,7 +410,8 @@
     "lon": 1.0105,
     "type": "Transitional",
     "region": "East Anglia",
-    "minSand": 0.048
+    "minSand": 0.048,
+    "country": "England"
   },
   {
     "name": "Brighton Central",
@@ -373,7 +419,8 @@
     "lon": -0.1459,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.122
+    "minSand": 0.122,
+    "country": "England"
   },
   {
     "name": "Brighton Kemptown",
@@ -381,7 +428,8 @@
     "lon": -0.1222,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.105
+    "minSand": 0.105,
+    "country": "England"
   },
   {
     "name": "Broadsands",
@@ -389,7 +437,8 @@
     "lon": -3.5543,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.482
+    "minSand": 0.482,
+    "country": "England"
   },
   {
     "name": "Broadstairs, Stone Bay",
@@ -397,7 +446,8 @@
     "lon": 1.4453,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.094
+    "minSand": 0.094,
+    "country": "England"
   },
   {
     "name": "Broadstairs, Viking Bay",
@@ -405,7 +455,8 @@
     "lon": 1.443,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.301
+    "minSand": 0.301,
+    "country": "England"
   },
   {
     "name": "Budleigh Salterton",
@@ -413,7 +464,8 @@
     "lon": -3.3182,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.18
+    "minSand": 0.18,
+    "country": "England"
   },
   {
     "name": "Caister Point",
@@ -421,7 +473,8 @@
     "lon": 1.7374,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.441
+    "minSand": 0.441,
+    "country": "England"
   },
   {
     "name": "Calshot",
@@ -429,7 +482,8 @@
     "lon": -1.3182,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.487
+    "minSand": 0.487,
+    "country": "England"
   },
   {
     "name": "Camber",
@@ -437,7 +491,8 @@
     "lon": 0.7963,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.293
+    "minSand": 0.293,
+    "country": "England"
   },
   {
     "name": "Carbis Bay",
@@ -445,7 +500,8 @@
     "lon": -5.4649,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.134
+    "minSand": 0.134,
+    "country": "England"
   },
   {
     "name": "Cawsand",
@@ -453,7 +509,8 @@
     "lon": -4.2013,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.041
+    "minSand": 0.041,
+    "country": "England"
   },
   {
     "name": "Cayton Bay",
@@ -461,7 +518,8 @@
     "lon": -0.3629,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.04
+    "minSand": 0.04,
+    "country": "England"
   },
   {
     "name": "Challaborough",
@@ -469,7 +527,8 @@
     "lon": -3.8975,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.317
+    "minSand": 0.317,
+    "country": "England"
   },
   {
     "name": "Chapel Porth",
@@ -477,7 +536,8 @@
     "lon": -5.2348,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.045
+    "minSand": 0.045,
+    "country": "England"
   },
   {
     "name": "Chapel St Leonards",
@@ -485,7 +545,8 @@
     "lon": 0.34,
     "type": "Coastal",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.412
+    "minSand": 0.412,
+    "country": "England"
   },
   {
     "name": "Charlestown",
@@ -493,7 +554,8 @@
     "lon": -4.7553,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.094
+    "minSand": 0.094,
+    "country": "England"
   },
   {
     "name": "Charmouth West",
@@ -501,7 +563,8 @@
     "lon": -2.9046,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.084
+    "minSand": 0.084,
+    "country": "England"
   },
   {
     "name": "Christchurch Avon Beach",
@@ -509,7 +572,8 @@
     "lon": -1.7337,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.536
+    "minSand": 0.536,
+    "country": "England"
   },
   {
     "name": "Christchurch Bay",
@@ -517,7 +581,8 @@
     "lon": -1.6627,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.086
+    "minSand": 0.086,
+    "country": "England"
   },
   {
     "name": "Christchurch Friar`s Cliff",
@@ -525,7 +590,8 @@
     "lon": -1.7294,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.284
+    "minSand": 0.284,
+    "country": "England"
   },
   {
     "name": "Christchurch Highcliffe Castle",
@@ -533,7 +599,8 @@
     "lon": -1.7144,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.448
+    "minSand": 0.448,
+    "country": "England"
   },
   {
     "name": "Christchurch Mudeford Sandbank East",
@@ -541,7 +608,8 @@
     "lon": -1.7421,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.291
+    "minSand": 0.291,
+    "country": "England"
   },
   {
     "name": "Church Cove",
@@ -549,7 +617,8 @@
     "lon": -5.2679,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.249
+    "minSand": 0.249,
+    "country": "England"
   },
   {
     "name": "Church Ope Cove",
@@ -557,7 +626,8 @@
     "lon": -2.4281,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.196
+    "minSand": 0.196,
+    "country": "England"
   },
   {
     "name": "Clacton",
@@ -565,7 +635,8 @@
     "lon": 1.1713,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.147
+    "minSand": 0.147,
+    "country": "England"
   },
   {
     "name": "Clacton Beach Martello Tower",
@@ -573,7 +644,8 @@
     "lon": 1.1401,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.491
+    "minSand": 0.491,
+    "country": "England"
   },
   {
     "name": "Cleethorpes",
@@ -581,7 +653,8 @@
     "lon": -0.0222,
     "type": "Transitional",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.098
+    "minSand": 0.098,
+    "country": "England"
   },
   {
     "name": "Clevedon Beach",
@@ -589,7 +662,8 @@
     "lon": -2.8615,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.059
+    "minSand": 0.059,
+    "country": "England"
   },
   {
     "name": "Cleveleys",
@@ -597,7 +671,8 @@
     "lon": -3.0481,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.287
+    "minSand": 0.287,
+    "country": "England"
   },
   {
     "name": "Coastguards Beach, Erme Estuary",
@@ -605,7 +680,8 @@
     "lon": -3.947,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.021
+    "minSand": 0.021,
+    "country": "England"
   },
   {
     "name": "Colwell Bay",
@@ -613,14 +689,16 @@
     "lon": -1.5385,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.182
+    "minSand": 0.182,
+    "country": "England"
   },
   {
     "name": "Colwick Country Park (West Lake)",
     "lat": 52.9451,
     "lon": -1.0982,
     "type": "Lake",
-    "region": "East Midlands"
+    "region": "East Midlands",
+    "country": "England"
   },
   {
     "name": "Combe Martin",
@@ -628,7 +706,8 @@
     "lon": -4.0382,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.125
+    "minSand": 0.125,
+    "country": "England"
   },
   {
     "name": "Combesgate Beach, Woolacombe",
@@ -636,7 +715,8 @@
     "lon": -4.2124,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.055
+    "minSand": 0.055,
+    "country": "England"
   },
   {
     "name": "Compton Bay",
@@ -644,28 +724,32 @@
     "lon": -1.4683,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.1
+    "minSand": 0.1,
+    "country": "England"
   },
   {
     "name": "Coniston Water, Boating Centre",
     "lat": 54.364,
     "lon": -3.0661,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Coniston Water, Brown Howe",
     "lat": 54.3113,
     "lon": -3.0912,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Coniston Water, Monk Coniston",
     "lat": 54.3718,
     "lon": -3.0544,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Constantine Bay",
@@ -673,14 +757,16 @@
     "lon": -5.0226,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.091
+    "minSand": 0.091,
+    "country": "England"
   },
   {
     "name": "Cotswold Country Park and Beach",
     "lat": 51.661,
     "lon": -1.9609,
     "type": "Lake",
-    "region": "Thames"
+    "region": "Thames",
+    "country": "England"
   },
   {
     "name": "Coverack",
@@ -688,7 +774,8 @@
     "lon": -5.0971,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.035
+    "minSand": 0.035,
+    "country": "England"
   },
   {
     "name": "Cowes",
@@ -696,7 +783,8 @@
     "lon": -1.3094,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.594
+    "minSand": 0.594,
+    "country": "England"
   },
   {
     "name": "Crackington Haven",
@@ -704,7 +792,8 @@
     "lon": -4.6338,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.111
+    "minSand": 0.111,
+    "country": "England"
   },
   {
     "name": "Crantock",
@@ -712,7 +801,8 @@
     "lon": -5.1192,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.026
+    "minSand": 0.026,
+    "country": "England"
   },
   {
     "name": "Crimdon",
@@ -720,7 +810,8 @@
     "lon": -1.2487,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.099
+    "minSand": 0.099,
+    "country": "England"
   },
   {
     "name": "Crinnis Beach",
@@ -728,7 +819,8 @@
     "lon": -4.7338,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.114
+    "minSand": 0.114,
+    "country": "England"
   },
   {
     "name": "Cromer",
@@ -736,7 +828,8 @@
     "lon": 1.3022,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.043
+    "minSand": 0.043,
+    "country": "England"
   },
   {
     "name": "Crooklets",
@@ -744,7 +837,8 @@
     "lon": -4.554,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.09
+    "minSand": 0.09,
+    "country": "England"
   },
   {
     "name": "Croyde Bay",
@@ -752,7 +846,8 @@
     "lon": -4.2385,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.117
+    "minSand": 0.117,
+    "country": "England"
   },
   {
     "name": "Danes Dyke, Flamborough",
@@ -760,7 +855,8 @@
     "lon": -0.1418,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.013
+    "minSand": 0.013,
+    "country": "England"
   },
   {
     "name": "Dartmouth Castle and Sugary Cove",
@@ -768,7 +864,8 @@
     "lon": -3.5655,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.019
+    "minSand": 0.019,
+    "country": "England"
   },
   {
     "name": "Dawlish Coryton Cove",
@@ -776,7 +873,8 @@
     "lon": -3.4685,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.069
+    "minSand": 0.069,
+    "country": "England"
   },
   {
     "name": "Dawlish Town",
@@ -784,7 +882,8 @@
     "lon": -3.4637,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.257
+    "minSand": 0.257,
+    "country": "England"
   },
   {
     "name": "Dawlish Warren",
@@ -792,7 +891,8 @@
     "lon": -3.4389,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.219
+    "minSand": 0.219,
+    "country": "England"
   },
   {
     "name": "Daymer Bay",
@@ -800,7 +900,8 @@
     "lon": -4.9264,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.062
+    "minSand": 0.062,
+    "country": "England"
   },
   {
     "name": "Deal Castle",
@@ -808,14 +909,16 @@
     "lon": 1.4049,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.553
+    "minSand": 0.553,
+    "country": "England"
   },
   {
     "name": "Derwent Water at Crow Park",
     "lat": 54.595,
     "lon": -3.1422,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Dittisham, Dart Estuary",
@@ -823,7 +926,8 @@
     "lon": -3.5972,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.25
+    "minSand": 0.25,
+    "country": "England"
   },
   {
     "name": "Dovercourt",
@@ -831,7 +935,8 @@
     "lon": 1.2737,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.33
+    "minSand": 0.33,
+    "country": "England"
   },
   {
     "name": "Downderry",
@@ -839,7 +944,8 @@
     "lon": -4.3708,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.099
+    "minSand": 0.099,
+    "country": "England"
   },
   {
     "name": "Druridge Bay North",
@@ -847,7 +953,8 @@
     "lon": -1.5685,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.045
+    "minSand": 0.045,
+    "country": "England"
   },
   {
     "name": "Druridge Bay South",
@@ -855,7 +962,8 @@
     "lon": -1.5439,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.059
+    "minSand": 0.059,
+    "country": "England"
   },
   {
     "name": "Dunster Beach",
@@ -863,7 +971,8 @@
     "lon": -3.4266,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.399
+    "minSand": 0.399,
+    "country": "England"
   },
   {
     "name": "Duporth",
@@ -871,7 +980,8 @@
     "lon": -4.7618,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.066
+    "minSand": 0.066,
+    "country": "England"
   },
   {
     "name": "Durdle Door East",
@@ -879,7 +989,8 @@
     "lon": -2.2741,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.078
+    "minSand": 0.078,
+    "country": "England"
   },
   {
     "name": "Durdle Door West",
@@ -887,7 +998,8 @@
     "lon": -2.2771,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.091
+    "minSand": 0.091,
+    "country": "England"
   },
   {
     "name": "Dymchurch",
@@ -895,7 +1007,8 @@
     "lon": 0.9966,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.099
+    "minSand": 0.099,
+    "country": "England"
   },
   {
     "name": "East Cowes",
@@ -903,7 +1016,8 @@
     "lon": -1.2833,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.175
+    "minSand": 0.175,
+    "country": "England"
   },
   {
     "name": "East Looe",
@@ -911,7 +1025,8 @@
     "lon": -4.4515,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.346
+    "minSand": 0.346,
+    "country": "England"
   },
   {
     "name": "East Runton",
@@ -919,7 +1034,8 @@
     "lon": 1.276,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.101
+    "minSand": 0.101,
+    "country": "England"
   },
   {
     "name": "Eastbourne",
@@ -927,7 +1043,8 @@
     "lon": 0.288,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.217
+    "minSand": 0.217,
+    "country": "England"
   },
   {
     "name": "Eastney",
@@ -935,7 +1052,8 @@
     "lon": -1.0451,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.717
+    "minSand": 0.717,
+    "country": "England"
   },
   {
     "name": "Eastoke",
@@ -943,7 +1061,8 @@
     "lon": -0.9673,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.668
+    "minSand": 0.668,
+    "country": "England"
   },
   {
     "name": "Exmouth",
@@ -951,7 +1070,8 @@
     "lon": -3.4017,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.342
+    "minSand": 0.342,
+    "country": "England"
   },
   {
     "name": "Eypemouth",
@@ -959,7 +1079,8 @@
     "lon": -2.7849,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.082
+    "minSand": 0.082,
+    "country": "England"
   },
   {
     "name": "Felixstowe North",
@@ -967,7 +1088,8 @@
     "lon": 1.355,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.134
+    "minSand": 0.134,
+    "country": "England"
   },
   {
     "name": "Felixstowe South",
@@ -975,7 +1097,8 @@
     "lon": 1.3415,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.462
+    "minSand": 0.462,
+    "country": "England"
   },
   {
     "name": "Felpham",
@@ -983,7 +1106,8 @@
     "lon": -0.6526,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.525
+    "minSand": 0.525,
+    "country": "England"
   },
   {
     "name": "Filey",
@@ -991,7 +1115,8 @@
     "lon": -0.2842,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.006
+    "minSand": 0.006,
+    "country": "England"
   },
   {
     "name": "Fistral North",
@@ -999,7 +1124,8 @@
     "lon": -5.0985,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.129
+    "minSand": 0.129,
+    "country": "England"
   },
   {
     "name": "Fistral South",
@@ -1007,7 +1133,8 @@
     "lon": -5.1015,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.073
+    "minSand": 0.073,
+    "country": "England"
   },
   {
     "name": "Flamborough South Landing",
@@ -1015,7 +1142,8 @@
     "lon": -0.1184,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.034
+    "minSand": 0.034,
+    "country": "England"
   },
   {
     "name": "Fleetwood",
@@ -1023,7 +1151,8 @@
     "lon": -3.02,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.398
+    "minSand": 0.398,
+    "country": "England"
   },
   {
     "name": "Folkestone",
@@ -1031,7 +1160,8 @@
     "lon": 1.1913,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.081
+    "minSand": 0.081,
+    "country": "England"
   },
   {
     "name": "Formby",
@@ -1039,7 +1169,8 @@
     "lon": -3.1062,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.007
+    "minSand": 0.007,
+    "country": "England"
   },
   {
     "name": "Fraisthorpe",
@@ -1047,21 +1178,24 @@
     "lon": -0.214,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.15
+    "minSand": 0.15,
+    "country": "England"
   },
   {
     "name": "Frensham Great Pond",
     "lat": 51.1573,
     "lon": -0.7918,
     "type": "Lake",
-    "region": "Thames"
+    "region": "Thames",
+    "country": "England"
   },
   {
     "name": "Friars Meadow, River Stour",
     "lat": 52.0341,
     "lon": 0.7349,
     "type": "River",
-    "region": "East Anglia"
+    "region": "East Anglia",
+    "country": "England"
   },
   {
     "name": "Frinton",
@@ -1069,7 +1203,8 @@
     "lon": 1.2483,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.038
+    "minSand": 0.038,
+    "country": "England"
   },
   {
     "name": "Godrevy Towans",
@@ -1077,7 +1212,8 @@
     "lon": -5.392,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.031
+    "minSand": 0.031,
+    "country": "England"
   },
   {
     "name": "Goodrington",
@@ -1085,7 +1221,8 @@
     "lon": -3.5595,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.426
+    "minSand": 0.426,
+    "country": "England"
   },
   {
     "name": "Goring Beach",
@@ -1093,7 +1230,8 @@
     "lon": -0.4154,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.255
+    "minSand": 0.255,
+    "country": "England"
   },
   {
     "name": "Gorleston Beach",
@@ -1101,7 +1239,8 @@
     "lon": 1.7335,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.605
+    "minSand": 0.605,
+    "country": "England"
   },
   {
     "name": "Gorran Haven Little Perhaver",
@@ -1109,7 +1248,8 @@
     "lon": -4.7875,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.085
+    "minSand": 0.085,
+    "country": "England"
   },
   {
     "name": "Great Western",
@@ -1117,7 +1257,8 @@
     "lon": -5.0766,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.049
+    "minSand": 0.049,
+    "country": "England"
   },
   {
     "name": "Great Yarmouth North",
@@ -1125,7 +1266,8 @@
     "lon": 1.7427,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.655
+    "minSand": 0.655,
+    "country": "England"
   },
   {
     "name": "Great Yarmouth Pier",
@@ -1133,7 +1275,8 @@
     "lon": 1.7395,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.617
+    "minSand": 0.617,
+    "country": "England"
   },
   {
     "name": "Great Yarmouth South",
@@ -1141,7 +1284,8 @@
     "lon": 1.7387,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.354
+    "minSand": 0.354,
+    "country": "England"
   },
   {
     "name": "Gurnard",
@@ -1149,7 +1293,8 @@
     "lon": -1.3251,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.395
+    "minSand": 0.395,
+    "country": "England"
   },
   {
     "name": "Gwithian Towans",
@@ -1157,7 +1302,8 @@
     "lon": -5.3919,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.177
+    "minSand": 0.177,
+    "country": "England"
   },
   {
     "name": "Gwynver",
@@ -1165,7 +1311,8 @@
     "lon": -5.6889,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.149
+    "minSand": 0.149,
+    "country": "England"
   },
   {
     "name": "Gyllyngvase",
@@ -1173,28 +1320,32 @@
     "lon": -5.0674,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.345
+    "minSand": 0.345,
+    "country": "England"
   },
   {
     "name": "Hampstead Heath (Ladies Pond)",
     "lat": 51.5667,
     "lon": -0.1601,
     "type": "Lake",
-    "region": "Hertfordshire and North London"
+    "region": "Hertfordshire and North London",
+    "country": "England"
   },
   {
     "name": "Hampstead Heath (Mens Pond)",
     "lat": 51.5633,
     "lon": -0.1566,
     "type": "Lake",
-    "region": "Hertfordshire and North London"
+    "region": "Hertfordshire and North London",
+    "country": "England"
   },
   {
     "name": "Hampstead Heath (Mixed Pond)",
     "lat": 51.5607,
     "lon": -0.1663,
     "type": "Lake",
-    "region": "Hertfordshire and North London"
+    "region": "Hertfordshire and North London",
+    "country": "England"
   },
   {
     "name": "Harlyn Bay",
@@ -1202,7 +1353,8 @@
     "lon": -4.9973,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.093
+    "minSand": 0.093,
+    "country": "England"
   },
   {
     "name": "Hartland Quay",
@@ -1210,7 +1362,8 @@
     "lon": -4.5337,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.035
+    "minSand": 0.035,
+    "country": "England"
   },
   {
     "name": "Hastings Pelham Beach",
@@ -1218,7 +1371,8 @@
     "lon": 0.5858,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.296
+    "minSand": 0.296,
+    "country": "England"
   },
   {
     "name": "Haverigg",
@@ -1226,7 +1380,8 @@
     "lon": -3.2888,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.044
+    "minSand": 0.044,
+    "country": "England"
   },
   {
     "name": "Hayle Towans",
@@ -1234,7 +1389,8 @@
     "lon": -5.417,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.093
+    "minSand": 0.093,
+    "country": "England"
   },
   {
     "name": "Heacham",
@@ -1242,7 +1398,8 @@
     "lon": 0.4715,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.061
+    "minSand": 0.061,
+    "country": "England"
   },
   {
     "name": "Hemsby",
@@ -1250,14 +1407,16 @@
     "lon": 1.7101,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.131
+    "minSand": 0.131,
+    "country": "England"
   },
   {
     "name": "Henleaze Lake",
     "lat": 51.4946,
     "lon": -2.6057,
     "type": "Lake",
-    "region": "Wessex"
+    "region": "Wessex",
+    "country": "England"
   },
   {
     "name": "Herne Bay",
@@ -1265,7 +1424,8 @@
     "lon": 1.1395,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.041
+    "minSand": 0.041,
+    "country": "England"
   },
   {
     "name": "Herne Bay Central",
@@ -1273,7 +1433,8 @@
     "lon": 1.1185,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.174
+    "minSand": 0.174,
+    "country": "England"
   },
   {
     "name": "Highcliffe",
@@ -1281,7 +1442,8 @@
     "lon": -1.6985,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.325
+    "minSand": 0.325,
+    "country": "England"
   },
   {
     "name": "Hillhead",
@@ -1289,7 +1451,8 @@
     "lon": -1.2254,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.25
+    "minSand": 0.25,
+    "country": "England"
   },
   {
     "name": "Hive",
@@ -1297,7 +1460,8 @@
     "lon": -2.7232,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.077
+    "minSand": 0.077,
+    "country": "England"
   },
   {
     "name": "Holland",
@@ -1305,7 +1469,8 @@
     "lon": 1.2258,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.044
+    "minSand": 0.044,
+    "country": "England"
   },
   {
     "name": "Hollicombe",
@@ -1313,7 +1478,8 @@
     "lon": -3.5535,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.059
+    "minSand": 0.059,
+    "country": "England"
   },
   {
     "name": "Holywell Bay",
@@ -1321,7 +1487,8 @@
     "lon": -5.1455,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.202
+    "minSand": 0.202,
+    "country": "England"
   },
   {
     "name": "Hope Cove",
@@ -1329,7 +1496,8 @@
     "lon": -3.8591,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.064
+    "minSand": 0.064,
+    "country": "England"
   },
   {
     "name": "Hornsea",
@@ -1337,7 +1505,8 @@
     "lon": -0.1605,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.217
+    "minSand": 0.217,
+    "country": "England"
   },
   {
     "name": "Hove",
@@ -1345,7 +1514,8 @@
     "lon": -0.1667,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.08
+    "minSand": 0.08,
+    "country": "England"
   },
   {
     "name": "Humberston Fitties",
@@ -1353,7 +1523,8 @@
     "lon": 0.0084,
     "type": "Transitional",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.269
+    "minSand": 0.269,
+    "country": "England"
   },
   {
     "name": "Hunstanton (Old Hunstanton)",
@@ -1361,7 +1532,8 @@
     "lon": 0.4964,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.047
+    "minSand": 0.047,
+    "country": "England"
   },
   {
     "name": "Hunstanton Main Beach",
@@ -1369,7 +1541,8 @@
     "lon": 0.4838,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.202
+    "minSand": 0.202,
+    "country": "England"
   },
   {
     "name": "Huttoft and Marsh Yard",
@@ -1377,7 +1550,8 @@
     "lon": 0.3184,
     "type": "Coastal",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.248
+    "minSand": 0.248,
+    "country": "England"
   },
   {
     "name": "Hythe",
@@ -1385,7 +1559,8 @@
     "lon": 1.0814,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.507
+    "minSand": 0.507,
+    "country": "England"
   },
   {
     "name": "Ilfracombe Hele",
@@ -1393,7 +1568,8 @@
     "lon": -4.0973,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.075
+    "minSand": 0.075,
+    "country": "England"
   },
   {
     "name": "Ilfracombe Tunnels Beach",
@@ -1401,7 +1577,8 @@
     "lon": -4.1272,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.024
+    "minSand": 0.024,
+    "country": "England"
   },
   {
     "name": "Ingoldmells",
@@ -1409,7 +1586,8 @@
     "lon": 0.3539,
     "type": "Coastal",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.244
+    "minSand": 0.244,
+    "country": "England"
   },
   {
     "name": "Jaywick",
@@ -1417,7 +1595,8 @@
     "lon": 1.1127,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.18
+    "minSand": 0.18,
+    "country": "England"
   },
   {
     "name": "Joss Bay, Broadstairs",
@@ -1425,7 +1604,8 @@
     "lon": 1.4461,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.224
+    "minSand": 0.224,
+    "country": "England"
   },
   {
     "name": "Kennack Sands",
@@ -1433,7 +1613,8 @@
     "lon": -5.1636,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.103
+    "minSand": 0.103,
+    "country": "England"
   },
   {
     "name": "Kimmeridge Bay",
@@ -1441,7 +1622,8 @@
     "lon": -2.1314,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.037
+    "minSand": 0.037,
+    "country": "England"
   },
   {
     "name": "Kingsand",
@@ -1449,7 +1631,8 @@
     "lon": -4.1994,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.053
+    "minSand": 0.053,
+    "country": "England"
   },
   {
     "name": "Ladram Bay",
@@ -1457,7 +1640,8 @@
     "lon": -3.2795,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.076
+    "minSand": 0.076,
+    "country": "England"
   },
   {
     "name": "Lancing, Beach Green",
@@ -1465,7 +1649,8 @@
     "lon": -0.3219,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.467
+    "minSand": 0.467,
+    "country": "England"
   },
   {
     "name": "Lee-on-Solent",
@@ -1473,7 +1658,8 @@
     "lon": -1.2043,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.412
+    "minSand": 0.412,
+    "country": "England"
   },
   {
     "name": "Leigh Bell Wharf",
@@ -1481,7 +1667,8 @@
     "lon": 0.6525,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.131
+    "minSand": 0.131,
+    "country": "England"
   },
   {
     "name": "Lepe",
@@ -1489,7 +1676,8 @@
     "lon": -1.3545,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.163
+    "minSand": 0.163,
+    "country": "England"
   },
   {
     "name": "Leysdown",
@@ -1497,7 +1685,8 @@
     "lon": 0.9218,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.273
+    "minSand": 0.273,
+    "country": "England"
   },
   {
     "name": "Littlehampton",
@@ -1505,7 +1694,8 @@
     "lon": -0.5389,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.292
+    "minSand": 0.292,
+    "country": "England"
   },
   {
     "name": "Littlehaven Beach",
@@ -1513,7 +1703,8 @@
     "lon": -1.4213,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.269
+    "minSand": 0.269,
+    "country": "England"
   },
   {
     "name": "Littlestone",
@@ -1521,7 +1712,8 @@
     "lon": 0.9673,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.267
+    "minSand": 0.267,
+    "country": "England"
   },
   {
     "name": "Long Rock",
@@ -1529,7 +1721,8 @@
     "lon": -5.5053,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.366
+    "minSand": 0.366,
+    "country": "England"
   },
   {
     "name": "Low Newton",
@@ -1537,7 +1730,8 @@
     "lon": -1.6155,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.049
+    "minSand": 0.049,
+    "country": "England"
   },
   {
     "name": "Lowestoft (North of Claremont Pier)",
@@ -1545,7 +1739,8 @@
     "lon": 1.7488,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.105
+    "minSand": 0.105,
+    "country": "England"
   },
   {
     "name": "Lowestoft (South of Claremont Pier)",
@@ -1553,7 +1748,8 @@
     "lon": 1.7452,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.333
+    "minSand": 0.333,
+    "country": "England"
   },
   {
     "name": "Lulworth Cove",
@@ -1561,7 +1757,8 @@
     "lon": -2.2493,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.067
+    "minSand": 0.067,
+    "country": "England"
   },
   {
     "name": "Lusty Glaze",
@@ -1569,7 +1766,8 @@
     "lon": -5.065,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.113
+    "minSand": 0.113,
+    "country": "England"
   },
   {
     "name": "Lyme Regis Church Cliff Beach",
@@ -1577,7 +1775,8 @@
     "lon": -2.9303,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.031
+    "minSand": 0.031,
+    "country": "England"
   },
   {
     "name": "Lyme Regis Front Beach",
@@ -1585,7 +1784,8 @@
     "lon": -2.9378,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.319
+    "minSand": 0.319,
+    "country": "England"
   },
   {
     "name": "Lynmouth",
@@ -1593,7 +1793,8 @@
     "lon": -3.8245,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.059
+    "minSand": 0.059,
+    "country": "England"
   },
   {
     "name": "Mablethorpe Town",
@@ -1601,7 +1802,8 @@
     "lon": 0.2644,
     "type": "Coastal",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.13
+    "minSand": 0.13,
+    "country": "England"
   },
   {
     "name": "Maenporth",
@@ -1609,7 +1811,8 @@
     "lon": -5.0935,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.283
+    "minSand": 0.283,
+    "country": "England"
   },
   {
     "name": "Maidencombe",
@@ -1617,7 +1820,8 @@
     "lon": -3.5134,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.084
+    "minSand": 0.084,
+    "country": "England"
   },
   {
     "name": "Manningtree Beach, Stour Estuary",
@@ -1625,7 +1829,8 @@
     "lon": 1.0652,
     "type": "Transitional",
     "region": "East Anglia",
-    "minSand": 0.244
+    "minSand": 0.244,
+    "country": "England"
   },
   {
     "name": "Marazion",
@@ -1633,7 +1838,8 @@
     "lon": -5.4807,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.406
+    "minSand": 0.406,
+    "country": "England"
   },
   {
     "name": "Margate Fulsam Rock",
@@ -1641,7 +1847,8 @@
     "lon": 1.3865,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.009
+    "minSand": 0.009,
+    "country": "England"
   },
   {
     "name": "Margate The Bay",
@@ -1649,7 +1856,8 @@
     "lon": 1.3758,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.321
+    "minSand": 0.321,
+    "country": "England"
   },
   {
     "name": "Marsden",
@@ -1657,7 +1865,8 @@
     "lon": -1.3766,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.035
+    "minSand": 0.035,
+    "country": "England"
   },
   {
     "name": "Marske Sands",
@@ -1665,7 +1874,8 @@
     "lon": -1.0171,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.041
+    "minSand": 0.041,
+    "country": "England"
   },
   {
     "name": "Mawgan Porth",
@@ -1673,7 +1883,8 @@
     "lon": -5.0334,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.031
+    "minSand": 0.031,
+    "country": "England"
   },
   {
     "name": "Meadfoot",
@@ -1681,7 +1892,8 @@
     "lon": -3.5092,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.031
+    "minSand": 0.031,
+    "country": "England"
   },
   {
     "name": "Meols",
@@ -1689,7 +1901,8 @@
     "lon": -3.1597,
     "type": "Coastal",
     "region": "Greater Manchester Merseyside and Cheshire",
-    "minSand": 0.179
+    "minSand": 0.179,
+    "country": "England"
   },
   {
     "name": "Mexico Towans",
@@ -1697,7 +1910,8 @@
     "lon": -5.4237,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.052
+    "minSand": 0.052,
+    "country": "England"
   },
   {
     "name": "Middleton-on-sea",
@@ -1705,7 +1919,8 @@
     "lon": -0.6039,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.329
+    "minSand": 0.329,
+    "country": "England"
   },
   {
     "name": "Milford-on-sea",
@@ -1713,7 +1928,8 @@
     "lon": -1.6106,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.105
+    "minSand": 0.105,
+    "country": "England"
   },
   {
     "name": "Mill Bay",
@@ -1721,7 +1937,8 @@
     "lon": -3.7669,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.198
+    "minSand": 0.198,
+    "country": "England"
   },
   {
     "name": "Millendreath",
@@ -1729,7 +1946,8 @@
     "lon": -4.4363,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.271
+    "minSand": 0.271,
+    "country": "England"
   },
   {
     "name": "Minehead Terminus",
@@ -1737,7 +1955,8 @@
     "lon": -3.467,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.358
+    "minSand": 0.358,
+    "country": "England"
   },
   {
     "name": "Minnis Bay, Birchington",
@@ -1745,7 +1964,8 @@
     "lon": 1.2837,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.238
+    "minSand": 0.238,
+    "country": "England"
   },
   {
     "name": "Minster Leas",
@@ -1753,7 +1973,8 @@
     "lon": 0.8053,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.089
+    "minSand": 0.089,
+    "country": "England"
   },
   {
     "name": "Morecambe North",
@@ -1761,7 +1982,8 @@
     "lon": -2.8607,
     "type": "Transitional",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.197
+    "minSand": 0.197,
+    "country": "England"
   },
   {
     "name": "Morecambe South",
@@ -1769,7 +1991,8 @@
     "lon": -2.8765,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.356
+    "minSand": 0.356,
+    "country": "England"
   },
   {
     "name": "Moreton",
@@ -1777,7 +2000,8 @@
     "lon": -3.1194,
     "type": "Coastal",
     "region": "Greater Manchester Merseyside and Cheshire",
-    "minSand": 0.048
+    "minSand": 0.048,
+    "country": "England"
   },
   {
     "name": "Mothecombe",
@@ -1785,7 +2009,8 @@
     "lon": -3.9527,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.073
+    "minSand": 0.073,
+    "country": "England"
   },
   {
     "name": "Mother Ivey`s Bay",
@@ -1793,7 +2018,8 @@
     "lon": -5.0154,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.086
+    "minSand": 0.086,
+    "country": "England"
   },
   {
     "name": "Mundesley",
@@ -1801,7 +2027,8 @@
     "lon": 1.4418,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.025
+    "minSand": 0.025,
+    "country": "England"
   },
   {
     "name": "Ness Cove",
@@ -1809,7 +2036,8 @@
     "lon": -3.4982,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.075
+    "minSand": 0.075,
+    "country": "England"
   },
   {
     "name": "Newbiggin North",
@@ -1817,7 +2045,8 @@
     "lon": -1.5103,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.393
+    "minSand": 0.393,
+    "country": "England"
   },
   {
     "name": "Newbiggin South",
@@ -1825,14 +2054,16 @@
     "lon": -1.5148,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.085
+    "minSand": 0.085,
+    "country": "England"
   },
   {
     "name": "Nidd at the Lido, Knaresborough",
     "lat": 53.9982,
     "lon": -1.4514,
     "type": "River",
-    "region": "Yorkshire"
+    "region": "Yorkshire",
+    "country": "England"
   },
   {
     "name": "Norman`s Bay",
@@ -1840,7 +2071,8 @@
     "lon": 0.3867,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.133
+    "minSand": 0.133,
+    "country": "England"
   },
   {
     "name": "Northcott Mouth",
@@ -1848,7 +2080,8 @@
     "lon": -4.5569,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.051
+    "minSand": 0.051,
+    "country": "England"
   },
   {
     "name": "Oddicombe",
@@ -1856,7 +2089,8 @@
     "lon": -3.5149,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.079
+    "minSand": 0.079,
+    "country": "England"
   },
   {
     "name": "Pagham",
@@ -1864,7 +2098,8 @@
     "lon": -0.7365,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.368
+    "minSand": 0.368,
+    "country": "England"
   },
   {
     "name": "Paignton Paignton Sands",
@@ -1872,7 +2107,8 @@
     "lon": -3.5588,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.43
+    "minSand": 0.43,
+    "country": "England"
   },
   {
     "name": "Paignton Preston Sands",
@@ -1880,7 +2116,8 @@
     "lon": -3.5562,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.386
+    "minSand": 0.386,
+    "country": "England"
   },
   {
     "name": "Par Sands",
@@ -1888,7 +2125,8 @@
     "lon": -4.6928,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.524
+    "minSand": 0.524,
+    "country": "England"
   },
   {
     "name": "Pendower",
@@ -1896,7 +2134,8 @@
     "lon": -4.9478,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.182
+    "minSand": 0.182,
+    "country": "England"
   },
   {
     "name": "Pentewan",
@@ -1904,7 +2143,8 @@
     "lon": -4.7825,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.302
+    "minSand": 0.302,
+    "country": "England"
   },
   {
     "name": "Penzance",
@@ -1912,7 +2152,8 @@
     "lon": -5.5355,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.025
+    "minSand": 0.025,
+    "country": "England"
   },
   {
     "name": "Perranporth",
@@ -1920,7 +2161,8 @@
     "lon": -5.1551,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.107
+    "minSand": 0.107,
+    "country": "England"
   },
   {
     "name": "Perranporth Penhale Sands",
@@ -1928,7 +2170,8 @@
     "lon": -5.1514,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.031
+    "minSand": 0.031,
+    "country": "England"
   },
   {
     "name": "Perranuthnoe",
@@ -1936,7 +2179,8 @@
     "lon": -5.4424,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.056
+    "minSand": 0.056,
+    "country": "England"
   },
   {
     "name": "Pevensey Bay",
@@ -1944,7 +2188,8 @@
     "lon": 0.3503,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.454
+    "minSand": 0.454,
+    "country": "England"
   },
   {
     "name": "Plymouth Firestone Bay",
@@ -1952,7 +2197,8 @@
     "lon": -4.1612,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.159
+    "minSand": 0.159,
+    "country": "England"
   },
   {
     "name": "Plymouth Hoe East",
@@ -1960,7 +2206,8 @@
     "lon": -4.1409,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.053
+    "minSand": 0.053,
+    "country": "England"
   },
   {
     "name": "Plymouth Hoe West",
@@ -1968,7 +2215,8 @@
     "lon": -4.1455,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.064
+    "minSand": 0.064,
+    "country": "England"
   },
   {
     "name": "Poldhu Cove",
@@ -1976,7 +2224,8 @@
     "lon": -5.2612,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.224
+    "minSand": 0.224,
+    "country": "England"
   },
   {
     "name": "Polkerris",
@@ -1984,7 +2233,8 @@
     "lon": -4.6815,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.158
+    "minSand": 0.158,
+    "country": "England"
   },
   {
     "name": "Polstreath",
@@ -1992,7 +2242,8 @@
     "lon": -4.7842,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.073
+    "minSand": 0.073,
+    "country": "England"
   },
   {
     "name": "Polurrian Cove",
@@ -2000,7 +2251,8 @@
     "lon": -5.2562,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.087
+    "minSand": 0.087,
+    "country": "England"
   },
   {
     "name": "Polzeath",
@@ -2008,7 +2260,8 @@
     "lon": -4.9164,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.235
+    "minSand": 0.235,
+    "country": "England"
   },
   {
     "name": "Poole Branksome Chine",
@@ -2016,7 +2269,8 @@
     "lon": -1.91,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.515
+    "minSand": 0.515,
+    "country": "England"
   },
   {
     "name": "Poole Canford Cliffs Chine",
@@ -2024,7 +2278,8 @@
     "lon": -1.9205,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.497
+    "minSand": 0.497,
+    "country": "England"
   },
   {
     "name": "Poole Harbour Lake",
@@ -2032,7 +2287,8 @@
     "lon": -2.0253,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.137
+    "minSand": 0.137,
+    "country": "England"
   },
   {
     "name": "Poole Harbour Rockley Sands",
@@ -2040,7 +2296,8 @@
     "lon": -2.0401,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.29
+    "minSand": 0.29,
+    "country": "England"
   },
   {
     "name": "Poole Sandbanks Peninsular",
@@ -2048,7 +2305,8 @@
     "lon": -1.9374,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.636
+    "minSand": 0.636,
+    "country": "England"
   },
   {
     "name": "Poole Shore Road Beach",
@@ -2056,7 +2314,8 @@
     "lon": -1.9294,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.593
+    "minSand": 0.593,
+    "country": "England"
   },
   {
     "name": "Porlock Weir",
@@ -2064,7 +2323,8 @@
     "lon": -3.6263,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.264
+    "minSand": 0.264,
+    "country": "England"
   },
   {
     "name": "Porth",
@@ -2072,7 +2332,8 @@
     "lon": -5.057,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.262
+    "minSand": 0.262,
+    "country": "England"
   },
   {
     "name": "Porthallow",
@@ -2080,7 +2341,8 @@
     "lon": -5.0793,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.403
+    "minSand": 0.403,
+    "country": "England"
   },
   {
     "name": "Porthcothan",
@@ -2088,7 +2350,8 @@
     "lon": -5.0235,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.218
+    "minSand": 0.218,
+    "country": "England"
   },
   {
     "name": "Porthcurnick",
@@ -2096,7 +2359,8 @@
     "lon": -4.9725,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.064
+    "minSand": 0.064,
+    "country": "England"
   },
   {
     "name": "Porthcurno",
@@ -2104,7 +2368,8 @@
     "lon": -5.6504,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.116
+    "minSand": 0.116,
+    "country": "England"
   },
   {
     "name": "Porthgwidden",
@@ -2112,7 +2377,8 @@
     "lon": -5.4766,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.127
+    "minSand": 0.127,
+    "country": "England"
   },
   {
     "name": "Porthkidney Sands",
@@ -2120,7 +2386,8 @@
     "lon": -5.4394,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.054
+    "minSand": 0.054,
+    "country": "England"
   },
   {
     "name": "Porthleven Sands",
@@ -2128,7 +2395,8 @@
     "lon": -5.3148,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.033
+    "minSand": 0.033,
+    "country": "England"
   },
   {
     "name": "Porthluney",
@@ -2136,7 +2404,8 @@
     "lon": -4.8433,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.217
+    "minSand": 0.217,
+    "country": "England"
   },
   {
     "name": "Porthmeor",
@@ -2144,7 +2413,8 @@
     "lon": -5.4834,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.082
+    "minSand": 0.082,
+    "country": "England"
   },
   {
     "name": "Porthminster",
@@ -2152,7 +2422,8 @@
     "lon": -5.4763,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.262
+    "minSand": 0.262,
+    "country": "England"
   },
   {
     "name": "Porthoustock",
@@ -2160,7 +2431,8 @@
     "lon": -5.0642,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.416
+    "minSand": 0.416,
+    "country": "England"
   },
   {
     "name": "Porthpean",
@@ -2168,7 +2440,8 @@
     "lon": -4.7657,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.048
+    "minSand": 0.048,
+    "country": "England"
   },
   {
     "name": "Porthtowan",
@@ -2176,7 +2449,8 @@
     "lon": -5.2424,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.135
+    "minSand": 0.135,
+    "country": "England"
   },
   {
     "name": "Portland Harbour Castle Cove",
@@ -2184,7 +2458,8 @@
     "lon": -2.4597,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.025
+    "minSand": 0.025,
+    "country": "England"
   },
   {
     "name": "Portland Harbour Sandsfoot Castle",
@@ -2192,7 +2467,8 @@
     "lon": -2.4636,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.072
+    "minSand": 0.072,
+    "country": "England"
   },
   {
     "name": "Portmellon",
@@ -2200,7 +2476,8 @@
     "lon": -4.7855,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.398
+    "minSand": 0.398,
+    "country": "England"
   },
   {
     "name": "Portreath",
@@ -2208,7 +2485,8 @@
     "lon": -5.2936,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.184
+    "minSand": 0.184,
+    "country": "England"
   },
   {
     "name": "Portwrinkle",
@@ -2216,7 +2494,8 @@
     "lon": -4.3077,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.102
+    "minSand": 0.102,
+    "country": "England"
   },
   {
     "name": "Praa Sands East",
@@ -2224,7 +2503,8 @@
     "lon": -5.3787,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.061
+    "minSand": 0.061,
+    "country": "England"
   },
   {
     "name": "Praa Sands West",
@@ -2232,7 +2512,8 @@
     "lon": -5.3909,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.043
+    "minSand": 0.043,
+    "country": "England"
   },
   {
     "name": "Putsborough",
@@ -2240,7 +2521,8 @@
     "lon": -4.2209,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.048
+    "minSand": 0.048,
+    "country": "England"
   },
   {
     "name": "Ramsgate Sands",
@@ -2248,7 +2530,8 @@
     "lon": 1.4249,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.211
+    "minSand": 0.211,
+    "country": "England"
   },
   {
     "name": "Ramsgate Western Undercliffe",
@@ -2256,7 +2539,8 @@
     "lon": 1.4062,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.043
+    "minSand": 0.043,
+    "country": "England"
   },
   {
     "name": "Readymoney Cove",
@@ -2264,7 +2548,8 @@
     "lon": -4.6452,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.129
+    "minSand": 0.129,
+    "country": "England"
   },
   {
     "name": "Redcar Coatham",
@@ -2272,7 +2557,8 @@
     "lon": -1.0816,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.019
+    "minSand": 0.019,
+    "country": "England"
   },
   {
     "name": "Redcar Granville",
@@ -2280,7 +2566,8 @@
     "lon": -1.0523,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.092
+    "minSand": 0.092,
+    "country": "England"
   },
   {
     "name": "Redcar Lifeboat Station",
@@ -2288,7 +2575,8 @@
     "lon": -1.0607,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.025
+    "minSand": 0.025,
+    "country": "England"
   },
   {
     "name": "Redcar Stray",
@@ -2296,7 +2584,8 @@
     "lon": -1.034,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.027
+    "minSand": 0.027,
+    "country": "England"
   },
   {
     "name": "Reighton",
@@ -2304,7 +2593,8 @@
     "lon": -0.2498,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.025
+    "minSand": 0.025,
+    "country": "England"
   },
   {
     "name": "Ringstead Bay",
@@ -2312,14 +2602,16 @@
     "lon": -2.3514,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.053
+    "minSand": 0.053,
+    "country": "England"
   },
   {
     "name": "River Avon at Fordingbridge",
     "lat": 50.9263,
     "lon": -1.7885,
     "type": "River",
-    "region": "Wessex"
+    "region": "Wessex",
+    "country": "England"
   },
   {
     "name": "River Deben Estuary, Waldringfield",
@@ -2327,49 +2619,56 @@
     "lon": 1.3327,
     "type": "Transitional",
     "region": "East Anglia",
-    "minSand": 0.156
+    "minSand": 0.156,
+    "country": "England"
   },
   {
     "name": "River Frome at Farleigh Hungerford",
     "lat": 51.3179,
     "lon": -2.2809,
     "type": "River",
-    "region": "Wessex"
+    "region": "Wessex",
+    "country": "England"
   },
   {
     "name": "River Ribble at Edisford Bridge",
     "lat": 53.8685,
     "lon": -2.4173,
     "type": "River",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "River Severn at Ironbridge",
     "lat": 52.6293,
     "lon": -2.4918,
     "type": "River",
-    "region": "West Midlands"
+    "region": "West Midlands",
+    "country": "England"
   },
   {
     "name": "River Severn in Shrewsbury",
     "lat": 52.7104,
     "lon": -2.7567,
     "type": "River",
-    "region": "West Midlands"
+    "region": "West Midlands",
+    "country": "England"
   },
   {
     "name": "River Teme in Ludlow",
     "lat": 52.3664,
     "lon": -2.7254,
     "type": "River",
-    "region": "West Midlands"
+    "region": "West Midlands",
+    "country": "England"
   },
   {
     "name": "River Tone at French Weir Park",
     "lat": 51.0181,
     "lon": -3.1128,
     "type": "River",
-    "region": "Wessex"
+    "region": "Wessex",
+    "country": "England"
   },
   {
     "name": "Robin Hoods Bay",
@@ -2377,7 +2676,8 @@
     "lon": -0.5319,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.015
+    "minSand": 0.015,
+    "country": "England"
   },
   {
     "name": "Roker - Sunderland",
@@ -2385,7 +2685,8 @@
     "lon": -1.3649,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.107
+    "minSand": 0.107,
+    "country": "England"
   },
   {
     "name": "Rottingdean Beach",
@@ -2393,7 +2694,8 @@
     "lon": -0.0568,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.162
+    "minSand": 0.162,
+    "country": "England"
   },
   {
     "name": "Runswick Bay",
@@ -2401,21 +2703,24 @@
     "lon": -0.7487,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.035
+    "minSand": 0.035,
+    "country": "England"
   },
   {
     "name": "Rutland Water Sykes Lane",
     "lat": 52.6632,
     "lon": -0.6132,
     "type": "Lake",
-    "region": "Lincolnshire and Northamptonshire"
+    "region": "Lincolnshire and Northamptonshire",
+    "country": "England"
   },
   {
     "name": "Rutland Water Whitwell Creek",
     "lat": 52.6635,
     "lon": -0.6319,
     "type": "Lake",
-    "region": "Lincolnshire and Northamptonshire"
+    "region": "Lincolnshire and Northamptonshire",
+    "country": "England"
   },
   {
     "name": "Ryde",
@@ -2423,7 +2728,8 @@
     "lon": -1.1498,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.506
+    "minSand": 0.506,
+    "country": "England"
   },
   {
     "name": "Salcombe North Sands",
@@ -2431,7 +2737,8 @@
     "lon": -3.7805,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.326
+    "minSand": 0.326,
+    "country": "England"
   },
   {
     "name": "Salcombe South Sands",
@@ -2439,7 +2746,8 @@
     "lon": -3.7839,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.23
+    "minSand": 0.23,
+    "country": "England"
   },
   {
     "name": "Saltburn",
@@ -2447,7 +2755,8 @@
     "lon": -0.9698,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.095
+    "minSand": 0.095,
+    "country": "England"
   },
   {
     "name": "Saltdean",
@@ -2455,7 +2764,8 @@
     "lon": -0.0417,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.155
+    "minSand": 0.155,
+    "country": "England"
   },
   {
     "name": "Sandgate",
@@ -2463,7 +2773,8 @@
     "lon": 1.1218,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.36
+    "minSand": 0.36,
+    "country": "England"
   },
   {
     "name": "Sandown",
@@ -2471,7 +2782,8 @@
     "lon": -1.1506,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.191
+    "minSand": 0.191,
+    "country": "England"
   },
   {
     "name": "Sandsend",
@@ -2479,7 +2791,8 @@
     "lon": -0.6673,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.113
+    "minSand": 0.113,
+    "country": "England"
   },
   {
     "name": "Sandwich Bay",
@@ -2487,7 +2800,8 @@
     "lon": 1.3796,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.599
+    "minSand": 0.599,
+    "country": "England"
   },
   {
     "name": "Sandy Bay",
@@ -2495,7 +2809,8 @@
     "lon": -3.368,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.091
+    "minSand": 0.091,
+    "country": "England"
   },
   {
     "name": "Sandymouth",
@@ -2503,7 +2818,8 @@
     "lon": -4.5568,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.076
+    "minSand": 0.076,
+    "country": "England"
   },
   {
     "name": "Saunton Sands",
@@ -2511,7 +2827,8 @@
     "lon": -4.2223,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.079
+    "minSand": 0.079,
+    "country": "England"
   },
   {
     "name": "Scarborough North Bay",
@@ -2519,7 +2836,8 @@
     "lon": -0.4072,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.121
+    "minSand": 0.121,
+    "country": "England"
   },
   {
     "name": "Scarborough South Bay",
@@ -2527,7 +2845,8 @@
     "lon": -0.3952,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.237
+    "minSand": 0.237,
+    "country": "England"
   },
   {
     "name": "Sea Palling",
@@ -2535,7 +2854,8 @@
     "lon": 1.6039,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.035
+    "minSand": 0.035,
+    "country": "England"
   },
   {
     "name": "Seaburn - Sunderland",
@@ -2543,7 +2863,8 @@
     "lon": -1.3663,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.057
+    "minSand": 0.057,
+    "country": "England"
   },
   {
     "name": "Seaford",
@@ -2551,7 +2872,8 @@
     "lon": 0.095,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.164
+    "minSand": 0.164,
+    "country": "England"
   },
   {
     "name": "Seagrove",
@@ -2559,7 +2881,8 @@
     "lon": -1.1069,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.087
+    "minSand": 0.087,
+    "country": "England"
   },
   {
     "name": "Seaham Beach",
@@ -2567,7 +2890,8 @@
     "lon": -1.3381,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.047
+    "minSand": 0.047,
+    "country": "England"
   },
   {
     "name": "Seaham Hall Beach",
@@ -2575,7 +2899,8 @@
     "lon": -1.3415,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.062
+    "minSand": 0.062,
+    "country": "England"
   },
   {
     "name": "Seahouses North",
@@ -2583,7 +2908,8 @@
     "lon": -1.6668,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.061
+    "minSand": 0.061,
+    "country": "England"
   },
   {
     "name": "Seascale",
@@ -2591,7 +2917,8 @@
     "lon": -3.4893,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.017
+    "minSand": 0.017,
+    "country": "England"
   },
   {
     "name": "Seaton (Cornwall)",
@@ -2599,7 +2926,8 @@
     "lon": -4.3864,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.464
+    "minSand": 0.464,
+    "country": "England"
   },
   {
     "name": "Seaton (Devon)",
@@ -2607,7 +2935,8 @@
     "lon": -3.0705,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.602
+    "minSand": 0.602,
+    "country": "England"
   },
   {
     "name": "Seaton Carew Centre",
@@ -2615,7 +2944,8 @@
     "lon": -1.1807,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.017
+    "minSand": 0.017,
+    "country": "England"
   },
   {
     "name": "Seaton Carew North",
@@ -2623,7 +2953,8 @@
     "lon": -1.186,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.016
+    "minSand": 0.016,
+    "country": "England"
   },
   {
     "name": "Seaton Carew North Gare",
@@ -2631,7 +2962,8 @@
     "lon": -1.1646,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.03
+    "minSand": 0.03,
+    "country": "England"
   },
   {
     "name": "Seaton Sluice",
@@ -2639,7 +2971,8 @@
     "lon": -1.4783,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.148
+    "minSand": 0.148,
+    "country": "England"
   },
   {
     "name": "Seatown",
@@ -2647,7 +2980,8 @@
     "lon": -2.8248,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.201
+    "minSand": 0.201,
+    "country": "England"
   },
   {
     "name": "Selsey",
@@ -2655,7 +2989,8 @@
     "lon": -0.7703,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.513
+    "minSand": 0.513,
+    "country": "England"
   },
   {
     "name": "Sennen",
@@ -2663,7 +2998,8 @@
     "lon": -5.6976,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.051
+    "minSand": 0.051,
+    "country": "England"
   },
   {
     "name": "Shaldon",
@@ -2671,7 +3007,8 @@
     "lon": -3.5024,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.416
+    "minSand": 0.416,
+    "country": "England"
   },
   {
     "name": "Shanklin",
@@ -2679,7 +3016,8 @@
     "lon": -1.1732,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.09
+    "minSand": 0.09,
+    "country": "England"
   },
   {
     "name": "Sharrow",
@@ -2687,7 +3025,8 @@
     "lon": -4.2596,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.062
+    "minSand": 0.062,
+    "country": "England"
   },
   {
     "name": "Sheep's Green, River Cam",
@@ -2695,7 +3034,8 @@
     "lon": 0.1168,
     "type": "River",
     "region": "East Anglia",
-    "minSand": 1.0
+    "minSand": 1.0,
+    "country": "England"
   },
   {
     "name": "Sheerness",
@@ -2703,7 +3043,8 @@
     "lon": 0.7602,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.124
+    "minSand": 0.124,
+    "country": "England"
   },
   {
     "name": "Shell Bay North",
@@ -2711,7 +3052,8 @@
     "lon": -1.9488,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.527
+    "minSand": 0.527,
+    "country": "England"
   },
   {
     "name": "Sheringham",
@@ -2719,7 +3061,8 @@
     "lon": 1.2085,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.045
+    "minSand": 0.045,
+    "country": "England"
   },
   {
     "name": "Shoebury East",
@@ -2727,7 +3070,8 @@
     "lon": 0.8038,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.349
+    "minSand": 0.349,
+    "country": "England"
   },
   {
     "name": "Shoeburyness",
@@ -2735,7 +3079,8 @@
     "lon": 0.7742,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.122
+    "minSand": 0.122,
+    "country": "England"
   },
   {
     "name": "Shoreham Beach",
@@ -2743,7 +3088,8 @@
     "lon": -0.2713,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.403
+    "minSand": 0.403,
+    "country": "England"
   },
   {
     "name": "Shorthorn Beach",
@@ -2751,7 +3097,8 @@
     "lon": -4.7229,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.612
+    "minSand": 0.612,
+    "country": "England"
   },
   {
     "name": "Sidmouth Jacobs Ladder",
@@ -2759,7 +3106,8 @@
     "lon": -3.2479,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.093
+    "minSand": 0.093,
+    "country": "England"
   },
   {
     "name": "Sidmouth Town",
@@ -2767,7 +3115,8 @@
     "lon": -3.243,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.139
+    "minSand": 0.139,
+    "country": "England"
   },
   {
     "name": "Silecroft",
@@ -2775,7 +3124,8 @@
     "lon": -3.3511,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.265
+    "minSand": 0.265,
+    "country": "England"
   },
   {
     "name": "Skegness",
@@ -2783,7 +3133,8 @@
     "lon": 0.3495,
     "type": "Coastal",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.436
+    "minSand": 0.436,
+    "country": "England"
   },
   {
     "name": "Skipsea",
@@ -2791,7 +3142,8 @@
     "lon": -0.1902,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.013
+    "minSand": 0.013,
+    "country": "England"
   },
   {
     "name": "Slapton Sands Monument",
@@ -2799,7 +3151,8 @@
     "lon": -3.6451,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.684
+    "minSand": 0.684,
+    "country": "England"
   },
   {
     "name": "Slapton Sands Torcross",
@@ -2807,7 +3160,8 @@
     "lon": -3.6521,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.603
+    "minSand": 0.603,
+    "country": "England"
   },
   {
     "name": "South Shields",
@@ -2815,7 +3169,8 @@
     "lon": -1.4091,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.151
+    "minSand": 0.151,
+    "country": "England"
   },
   {
     "name": "Southend Chalkwell",
@@ -2823,14 +3178,16 @@
     "lon": 0.6729,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.206
+    "minSand": 0.206,
+    "country": "England"
   },
   {
     "name": "Southend Jubilee",
     "lat": 51.5278,
     "lon": 0.7233,
     "type": "Transitional",
-    "region": "Kent South London and East Sussex"
+    "region": "Kent South London and East Sussex",
+    "country": "England"
   },
   {
     "name": "Southend Thorpe Bay",
@@ -2838,7 +3195,8 @@
     "lon": 0.7536,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.087
+    "minSand": 0.087,
+    "country": "England"
   },
   {
     "name": "Southend Three Shells",
@@ -2846,7 +3204,8 @@
     "lon": 0.712,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.173
+    "minSand": 0.173,
+    "country": "England"
   },
   {
     "name": "Southend Westcliff Bay",
@@ -2854,14 +3213,16 @@
     "lon": 0.6869,
     "type": "Transitional",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.107
+    "minSand": 0.107,
+    "country": "England"
   },
   {
     "name": "Southport",
     "lat": 53.6532,
     "lon": -3.0273,
     "type": "Coastal",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Southsea East",
@@ -2869,7 +3230,8 @@
     "lon": -1.0794,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.492
+    "minSand": 0.492,
+    "country": "England"
   },
   {
     "name": "Southwick",
@@ -2877,7 +3239,8 @@
     "lon": -0.2356,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.478
+    "minSand": 0.478,
+    "country": "England"
   },
   {
     "name": "Southwold The Denes",
@@ -2885,7 +3248,8 @@
     "lon": 1.6786,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.289
+    "minSand": 0.289,
+    "country": "England"
   },
   {
     "name": "Southwold The Pier",
@@ -2893,7 +3257,8 @@
     "lon": 1.6869,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.14
+    "minSand": 0.14,
+    "country": "England"
   },
   {
     "name": "Spittal",
@@ -2901,7 +3266,8 @@
     "lon": -1.9888,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.131
+    "minSand": 0.131,
+    "country": "England"
   },
   {
     "name": "St Annes",
@@ -2909,14 +3275,16 @@
     "lon": -3.0404,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.002
+    "minSand": 0.002,
+    "country": "England"
   },
   {
     "name": "St Annes North",
     "lat": 53.7597,
     "lon": -3.0509,
     "type": "Coastal",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "St Bees",
@@ -2924,7 +3292,8 @@
     "lon": -3.6086,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.043
+    "minSand": 0.043,
+    "country": "England"
   },
   {
     "name": "St Helens",
@@ -2932,7 +3301,8 @@
     "lon": -1.0986,
     "type": "Transitional",
     "region": "Solent and South Downs",
-    "minSand": 0.373
+    "minSand": 0.373,
+    "country": "England"
   },
   {
     "name": "St Leonards",
@@ -2940,7 +3310,8 @@
     "lon": 0.5514,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.063
+    "minSand": 0.063,
+    "country": "England"
   },
   {
     "name": "St Margaret`s Bay",
@@ -2948,7 +3319,8 @@
     "lon": 1.3857,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.145
+    "minSand": 0.145,
+    "country": "England"
   },
   {
     "name": "St Mary's Bay (Devon)",
@@ -2956,7 +3328,8 @@
     "lon": -3.5036,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.093
+    "minSand": 0.093,
+    "country": "England"
   },
   {
     "name": "St Mary's Bay (Kent)",
@@ -2964,7 +3337,8 @@
     "lon": 0.9823,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.088
+    "minSand": 0.088,
+    "country": "England"
   },
   {
     "name": "St Mildred's Bay, Westgate",
@@ -2972,7 +3346,8 @@
     "lon": 1.3427,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.106
+    "minSand": 0.106,
+    "country": "England"
   },
   {
     "name": "Steamer Quay, Dart Estuary",
@@ -2980,7 +3355,8 @@
     "lon": -3.6787,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.63
+    "minSand": 0.63,
+    "country": "England"
   },
   {
     "name": "Stoke Gabriel, Dart Estuary",
@@ -2988,7 +3364,8 @@
     "lon": -3.6229,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.13
+    "minSand": 0.13,
+    "country": "England"
   },
   {
     "name": "Stokes Bay",
@@ -2996,7 +3373,8 @@
     "lon": -1.1504,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.652
+    "minSand": 0.652,
+    "country": "England"
   },
   {
     "name": "Studland Knoll House",
@@ -3004,7 +3382,8 @@
     "lon": -1.9528,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.753
+    "minSand": 0.753,
+    "country": "England"
   },
   {
     "name": "Summerleaze",
@@ -3012,7 +3391,8 @@
     "lon": -4.552,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.083
+    "minSand": 0.083,
+    "country": "England"
   },
   {
     "name": "Sutton-on-Sea",
@@ -3020,7 +3400,8 @@
     "lon": 0.2838,
     "type": "Coastal",
     "region": "Lincolnshire and Northamptonshire",
-    "minSand": 0.185
+    "minSand": 0.185,
+    "country": "England"
   },
   {
     "name": "Swanage Central",
@@ -3028,7 +3409,8 @@
     "lon": -1.9575,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.44
+    "minSand": 0.44,
+    "country": "England"
   },
   {
     "name": "Swanpool",
@@ -3036,7 +3418,8 @@
     "lon": -5.0758,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.316
+    "minSand": 0.316,
+    "country": "England"
   },
   {
     "name": "Tankerton",
@@ -3044,7 +3427,8 @@
     "lon": 1.0458,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.103
+    "minSand": 0.103,
+    "country": "England"
   },
   {
     "name": "Teignmouth Holcombe",
@@ -3052,7 +3436,8 @@
     "lon": -3.4746,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.037
+    "minSand": 0.037,
+    "country": "England"
   },
   {
     "name": "Teignmouth Town",
@@ -3060,14 +3445,16 @@
     "lon": -3.4934,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.457
+    "minSand": 0.457,
+    "country": "England"
   },
   {
     "name": "The Serpentine - Hyde Park",
     "lat": 51.5049,
     "lon": -0.1691,
     "type": "Lake",
-    "region": "Hertfordshire and North London"
+    "region": "Hertfordshire and North London",
+    "country": "England"
   },
   {
     "name": "Thurlestone North",
@@ -3075,7 +3462,8 @@
     "lon": -3.8618,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.395
+    "minSand": 0.395,
+    "country": "England"
   },
   {
     "name": "Thurlestone South",
@@ -3083,7 +3471,8 @@
     "lon": -3.8581,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.539
+    "minSand": 0.539,
+    "country": "England"
   },
   {
     "name": "Tolcarne",
@@ -3091,7 +3480,8 @@
     "lon": -5.0734,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.074
+    "minSand": 0.074,
+    "country": "England"
   },
   {
     "name": "Torre Abbey",
@@ -3099,7 +3489,8 @@
     "lon": -3.536,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.246
+    "minSand": 0.246,
+    "country": "England"
   },
   {
     "name": "Totland Bay",
@@ -3107,7 +3498,8 @@
     "lon": -1.5457,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.164
+    "minSand": 0.164,
+    "country": "England"
   },
   {
     "name": "Towan",
@@ -3115,7 +3507,8 @@
     "lon": -5.0843,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.064
+    "minSand": 0.064,
+    "country": "England"
   },
   {
     "name": "Trebarwith Strand",
@@ -3123,7 +3516,8 @@
     "lon": -4.7616,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.043
+    "minSand": 0.043,
+    "country": "England"
   },
   {
     "name": "Tregonhawke",
@@ -3131,7 +3525,8 @@
     "lon": -4.2428,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.075
+    "minSand": 0.075,
+    "country": "England"
   },
   {
     "name": "Trevaunance Cove",
@@ -3139,7 +3534,8 @@
     "lon": -5.2012,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.023
+    "minSand": 0.023,
+    "country": "England"
   },
   {
     "name": "Trevone Bay",
@@ -3147,7 +3543,8 @@
     "lon": -4.9774,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.111
+    "minSand": 0.111,
+    "country": "England"
   },
   {
     "name": "Treyarnon Bay",
@@ -3155,7 +3552,8 @@
     "lon": -5.0226,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.122
+    "minSand": 0.122,
+    "country": "England"
   },
   {
     "name": "Tynemouth Cullercoats",
@@ -3163,7 +3561,8 @@
     "lon": -1.431,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.045
+    "minSand": 0.045,
+    "country": "England"
   },
   {
     "name": "Tynemouth King Edwards Bay",
@@ -3171,7 +3570,8 @@
     "lon": -1.419,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.072
+    "minSand": 0.072,
+    "country": "England"
   },
   {
     "name": "Tynemouth Long Sands North",
@@ -3179,7 +3579,8 @@
     "lon": -1.4287,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.095
+    "minSand": 0.095,
+    "country": "England"
   },
   {
     "name": "Tynemouth Long Sands South",
@@ -3187,7 +3588,8 @@
     "lon": -1.4233,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.105
+    "minSand": 0.105,
+    "country": "England"
   },
   {
     "name": "Upton Towans",
@@ -3195,7 +3597,8 @@
     "lon": -5.4029,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.038
+    "minSand": 0.038,
+    "country": "England"
   },
   {
     "name": "Vault Beach",
@@ -3203,7 +3606,8 @@
     "lon": -4.7876,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.193
+    "minSand": 0.193,
+    "country": "England"
   },
   {
     "name": "Ventnor",
@@ -3211,7 +3615,8 @@
     "lon": -1.21,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.222
+    "minSand": 0.222,
+    "country": "England"
   },
   {
     "name": "Wallasey",
@@ -3219,14 +3624,16 @@
     "lon": -3.0773,
     "type": "Coastal",
     "region": "Greater Manchester Merseyside and Cheshire",
-    "minSand": 0.144
+    "minSand": 0.144,
+    "country": "England"
   },
   {
     "name": "Wallingford Beach, River Thames",
     "lat": 51.6,
     "lon": -1.1203,
     "type": "River",
-    "region": "Thames"
+    "region": "Thames",
+    "country": "England"
   },
   {
     "name": "Walney Biggar Bank",
@@ -3234,7 +3641,8 @@
     "lon": -3.2584,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.096
+    "minSand": 0.096,
+    "country": "England"
   },
   {
     "name": "Walney Sandy Gap",
@@ -3242,7 +3650,8 @@
     "lon": -3.2632,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.309
+    "minSand": 0.309,
+    "country": "England"
   },
   {
     "name": "Walney West Shore",
@@ -3250,7 +3659,8 @@
     "lon": -3.2716,
     "type": "Coastal",
     "region": "Cumbria and Lancashire",
-    "minSand": 0.316
+    "minSand": 0.316,
+    "country": "England"
   },
   {
     "name": "Walpole Bay, Margate",
@@ -3258,7 +3668,8 @@
     "lon": 1.3991,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.064
+    "minSand": 0.064,
+    "country": "England"
   },
   {
     "name": "Walton",
@@ -3266,7 +3677,8 @@
     "lon": 1.2733,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.039
+    "minSand": 0.039,
+    "country": "England"
   },
   {
     "name": "Warfleet Creek, Dart Estuary",
@@ -3274,7 +3686,8 @@
     "lon": -3.5734,
     "type": "Transitional",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.078
+    "minSand": 0.078,
+    "country": "England"
   },
   {
     "name": "Warkworth",
@@ -3282,7 +3695,8 @@
     "lon": -1.5928,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.14
+    "minSand": 0.14,
+    "country": "England"
   },
   {
     "name": "Watcombe",
@@ -3290,7 +3704,8 @@
     "lon": -3.5153,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.089
+    "minSand": 0.089,
+    "country": "England"
   },
   {
     "name": "Watergate Bay",
@@ -3298,7 +3713,8 @@
     "lon": -5.0426,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.073
+    "minSand": 0.073,
+    "country": "England"
   },
   {
     "name": "Wells",
@@ -3306,7 +3722,8 @@
     "lon": 0.8491,
     "type": "Transitional",
     "region": "East Anglia",
-    "minSand": 0.114
+    "minSand": 0.114,
+    "country": "England"
   },
   {
     "name": "Wembury",
@@ -3314,7 +3731,8 @@
     "lon": -4.0851,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.079
+    "minSand": 0.079,
+    "country": "England"
   },
   {
     "name": "West Bay (West)",
@@ -3322,7 +3740,8 @@
     "lon": -2.7665,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.383
+    "minSand": 0.383,
+    "country": "England"
   },
   {
     "name": "West Bay, Westgate",
@@ -3330,7 +3749,8 @@
     "lon": 1.3323,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.068
+    "minSand": 0.068,
+    "country": "England"
   },
   {
     "name": "West Beach, Whitstable",
@@ -3338,7 +3758,8 @@
     "lon": 1.0117,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.073
+    "minSand": 0.073,
+    "country": "England"
   },
   {
     "name": "West Kirby",
@@ -3346,14 +3767,16 @@
     "lon": -3.1932,
     "type": "Transitional",
     "region": "Greater Manchester Merseyside and Cheshire",
-    "minSand": 0.001
+    "minSand": 0.001,
+    "country": "England"
   },
   {
     "name": "West Mersea",
     "lat": 51.7704,
     "lon": 0.9302,
     "type": "Coastal",
-    "region": "East Anglia"
+    "region": "East Anglia",
+    "country": "England"
   },
   {
     "name": "West Runton",
@@ -3361,7 +3784,8 @@
     "lon": 1.2528,
     "type": "Coastal",
     "region": "East Anglia",
-    "minSand": 0.031
+    "minSand": 0.031,
+    "country": "England"
   },
   {
     "name": "West Wittering",
@@ -3369,7 +3793,8 @@
     "lon": -0.9121,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.236
+    "minSand": 0.236,
+    "country": "England"
   },
   {
     "name": "Westbrook Bay, Margate",
@@ -3377,7 +3802,8 @@
     "lon": 1.3631,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.122
+    "minSand": 0.122,
+    "country": "England"
   },
   {
     "name": "Weston Main",
@@ -3385,7 +3811,8 @@
     "lon": -2.9834,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.287
+    "minSand": 0.287,
+    "country": "England"
   },
   {
     "name": "Weston-super-Mare Sand Bay",
@@ -3393,7 +3820,8 @@
     "lon": -2.9661,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.193
+    "minSand": 0.193,
+    "country": "England"
   },
   {
     "name": "Weston-super-Mare Uphill Slipway",
@@ -3401,7 +3829,8 @@
     "lon": -2.9903,
     "type": "Transitional",
     "region": "Wessex",
-    "minSand": 0.153
+    "minSand": 0.153,
+    "country": "England"
   },
   {
     "name": "Westward Ho!",
@@ -3409,7 +3838,8 @@
     "lon": -4.2362,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.231
+    "minSand": 0.231,
+    "country": "England"
   },
   {
     "name": "Weymouth Central",
@@ -3417,7 +3847,8 @@
     "lon": -2.4522,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.442
+    "minSand": 0.442,
+    "country": "England"
   },
   {
     "name": "Weymouth Lodmoor",
@@ -3425,21 +3856,24 @@
     "lon": -2.4422,
     "type": "Coastal",
     "region": "Wessex",
-    "minSand": 0.524
+    "minSand": 0.524,
+    "country": "England"
   },
   {
     "name": "Wharfe at Cromwheel, Ilkley",
     "lat": 53.9319,
     "lon": -1.8162,
     "type": "River",
-    "region": "Yorkshire"
+    "region": "Yorkshire",
+    "country": "England"
   },
   {
     "name": "Wharfe at Wilderness Carpark",
     "lat": 53.9265,
     "lon": -1.3854,
     "type": "River",
-    "region": "Yorkshire"
+    "region": "Yorkshire",
+    "country": "England"
   },
   {
     "name": "Wherry Town",
@@ -3447,7 +3881,8 @@
     "lon": -5.5448,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.047
+    "minSand": 0.047,
+    "country": "England"
   },
   {
     "name": "Whitby",
@@ -3455,7 +3890,8 @@
     "lon": -0.6246,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.032
+    "minSand": 0.032,
+    "country": "England"
   },
   {
     "name": "Whitecliff Bay",
@@ -3463,7 +3899,8 @@
     "lon": -1.0943,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.081
+    "minSand": 0.081,
+    "country": "England"
   },
   {
     "name": "Whitley Bay",
@@ -3471,7 +3908,8 @@
     "lon": -1.4451,
     "type": "Coastal",
     "region": "North East",
-    "minSand": 0.048
+    "minSand": 0.048,
+    "country": "England"
   },
   {
     "name": "Widemouth Sand",
@@ -3479,7 +3917,8 @@
     "lon": -4.5576,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.143
+    "minSand": 0.143,
+    "country": "England"
   },
   {
     "name": "Wilsthorpe",
@@ -3487,7 +3926,8 @@
     "lon": -0.2075,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.128
+    "minSand": 0.128,
+    "country": "England"
   },
   {
     "name": "Winchelsea",
@@ -3495,35 +3935,40 @@
     "lon": 0.7181,
     "type": "Coastal",
     "region": "Kent South London and East Sussex",
-    "minSand": 0.137
+    "minSand": 0.137,
+    "country": "England"
   },
   {
     "name": "Windermere, Fellfoot",
     "lat": 54.2745,
     "lon": -2.9538,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Windermere, Lakeside YMCA",
     "lat": 54.3004,
     "lon": -2.9615,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Windermere, Millerground Landing",
     "lat": 54.3807,
     "lon": -2.9225,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Windermere, Rayrigg Meadow",
     "lat": 54.3782,
     "lon": -2.9225,
     "type": "Lake",
-    "region": "Cumbria and Lancashire"
+    "region": "Cumbria and Lancashire",
+    "country": "England"
   },
   {
     "name": "Withernsea",
@@ -3531,14 +3976,16 @@
     "lon": 0.036,
     "type": "Coastal",
     "region": "Yorkshire",
-    "minSand": 0.098
+    "minSand": 0.098,
+    "country": "England"
   },
   {
     "name": "Wolvercote Mill Stream",
     "lat": 51.7808,
     "lon": -1.296,
     "type": "River",
-    "region": "Thames"
+    "region": "Thames",
+    "country": "England"
   },
   {
     "name": "Woolacombe Village",
@@ -3546,7 +3993,8 @@
     "lon": -4.2097,
     "type": "Coastal",
     "region": "Devon Cornwall and the Isles of Scilly",
-    "minSand": 0.078
+    "minSand": 0.078,
+    "country": "England"
   },
   {
     "name": "Worthing",
@@ -3554,7 +4002,8 @@
     "lon": -0.3848,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.523
+    "minSand": 0.523,
+    "country": "England"
   },
   {
     "name": "Worthing Beach House",
@@ -3562,7 +4011,8 @@
     "lon": -0.3609,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.395
+    "minSand": 0.395,
+    "country": "England"
   },
   {
     "name": "Yaverland",
@@ -3570,6 +4020,7 @@
     "lon": -1.1332,
     "type": "Coastal",
     "region": "Solent and South Downs",
-    "minSand": 0.102
+    "minSand": 0.102,
+    "country": "England"
   }
 ]
