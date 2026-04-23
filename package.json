@@ -1,0 +1,17 @@
+{
+  "name": "beach-walk-uk",
+  "version": "1.0.0",
+  "description": "Beach Walk UK — know the best time to walk on the beach",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0",
+    "vitest": "^4.1.4"
+  }
+}
