@@ -181,20 +181,20 @@ import {
   }
 
   // ── API ───────────────────────────────────────────────────────────────────
-  /**
-   * Fetches weather and marine data from Open-Meteo APIs.
-   * Caches in memory for 30 minutes; pass force=true to bypass.
-   *
-   * APIs used:
-   *   - https://api.open-meteo.com/v1/forecast  (weather)
-   *   - https://marine-api.open-meteo.com/v1/marine  (tide / sea temp / wave height)
-   */
+  const _apiBase = import.meta.env.VITE_API_BASE;
+  const WEATHER_URL = _apiBase
+    ? `${_apiBase}/weather`
+    : 'https://api.open-meteo.com/v1/forecast';
+  const MARINE_URL = _apiBase
+    ? `${_apiBase}/marine`
+    : 'https://marine-api.open-meteo.com/v1/marine';
+
   async function fetchAllData(force) {
     if (!force && memCache && Date.now() - memCache.ts < 30 * 60 * 1000) return memCache;
     const lat = getLat(), lon = getLon();
     const [wRes, mRes] = await Promise.all([
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=Europe/London&forecast_days=4`),
-      fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=sea_level_height_msl,wave_height,sea_surface_temperature&timezone=Europe/London&forecast_days=4`),
+      fetch(`${WEATHER_URL}?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=Europe/London&forecast_days=4`),
+      fetch(`${MARINE_URL}?latitude=${lat}&longitude=${lon}&hourly=sea_level_height_msl,wave_height,sea_surface_temperature&timezone=Europe/London&forecast_days=4`),
     ]);
     if (!wRes.ok || !mRes.ok) throw new Error('API error');
     const weather = await wRes.json();

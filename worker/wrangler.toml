@@ -1,0 +1,19 @@
+name = "beach-walk-api"
+main = "index.js"
+compatibility_date = "2024-11-01"
+
+# Deploy commands:
+#   npm install -g wrangler
+#   wrangler login
+#   wrangler deploy
+#
+# Local development:
+#   wrangler dev
+#   Create worker/.dev.vars with OPENMETEO_API_KEY=your_key (optional, uses free tier if absent)
+#
+# To set the commercial API key as an encrypted secret:
+#   wrangler secret put OPENMETEO_API_KEY
+#
+# Set VITE_API_BASE=https://beach-walk-api.<your-account>.workers.dev in your
+# GitHub Actions deploy workflow (or Cloudflare Pages env vars) so the app
+# routes through this worker in production.
