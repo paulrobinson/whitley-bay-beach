@@ -2,7 +2,6 @@
 
 > Know before you go — the best time to walk on the beach, for any UK bathing water location.
 
-
 Live at: **[paulrobinson.github.io/beach-walk-uk](https://paulrobinson.github.io/beach-walk-uk/)**
 
 ---
