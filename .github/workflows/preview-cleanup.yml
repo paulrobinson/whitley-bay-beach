@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [closed]
 
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
 permissions:
   contents: write
 
@@ -22,5 +26,5 @@ jobs:
           if [ -d "previews/pr-${{ github.event.pull_request.number }}" ]; then
             git rm -rf "previews/pr-${{ github.event.pull_request.number }}"
             git commit -m "chore: remove preview for PR #${{ github.event.pull_request.number }}"
-            git push
+            git push origin gh-pages
           fi
