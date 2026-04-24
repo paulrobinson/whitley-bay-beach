@@ -119,30 +119,39 @@ export function computeBestWindow(hours, seaMin, seaMax, sunTimes, beachProfile 
 
 export function computeSeaFrettPct(temp, dewPoint, windDirDeg, windKmh, sst, hour, month) {
   if (dewPoint === null || dewPoint === undefined) return 0;
+
+  // Near-saturation is a hard requirement for any fog — TDD > 3°C makes it impossible
+  const tdd = temp - dewPoint;
+  if (tdd > 3) return 0;
+
   let score = 0;
 
-  // Temperature-dew point depression — most critical indicator (max 40 pts)
-  const tdd = temp - dewPoint;
-  if (tdd <= 2) score += 40;
-  else if (tdd <= 4) score += 20;
+  // Temperature-dew point depression (max 40 pts)
+  if (tdd <= 1) score += 40;
+  else if (tdd <= 2) score += 30;
+  else score += 15; // 2–3°C: marginal
 
-  // SST ≤ dew point means sea is cold enough to trigger condensation (max 30 pts)
+  // SST vs dew point: sea must be cold enough to sustain condensation (max 30 pts)
   if (sst !== null && sst !== undefined) {
     const sstDiff = sst - dewPoint;
     if (sstDiff <= 0) score += 30;
-    else if (sstDiff <= 2) score += 15;
+    else if (sstDiff <= 1) score += 10;
   }
 
-  // Easterly/onshore wind required for haar advection (max 20 pts)
-  if (windDirDeg !== null && windDirDeg !== undefined) {
-    if (windDirDeg >= 45 && windDirDeg <= 180) score += 20;      // NE–S: ideal
-    else if (windDirDeg > 315 || windDirDeg < 45) score += 8;   // N–NE: marginal
-  }
-
-  // Moderate wind speed — enough to advect fog, not so strong it mixes out (max 10 pts)
+  // Wind speed: moderate advection needed (max 10 pts)
   const windMph = windKmh * KMH_TO_MPH;
   if (windMph >= 5 && windMph <= 25) score += 10;
   else if (windMph > 25 && windMph <= 35) score += 5;
+
+  // Wind direction is a multiplier, not additive — onshore easterly is required for haar.
+  // Without it the humidity conditions above can't produce sea frett specifically.
+  let windDirMult = 0.15;
+  if (windDirDeg !== null && windDirDeg !== undefined) {
+    if (windDirDeg >= 45 && windDirDeg <= 180) windDirMult = 1.0;       // NE–S: ideal
+    else if (windDirDeg >= 20 && windDirDeg < 45) windDirMult = 0.5;    // NNE: marginal
+    else if (windDirDeg > 180 && windDirDeg <= 210) windDirMult = 0.35; // SSW: marginal
+  }
+  score *= windDirMult;
 
   // Seasonal multiplier: Apr–Jun peak season along UK east coast
   let seasonMult;
