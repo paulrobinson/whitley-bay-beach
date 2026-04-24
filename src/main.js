@@ -17,9 +17,6 @@ import {
 (function () {
   'use strict';
 
-  const DEMO_FRETT = new URLSearchParams(window.location.search).has('frett');
-  const getFrettPct = h => (DEMO_FRETT && h.hour >= 7 && h.hour <= 9) ? 75 : h.seaFrettPct;
-
   // ── Location state ────────────────────────────────────────────────────────
   const DEFAULT_LOCATION = { name: 'Whitley Bay', lat: 55.0464, lon: -1.4444, type: 'Coastal' };
   const LS_KEY = 'beachWalkLocation';
@@ -207,7 +204,7 @@ import {
     if (!force && memCache && Date.now() - memCache.ts < 30 * 60 * 1000) return memCache;
     const lat = getLat(), lon = getLon();
     const [wRes, mRes] = await Promise.all([
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,dew_point_2m,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,precipitation&timezone=Europe/London&forecast_days=4`),
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m,precipitation&timezone=Europe/London&forecast_days=4`),
       fetch(`https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=sea_level_height_msl,wave_height,sea_surface_temperature&timezone=Europe/London&forecast_days=4`),
     ]);
     if (!wRes.ok || !mRes.ok) throw new Error('API error');
@@ -247,13 +244,11 @@ import {
     const now = new Date();
     const h = todayData.hours.find(x => x.hour === now.getHours()) || todayData.hours[0];
     const info = weatherCodeToInfo(h.weatherCode);
-    const frettLabel = getFrettPct(h) >= 70 ? 'Sea frett likely' : getFrettPct(h) >= 40 ? 'Sea frett possible' : '';
     el.innerHTML = `
       <div class="condition-item">${info.icon} <span class="condition-value">${info.desc}</span></div>
       <div class="condition-item">🌡️ <span class="condition-value">${Math.round(h.temp)}°C</span></div>
       <div class="condition-item">💨 <span class="condition-value">${h.windMph} mph</span></div>
       ${h.showGust ? `<div class="condition-item">⚠️ <span class="condition-value" style="color:#F39C12">Gusts ${h.gustMph} mph</span></div>` : ''}
-      ${frettLabel ? `<div class="condition-item">🌫️ <span class="condition-value" style="color:#8ab8cc">${frettLabel}</span></div>` : ''}
     `;
   }
 
@@ -278,15 +273,10 @@ import {
       const gustHtml = h.showGust
         ? `<div class="weather-gust">Gusts:${h.gustMph}</div>`
         : `<div class="weather-gust-empty"></div>`;
-      const frettPct = getFrettPct(h);
-      const frettHtml = frettPct >= 40
-        ? `<div class="weather-frett">🌫 Frett</div>`
-        : `<div class="weather-frett-empty"></div>`;
       return `<div class="weather-col${isBest ? ' best-hour' : ''}${isCurrent ? ' current-hour' : ''}">
         <div class="weather-temp">${Math.round(h.temp)}°</div>
         <div class="weather-wind">${h.windMph}<small>mph</small></div>
         ${gustHtml}
-        ${frettHtml}
         <div class="weather-icon">${info.icon}</div>
         ${precipHtml}
         <div class="weather-hour">${formatHour(h.hour)}</div>
@@ -310,22 +300,6 @@ import {
     if (!best) { el.classList.remove('visible'); return; }
     el.classList.add('visible');
     el.innerHTML = `<span class="label">🚶 Best time for a walk</span><span class="time-range">${formatHour(best.startHour)} – ${formatHour(best.endHour + 1)}</span><button class="best-time-info-btn" onclick="openBestTimeInfo(event)" aria-label="How is this calculated?">i</button>`;
-  }
-
-  function renderSeaFrettBanner(dayData) {
-    const el = document.getElementById('seaFrettBanner');
-    if (!dayData || !dayData.hours.length) { el.classList.remove('visible'); return; }
-    const frettHours = dayData.hours.filter(h => getFrettPct(h) >= 40);
-    if (!frettHours.length) { el.classList.remove('visible'); return; }
-    const maxPct = Math.max(...frettHours.map(h => getFrettPct(h)));
-    const firstHour = frettHours[0].hour;
-    const lastHour = frettHours[frettHours.length - 1].hour;
-    const label = maxPct >= 70 ? 'Sea frett likely' : 'Sea frett possible';
-    const timeRange = firstHour === lastHour
-      ? formatHour(firstHour)
-      : `${formatHour(firstHour)} – ${formatHour(lastHour + 1)}`;
-    el.classList.add('visible');
-    el.innerHTML = `<span class="label">🌫️ ${label}</span><span class="time-range">${timeRange}</span>`;
   }
 
   // ── Render: beach canvas ──────────────────────────────────────────────────
@@ -679,7 +653,6 @@ import {
     renderCurrentConditions(data);
     renderWeatherStrip(dayData, best);
     renderBestTimeBanner(best);
-    renderSeaFrettBanner(dayData);
     renderBeachCanvas(dayData);
     requestAnimationFrame(() => renderTideAxis(dayData));
 
