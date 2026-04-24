@@ -117,6 +117,58 @@ export function computeBestWindow(hours, seaMin, seaMax, sunTimes, beachProfile 
   };
 }
 
+export function computeSeaFrettPct(temp, dewPoint, windDirDeg, windKmh, sst, hour, month) {
+  if (dewPoint === null || dewPoint === undefined) return 0;
+
+  // Near-saturation is a hard requirement for any fog — TDD > 3°C makes it impossible
+  const tdd = temp - dewPoint;
+  if (tdd > 3) return 0;
+
+  let score = 0;
+
+  // Temperature-dew point depression (max 40 pts)
+  if (tdd <= 1) score += 40;
+  else if (tdd <= 2) score += 30;
+  else score += 15; // 2–3°C: marginal
+
+  // SST vs dew point: sea must be cold enough to sustain condensation (max 30 pts)
+  if (sst !== null && sst !== undefined) {
+    const sstDiff = sst - dewPoint;
+    if (sstDiff <= 0) score += 30;
+    else if (sstDiff <= 1) score += 10;
+  }
+
+  // Wind speed: moderate advection needed (max 10 pts)
+  const windMph = windKmh * KMH_TO_MPH;
+  if (windMph >= 5 && windMph <= 25) score += 10;
+  else if (windMph > 25 && windMph <= 35) score += 5;
+
+  // Wind direction is a multiplier, not additive — onshore easterly is required for haar.
+  // Without it the humidity conditions above can't produce sea frett specifically.
+  let windDirMult = 0.15;
+  if (windDirDeg !== null && windDirDeg !== undefined) {
+    if (windDirDeg >= 45 && windDirDeg <= 180) windDirMult = 1.0;       // NE–S: ideal
+    else if (windDirDeg >= 20 && windDirDeg < 45) windDirMult = 0.5;    // NNE: marginal
+    else if (windDirDeg > 180 && windDirDeg <= 210) windDirMult = 0.35; // SSW: marginal
+  }
+  score *= windDirMult;
+
+  // Seasonal multiplier: Apr–Jun peak season along UK east coast
+  let seasonMult;
+  if (month >= 4 && month <= 6) seasonMult = 1.3;
+  else if (month >= 7 && month <= 9) seasonMult = 1.0;
+  else seasonMult = 0.5;
+
+  // Time-of-day multiplier: sea frett most common in the morning
+  let timeMult;
+  if (hour >= 5 && hour <= 9) timeMult = 1.2;
+  else if (hour >= 10 && hour <= 14) timeMult = 1.0;
+  else if (hour >= 15 && hour <= 20) timeMult = 0.7;
+  else timeMult = 0.6;
+
+  return Math.min(100, Math.round(score * seasonMult * timeMult));
+}
+
 export function extractDayData(data, dayIdx, lat) {
   const w = data.weather.hourly;
   const m = data.marine.hourly;
@@ -124,6 +176,7 @@ export function extractDayData(data, dayIdx, lat) {
   const targetDate = dates[dayIdx];
   if (!targetDate) return null;
   const { start: HOURS_START, end: HOURS_END } = getDayHourRange(targetDate, lat);
+  const month = parseInt(targetDate.split('-')[1], 10);
   const hours = [];
   for (let h = HOURS_START; h <= HOURS_END; h++) {
     const ts = targetDate + 'T' + String(h).padStart(2, '0') + ':00';
@@ -135,18 +188,25 @@ export function extractDayData(data, dayIdx, lat) {
     const windMph = Math.round(windKmh * KMH_TO_MPH);
     const gustMph = Math.round(gustKmh * KMH_TO_MPH);
     const showGust = gustMph >= 25 && gustMph > windMph + 8;
+    const temp = w.temperature_2m[wi];
+    const dewPoint = w.dew_point_2m ? (w.dew_point_2m[wi] ?? null) : null;
+    const windDir = w.wind_direction_10m ? (w.wind_direction_10m[wi] ?? null) : null;
+    const sst = mi !== -1 ? (m.sea_surface_temperature ? (m.sea_surface_temperature[mi] ?? null) : null) : null;
     hours.push({
       hour: h,
-      temp: w.temperature_2m[wi],
+      temp,
+      dewPoint,
       weatherCode: w.weather_code[wi],
       windKmh,
+      windDir,
       windMph,
       gustMph,
       showGust,
       precip: w.precipitation[wi] || 0,
       seaLevel: mi !== -1 ? (m.sea_level_height_msl[mi] ?? 0) : 0,
       waveHeight: mi !== -1 ? (m.wave_height[mi] ?? 0) : 0,
-      seaSurfaceTemp: mi !== -1 ? (m.sea_surface_temperature ? (m.sea_surface_temperature[mi] ?? null) : null) : null,
+      seaSurfaceTemp: sst,
+      seaFrettPct: computeSeaFrettPct(temp, dewPoint, windDir, windKmh, sst, h, month),
     });
   }
   const allSea = m.sea_level_height_msl.filter(v => v != null);

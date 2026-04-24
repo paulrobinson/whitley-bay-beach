@@ -11,6 +11,7 @@ import {
   darknessAlpha,
   computeBestWindow,
   extractDayData,
+  computeSeaFrettPct,
 } from './utils.js';
 
 // ── KMH_TO_MPH ────────────────────────────────────────────────────────────────
@@ -628,6 +629,7 @@ describe('computeBestWindow', () => {
 
 function buildMockData(dates = ['2026-06-21']) {
   const times = [], temp = [], weatherCode = [], wind = [], gusts = [], precip = [];
+  const dewPoint = [], windDir = [];
   const seaLevel = [], waveHeight = [], sst = [];
 
   for (const date of dates) {
@@ -638,6 +640,8 @@ function buildMockData(dates = ['2026-06-21']) {
       wind.push(16.0934); // exactly 10 mph
       gusts.push(19.312); // exactly 12 mph — not enough for showGust
       precip.push(0);
+      dewPoint.push(12);  // TDD = 18-12 = 6°C → computeSeaFrettPct returns 0
+      windDir.push(270);  // westerly — unfavourable for sea frett
       seaLevel.push(1.0 + Math.sin(h * Math.PI / 12));
       waveHeight.push(0.5);
       sst.push(15.0);
@@ -653,6 +657,8 @@ function buildMockData(dates = ['2026-06-21']) {
         wind_speed_10m: wind,
         wind_gusts_10m: gusts,
         precipitation: precip,
+        dew_point_2m: dewPoint,
+        wind_direction_10m: windDir,
       },
     },
     marine: {
@@ -778,5 +784,164 @@ describe('extractDayData', () => {
     const result = extractDayData(data, 0, LAT);
     // gustMph should equal windMph when no gusts data
     expect(result.hours[0].gustMph).toBe(result.hours[0].windMph);
+  });
+
+  it('exposes dewPoint on each hour', () => {
+    const data = buildMockData(['2026-06-21']);
+    const result = extractDayData(data, 0, LAT);
+    expect(result.hours[0].dewPoint).toBe(12);
+  });
+
+  it('exposes windDir on each hour', () => {
+    const data = buildMockData(['2026-06-21']);
+    const result = extractDayData(data, 0, LAT);
+    expect(result.hours[0].windDir).toBe(270);
+  });
+
+  it('exposes seaFrettPct on each hour', () => {
+    const data = buildMockData(['2026-06-21']);
+    const result = extractDayData(data, 0, LAT);
+    expect(typeof result.hours[0].seaFrettPct).toBe('number');
+  });
+
+  it('sets seaFrettPct to 0 when TDD is too large (> 3°C)', () => {
+    // buildMockData sets temp=18, dewPoint=12 → TDD=6 → hard gate returns 0
+    const data = buildMockData(['2026-06-21']);
+    const result = extractDayData(data, 0, LAT);
+    expect(result.hours.every(h => h.seaFrettPct === 0)).toBe(true);
+  });
+
+  it('sets dewPoint to null and seaFrettPct to 0 when dew_point_2m is absent', () => {
+    const data = buildMockData(['2026-06-21']);
+    delete data.weather.hourly.dew_point_2m;
+    const result = extractDayData(data, 0, LAT);
+    expect(result.hours[0].dewPoint).toBeNull();
+    expect(result.hours[0].seaFrettPct).toBe(0);
+  });
+
+  it('sets windDir to null when wind_direction_10m is absent', () => {
+    const data = buildMockData(['2026-06-21']);
+    delete data.weather.hourly.wind_direction_10m;
+    const result = extractDayData(data, 0, LAT);
+    expect(result.hours[0].windDir).toBeNull();
+  });
+
+  it('computes non-zero seaFrettPct for frett-favourable conditions', () => {
+    // June, temp=18, dew_point=17 (TDD=1), easterly wind (90°), SST=15 < dew → high score
+    const data = buildMockData(['2026-06-21']);
+    data.weather.hourly.dew_point_2m.fill(17);
+    data.weather.hourly.wind_direction_10m.fill(90);
+    const result = extractDayData(data, 0, LAT);
+    const morningHour = result.hours.find(h => h.hour >= 7 && h.hour <= 9);
+    expect(morningHour.seaFrettPct).toBeGreaterThan(0);
+  });
+});
+
+// ── computeSeaFrettPct ────────────────────────────────────────────────────────
+
+describe('computeSeaFrettPct', () => {
+  // Convenience: ideal conditions for sea frett (April morning, near-saturation, NE wind)
+  const ideal = (overrides = {}) => ({
+    temp: 12, dewPoint: 11, windDir: 90, windKmh: 24, sst: 8, hour: 8, month: 4,
+    ...overrides,
+  });
+  const call = ({ temp, dewPoint, windDir, windKmh, sst, hour, month }) =>
+    computeSeaFrettPct(temp, dewPoint, windDir, windKmh, sst, hour, month);
+
+  it('returns 0 when dewPoint is null', () => {
+    expect(call(ideal({ dewPoint: null }))).toBe(0);
+  });
+
+  it('returns 0 when dewPoint is undefined', () => {
+    expect(call(ideal({ dewPoint: undefined }))).toBe(0);
+  });
+
+  it('returns 0 when TDD exceeds 3°C (hard gate)', () => {
+    expect(call(ideal({ temp: 15, dewPoint: 11 }))).toBe(0); // TDD = 4
+    expect(call(ideal({ temp: 18, dewPoint: 11 }))).toBe(0); // TDD = 7
+  });
+
+  it('does not return 0 when TDD ≤ 3°C with easterly wind', () => {
+    expect(call(ideal({ temp: 14, dewPoint: 11 }))).toBeGreaterThan(0); // TDD = 3
+    expect(call(ideal({ temp: 13, dewPoint: 11 }))).toBeGreaterThan(0); // TDD = 2
+    expect(call(ideal({ temp: 12, dewPoint: 11 }))).toBeGreaterThan(0); // TDD = 1
+  });
+
+  it('scores higher for TDD ≤ 1°C than TDD ≤ 2°C', () => {
+    // Use month=7 (seasonMult=1.0) and hour=12 (timeMult=1.0) so scores don't hit the 100 cap
+    const tdd1 = call(ideal({ temp: 12, dewPoint: 11, month: 7, hour: 12 })); // TDD = 1
+    const tdd2 = call(ideal({ temp: 13, dewPoint: 11, month: 7, hour: 12 })); // TDD = 2
+    expect(tdd1).toBeGreaterThan(tdd2);
+  });
+
+  it('scores higher for TDD ≤ 2°C than TDD 2–3°C', () => {
+    const tdd2 = call(ideal({ temp: 13, dewPoint: 11 })); // TDD = 2
+    const tdd3 = call(ideal({ temp: 14, dewPoint: 11 })); // TDD = 3
+    expect(tdd2).toBeGreaterThan(tdd3);
+  });
+
+  it('scores higher when SST is below the dew point', () => {
+    const sstBelowDew = call(ideal({ sst: 8 }));   // sst(8) < dew(11): +30 pts
+    const sstAboveDew = call(ideal({ sst: 13 }));  // sst(13) > dew+1: +0 pts
+    expect(sstBelowDew).toBeGreaterThan(sstAboveDew);
+  });
+
+  it('scores higher when SST is just below dew than just above dew + 1', () => {
+    const nearBelow = call(ideal({ sst: 10.5 })); // within 1°C above dew: +10 pts
+    const over1 = call(ideal({ sst: 12.5 }));     // > dew+1: +0 pts
+    expect(nearBelow).toBeGreaterThan(over1);
+  });
+
+  it('applies wind direction as a multiplier — westerly wind heavily discounts the score', () => {
+    const easterly = call(ideal({ windDir: 90 }));   // mult = 1.0
+    const westerly = call(ideal({ windDir: 270 }));  // mult = 0.15
+    expect(easterly).toBeGreaterThan(westerly * 3);
+  });
+
+  it('returns low probability for non-easterly wind even with near-saturation', () => {
+    // TDD = 1, SST well below dew, but westerly wind
+    const pct = call(ideal({ windDir: 270 }));
+    expect(pct).toBeLessThan(40);
+  });
+
+  it('treats null windDir as unfavourable (0.15 multiplier)', () => {
+    const nullDir = call(ideal({ windDir: null }));
+    const westerly = call(ideal({ windDir: 270 }));
+    expect(nullDir).toBe(westerly); // both get the 0.15 default multiplier
+  });
+
+  it('gives partial credit for NNE wind (20–45°)', () => {
+    const nne = call(ideal({ windDir: 30 }));    // mult = 0.5
+    const east = call(ideal({ windDir: 90 }));   // mult = 1.0
+    const west = call(ideal({ windDir: 270 }));  // mult = 0.15
+    expect(nne).toBeGreaterThan(west);
+    expect(east).toBeGreaterThan(nne);
+  });
+
+  it('scores higher in April–June than October (seasonal multiplier)', () => {
+    const april = call(ideal({ month: 4 }));
+    const october = call(ideal({ month: 10 }));
+    expect(april).toBeGreaterThan(october);
+  });
+
+  it('scores higher in morning (5–9) than afternoon (15–20)', () => {
+    const morning = call(ideal({ hour: 7 }));
+    const afternoon = call(ideal({ hour: 16 }));
+    expect(morning).toBeGreaterThan(afternoon);
+  });
+
+  it('never exceeds 100', () => {
+    expect(call(ideal())).toBeLessThanOrEqual(100);
+  });
+
+  it('always returns a non-negative integer', () => {
+    const pct = call(ideal());
+    expect(pct).toBeGreaterThanOrEqual(0);
+    expect(Number.isInteger(pct)).toBe(true);
+  });
+
+  it('returns a high probability (≥ 50) for classic sea frett conditions', () => {
+    // April, 8am, TDD=1°C, NE wind, SST well below dew, moderate speed
+    expect(call(ideal())).toBeGreaterThanOrEqual(50);
   });
 });
