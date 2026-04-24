@@ -12,13 +12,13 @@ import {
   darknessAlpha,
   computeBestWindow,
   extractDayData,
-  computeSeaFrettPct,
 } from './utils.js';
 
 (function () {
   'use strict';
 
   const DEMO_FRETT = new URLSearchParams(window.location.search).has('frett');
+  const getFrettPct = h => (DEMO_FRETT && h.hour >= 7 && h.hour <= 9) ? 75 : h.seaFrettPct;
 
   // ── Location state ────────────────────────────────────────────────────────
   const DEFAULT_LOCATION = { name: 'Whitley Bay', lat: 55.0464, lon: -1.4444, type: 'Coastal' };
@@ -247,7 +247,7 @@ import {
     const now = new Date();
     const h = todayData.hours.find(x => x.hour === now.getHours()) || todayData.hours[0];
     const info = weatherCodeToInfo(h.weatherCode);
-    const frettLabel = h.seaFrettPct >= 70 ? 'Sea frett likely' : h.seaFrettPct >= 40 ? 'Sea frett possible' : '';
+    const frettLabel = getFrettPct(h) >= 70 ? 'Sea frett likely' : getFrettPct(h) >= 40 ? 'Sea frett possible' : '';
     el.innerHTML = `
       <div class="condition-item">${info.icon} <span class="condition-value">${info.desc}</span></div>
       <div class="condition-item">🌡️ <span class="condition-value">${Math.round(h.temp)}°C</span></div>
@@ -278,7 +278,7 @@ import {
       const gustHtml = h.showGust
         ? `<div class="weather-gust">Gusts:${h.gustMph}</div>`
         : `<div class="weather-gust-empty"></div>`;
-      const frettPct = (DEMO_FRETT && h.hour >= 7 && h.hour <= 9) ? 75 : h.seaFrettPct;
+      const frettPct = getFrettPct(h);
       const frettHtml = frettPct >= 40
         ? `<div class="weather-frett">🌫 Frett</div>`
         : `<div class="weather-frett-empty"></div>`;
@@ -315,14 +315,9 @@ import {
   function renderSeaFrettBanner(dayData) {
     const el = document.getElementById('seaFrettBanner');
     if (!dayData || !dayData.hours.length) { el.classList.remove('visible'); return; }
-    const frettHours = dayData.hours.filter(h => {
-      const pct = (DEMO_FRETT && h.hour >= 7 && h.hour <= 9) ? 75 : h.seaFrettPct;
-      return pct >= 40;
-    });
+    const frettHours = dayData.hours.filter(h => getFrettPct(h) >= 40);
     if (!frettHours.length) { el.classList.remove('visible'); return; }
-    const maxPct = Math.max(...frettHours.map(h =>
-      (DEMO_FRETT && h.hour >= 7 && h.hour <= 9) ? 75 : h.seaFrettPct
-    ));
+    const maxPct = Math.max(...frettHours.map(h => getFrettPct(h)));
     const firstHour = frettHours[0].hour;
     const lastHour = frettHours[frettHours.length - 1].hour;
     const label = maxPct >= 70 ? 'Sea frett likely' : 'Sea frett possible';
