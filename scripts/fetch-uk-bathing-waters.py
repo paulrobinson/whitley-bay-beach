@@ -18,11 +18,12 @@ Data sources
 
 Usage
 -----
-  pip3 install requests          # only external dependency
   python3 scripts/fetch-uk-bathing-waters.py              # full update
   python3 scripts/fetch-uk-bathing-waters.py --dry-run    # print counts, no write
   python3 scripts/fetch-uk-bathing-waters.py --country wales    # Wales only
   python3 scripts/fetch-uk-bathing-waters.py --country scotland # Scotland only
+
+No external dependencies — uses only Python standard library.
 
 After running, commit the updated data/bathing-waters.json to the branch.
 """
@@ -31,73 +32,74 @@ from __future__ import annotations
 
 import argparse
 import json
+import math as _math
 import sys
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from pathlib import Path
-
-try:
-    import requests
-except ImportError:
-    sys.exit("Missing dependency: requests\nInstall with:  pip3 install requests")
 
 
 SCRIPT_DIR   = Path(__file__).parent
 BEACHES_JSON = SCRIPT_DIR.parent / "data" / "bathing-waters.json"
 
+UA = (
+    "Mozilla/5.0 (compatible; beach-walk-uk/1.0; "
+    "+https://github.com/paulrobinson/beach-walk-uk)"
+)
+
 # ── Wales (NRW) ────────────────────────────────────────────────────────────────
-WALES_BASE     = "https://environment.data.gov.uk/wales/bathing-waters"
-# LDA list endpoint — class is "bathing-water-profile" (all lower-case, hyphenated)
-WALES_LIST     = f"{WALES_BASE}/doc/bathing-water-profile.json"
-# Individual resource template (site ID like ukl1402-38800)
-WALES_DOC_TMPL = f"{WALES_BASE}/doc/bathing-water-profile/{{site_id}}.json"
+WALES_BASE = "https://environment.data.gov.uk/wales/bathing-waters"
+WALES_LIST = f"{WALES_BASE}/doc/bathing-water-profile.json"
 
 # ── Scotland (SEPA) ────────────────────────────────────────────────────────────
 # Environmental_Monitoring MapServer — layer 1 = "Bathing water points"
-SEPA_MAPSERVER = (
+SEPA_QUERY_URL = (
     "https://map.sepa.org.uk/server/rest/services/Open/"
-    "Environmental_Monitoring/MapServer"
+    "Environmental_Monitoring/MapServer/1/query"
 )
-SEPA_BW_LAYER  = 1   # "Bathing water points"
-SEPA_QUERY_URL = f"{SEPA_MAPSERVER}/{SEPA_BW_LAYER}/query"
 
-REQUEST_HEADERS = {
-    "User-Agent": (
-        "Mozilla/5.0 (compatible; beach-walk-uk/1.0; "
-        "+https://github.com/paulrobinson/beach-walk-uk)"
-    )
-}
-REQUEST_TIMEOUT  = 30
-INTER_REQUEST_DELAY = 0.15   # seconds between individual-record fetches
+REQUEST_TIMEOUT     = 30
+INTER_REQUEST_DELAY = 0.15
+
+
+# ── HTTP helper (stdlib only) ──────────────────────────────────────────────────
+
+def _get(url: str, params: dict | None = None, timeout: int = REQUEST_TIMEOUT) -> dict | list:
+    """GET a URL, return parsed JSON. Raises on HTTP errors."""
+    if params:
+        url = url + "?" + urllib.parse.urlencode(params)
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        if resp.status >= 400:
+            raise urllib.error.HTTPError(url, resp.status, resp.reason, {}, None)
+        return json.loads(resp.read().decode("utf-8"))
 
 
 # ── OSGB → WGS84 (pure Python, no external dependencies) ─────────────────────
 # OS algorithm: "Guide to coordinate systems in Great Britain" (2015).
 # Accuracy ~2 m — sufficient for locating bathing waters.
 
-import math as _math
-
 def _osgb_to_latlon(easting: float, northing: float) -> tuple[float, float]:
     """Convert BNG (EPSG:27700) easting/northing to WGS84 (lat, lon)."""
-    # Airy 1830 ellipsoid parameters
-    a, b  = 6377563.396, 6356256.909
-    F0    = 0.9996012717
-    phi0  = _math.radians(49.0)
-    lam0  = _math.radians(-2.0)
+    a, b   = 6377563.396, 6356256.909
+    F0     = 0.9996012717
+    phi0   = _math.radians(49.0)
+    lam0   = _math.radians(-2.0)
     N0, E0 = -100000.0, 400000.0
-    e2    = 1.0 - (b / a) ** 2
-    n     = (a - b) / (a + b)
+    e2     = 1.0 - (b / a) ** 2
+    n      = (a - b) / (a + b)
     n2, n3 = n * n, n * n * n
 
-    # Meridian arc M(φ)
-    def M(phi):
+    def M(phi: float) -> float:
         return a * F0 * (
             (1 + n + 5/4*n2 + 5/4*n3) * (phi - phi0)
-            - (3*n + 3*n2 + 21/8*n3) * _math.sin(phi - phi0) * _math.cos(phi + phi0)
-            + (15/8*n2 + 15/8*n3) * _math.sin(2*(phi-phi0)) * _math.cos(2*(phi+phi0))
-            - 35/24*n3 * _math.sin(3*(phi-phi0)) * _math.cos(3*(phi+phi0))
+            - (3*n + 3*n2 + 21/8*n3)  * _math.sin(phi - phi0) * _math.cos(phi + phi0)
+            + (15/8*n2 + 15/8*n3)     * _math.sin(2*(phi-phi0)) * _math.cos(2*(phi+phi0))
+            - 35/24*n3                * _math.sin(3*(phi-phi0)) * _math.cos(3*(phi+phi0))
         )
 
-    # Iterative latitude from northing
     phi = phi0
     for _ in range(100):
         dp = (northing - N0 - M(phi)) / (a * F0)
@@ -113,19 +115,18 @@ def _osgb_to_latlon(easting: float, northing: float) -> tuple[float, float]:
     sec  = 1.0 / cp
     t2, t4 = tp**2, tp**4
 
-    # Latitude and longitude on OSGB36
     phi36 = (phi
-        - tp / (2*rho*nu)          * dE**2
-        + tp / (24*rho*nu**3)      * (5 + 3*t2 + eta2 - 9*t2*eta2) * dE**4
-        - tp / (720*rho*nu**5)     * (61 + 90*t2 + 45*t4) * dE**6)
+        - tp/(2*rho*nu)      * dE**2
+        + tp/(24*rho*nu**3)  * (5 + 3*t2 + eta2 - 9*t2*eta2) * dE**4
+        - tp/(720*rho*nu**5) * (61 + 90*t2 + 45*t4)           * dE**6)
     lam36 = (lam0
-        + sec / nu                 * dE
-        - sec / (6*nu**3)          * (nu/rho + 2*t2) * dE**3
-        + sec / (120*nu**5)        * (5 + 28*t2 + 24*t4) * dE**5
-        - sec / (5040*nu**7)       * (61 + 662*t2 + 1320*t4 + 720*t2*t4) * dE**7)
+        + sec/nu             * dE
+        - sec/(6*nu**3)      * (nu/rho + 2*t2)          * dE**3
+        + sec/(120*nu**5)    * (5 + 28*t2 + 24*t4)       * dE**5
+        - sec/(5040*nu**7)   * (61 + 662*t2 + 1320*t4 + 720*t2*t4) * dE**7)
 
-    # Helmert transformation: OSGB36 (Airy 1830) → WGS84 (GRS80)
-    tx, ty, tz = 446.448, -125.157, 542.060          # metres
+    # Helmert: OSGB36 (Airy 1830) → WGS84 (GRS80)
+    tx, ty, tz = 446.448, -125.157, 542.060
     arcsec = _math.pi / (180 * 3600)
     rx, ry, rz = 0.1502*arcsec, 0.2470*arcsec, 0.8421*arcsec
     s = -20.4894e-6
@@ -133,17 +134,16 @@ def _osgb_to_latlon(easting: float, northing: float) -> tuple[float, float]:
     x = nu * cp * _math.cos(lam36)
     y = nu * cp * _math.sin(lam36)
     z = nu * (1 - e2) * sp
+    x2 = tx + (1+s)*x - rz*y + ry*z
+    y2 = ty + rz*x + (1+s)*y - rx*z
+    z2 = tz - ry*x + rx*y  + (1+s)*z
 
-    x2 = tx + (1+s)*x  - rz*y  + ry*z
-    y2 = ty + rz*x  + (1+s)*y  - rx*z
-    z2 = tz - ry*x  + rx*y  + (1+s)*z
-
-    # Cartesian → geographic on GRS80
     a2, b2 = 6378137.0, 6356752.314
     e22 = 1.0 - (b2 / a2)**2
     p   = _math.sqrt(x2**2 + y2**2)
     lam_wgs = _math.atan2(y2, x2)
     phi_wgs = _math.atan2(z2, p * (1 - e22))
+    phi_new = phi_wgs
     for _ in range(10):
         nu2 = a2 / _math.sqrt(1 - e22 * _math.sin(phi_wgs)**2)
         phi_new = _math.atan2(z2 + e22 * nu2 * _math.sin(phi_wgs), p)
@@ -171,9 +171,9 @@ def _normalise_type(raw: str) -> str:
 
 # ── Wales fetch ────────────────────────────────────────────────────────────────
 
-def fetch_wales(session: requests.Session) -> list[dict]:
+def fetch_wales() -> list[dict]:
     print("Fetching Wales bathing waters…")
-    beaches = _wales_via_lda_list(session)
+    beaches = _wales_via_lda_list()
     if beaches:
         print(f"  {len(beaches)} Wales sites fetched.")
         return beaches
@@ -182,18 +182,12 @@ def fetch_wales(session: requests.Session) -> list[dict]:
     return []
 
 
-def _wales_via_lda_list(session: requests.Session) -> list[dict]:
-    """Fetch the bathing-water-profile LDA list, paginating until complete."""
+def _wales_via_lda_list() -> list[dict]:
     page, beaches = 0, []
     while True:
         try:
-            resp = session.get(
-                WALES_LIST,
-                params={"_pageSize": 200, "_page": page, "_view": "all", "_metadata": "all"},
-                timeout=REQUEST_TIMEOUT,
-            )
-            resp.raise_for_status()
-            data = resp.json()
+            data = _get(WALES_LIST, {"_pageSize": 200, "_page": page,
+                                     "_view": "all", "_metadata": "all"})
         except Exception as exc:
             print(f"  LDA list page {page} failed: {exc}")
             return []
@@ -205,10 +199,9 @@ def _wales_via_lda_list(session: requests.Session) -> list[dict]:
         if not items:
             if page == 0:
                 top_keys = list(data.keys())[:10] if isinstance(data, dict) else type(data).__name__
-                print(f"  LDA list returned no items. Response top-level keys: {top_keys}")
+                print(f"  LDA list returned no items. Top-level keys: {top_keys}")
             break
 
-        # Items may be full dicts OR bare URI strings (LDA returns URIs in some views).
         uri_items: list[str] = []
         for item in items:
             if isinstance(item, str) and item.startswith("http"):
@@ -221,11 +214,9 @@ def _wales_via_lda_list(session: requests.Session) -> list[dict]:
         if uri_items:
             print(f"  Page {page}: {len(uri_items)} URI refs — fetching individual docs…")
             for uri in uri_items:
-                json_url = (uri if uri.endswith(".json") else uri + ".json")
+                json_url = uri if uri.endswith(".json") else uri + ".json"
                 try:
-                    r = session.get(json_url, params={"_view": "all"}, timeout=REQUEST_TIMEOUT)
-                    r.raise_for_status()
-                    b = _parse_wales_item(r.json())
+                    b = _parse_wales_item(_get(json_url, {"_view": "all"}))
                     if b:
                         beaches.append(b)
                 except Exception as exc:
@@ -241,8 +232,6 @@ def _wales_via_lda_list(session: requests.Session) -> list[dict]:
 
 
 def _parse_wales_item(item: dict) -> dict | None:
-    """Extract a beach record from an NRW LDA bathing-water-profile JSON item."""
-    # --- Coordinates: try WGS84 directly first, then convert from OSGB --------
     lat = _float(
         item.get("lat") or item.get("latitude") or item.get("wgs84Lat")
         or _nested(item, "samplingPoint", "lat")
@@ -254,30 +243,25 @@ def _parse_wales_item(item: dict) -> dict | None:
         or _nested(item, "bathingWater", "long")
     )
 
-    # GeoJSON-style geometry block
     if (lat is None or lon is None) and isinstance(item.get("geometry"), dict):
         coords = item["geometry"].get("coordinates")
         if coords and len(coords) >= 2:
             lon, lat = float(coords[0]), float(coords[1])
 
-    # OSGB easting/northing → WGS84 (coordinates often stored as BNG in NRW data)
     if lat is None or lon is None:
         easting  = _float(
-            item.get("easting") or item.get("samplingPoint.easting")
+            item.get("easting")
             or _nested(item, "samplingPoint", "easting")
             or _nested(item, "bathingWater", "envelope", "lowerCorner", "easting")
         )
         northing = _float(
-            item.get("northing") or item.get("samplingPoint.northing")
+            item.get("northing")
             or _nested(item, "samplingPoint", "northing")
             or _nested(item, "bathingWater", "envelope", "lowerCorner", "northing")
         )
         if easting is not None and northing is not None:
-            result = _osgb_to_latlon(easting, northing)
-            if result:
-                lat, lon = result
+            lat, lon = _osgb_to_latlon(easting, northing)
 
-    # --- Name -----------------------------------------------------------------
     name = (
         item.get("name") or item.get("label") or item.get("bathingWaterName")
         or _nested(item, "bathingWater", "name")
@@ -293,13 +277,11 @@ def _parse_wales_item(item: dict) -> dict | None:
 
     raw_type = (
         item.get("siteType") or item.get("type") or item.get("waterBodyType")
-        or _nested(item, "bathingWater", "siteType")
-        or "Coastal"
+        or _nested(item, "bathingWater", "siteType") or "Coastal"
     )
     region = (
         item.get("region") or item.get("catchment") or item.get("RiverBasinDistrict")
-        or _nested(item, "bathingWater", "region")
-        or ""
+        or _nested(item, "bathingWater", "region") or ""
     )
     return {
         "name":    name,
@@ -313,20 +295,15 @@ def _parse_wales_item(item: dict) -> dict | None:
 
 # ── Scotland fetch ─────────────────────────────────────────────────────────────
 
-def fetch_scotland(session: requests.Session) -> list[dict]:
+def fetch_scotland() -> list[dict]:
     print("Fetching Scotland bathing waters from SEPA…")
-
     try:
-        resp = session.get(
-            SEPA_QUERY_URL,
-            params={"where": "1=1", "outFields": "*", "f": "geojson", "outSR": "4326"},
-            timeout=REQUEST_TIMEOUT,
-        )
-        resp.raise_for_status()
-        geojson = resp.json()
+        geojson = _get(SEPA_QUERY_URL,
+                       {"where": "1=1", "outFields": "*", "f": "geojson", "outSR": "4326"})
     except Exception as exc:
         print(f"  SEPA query failed: {exc}")
-        _print_manual_hint("Scotland", SEPA_QUERY_URL + "?where=1=1&outFields=*&f=geojson&outSR=4326")
+        _print_manual_hint("Scotland",
+            SEPA_QUERY_URL + "?where=1=1&outFields=*&f=geojson&outSR=4326")
         return []
 
     if geojson.get("type") != "FeatureCollection":
@@ -345,7 +322,6 @@ def fetch_scotland(session: requests.Session) -> list[dict]:
 
 def _parse_sepa_features(features: list[dict]) -> list[dict]:
     beaches: list[dict] = []
-    skipped = 0
     for feat in features:
         props = feat.get("properties") or {}
         geom  = feat.get("geometry") or {}
@@ -364,16 +340,11 @@ def _parse_sepa_features(features: list[dict]) -> list[dict]:
         ).strip()
 
         if not name or lat is None or lon is None:
-            skipped += 1
             continue
 
-        raw_type = (
-            props.get("WATER_TYPE") or props.get("WaterType") or props.get("type") or "Coastal"
-        )
-        region = (
-            props.get("REGION") or props.get("Region") or props.get("COUNCIL")
-            or props.get("LocalAuthority") or props.get("LOCAL_AUTHORITY") or ""
-        )
+        raw_type = props.get("WATER_TYPE") or props.get("WaterType") or "Coastal"
+        region   = (props.get("REGION") or props.get("Region") or props.get("COUNCIL")
+                    or props.get("LocalAuthority") or props.get("LOCAL_AUTHORITY") or "")
         beaches.append({
             "name":    name,
             "lat":     round(lat, 4),
@@ -397,7 +368,6 @@ def _float(val: object) -> float | None:
 
 
 def _nested(obj: dict, *keys: str) -> object:
-    """Safely traverse nested dicts: _nested(d, 'a', 'b') → d['a']['b'] or None."""
     cur = obj
     for k in keys:
         if not isinstance(cur, dict):
@@ -439,17 +409,14 @@ def main() -> None:
         beach.setdefault("country", "England")
     print(f"  {len(existing)} existing entries (all England).")
 
-    session = requests.Session()
-    session.headers.update(REQUEST_HEADERS)
-
     new_beaches: list[dict] = []
 
     if args.country in ("wales", "all"):
-        new_beaches.extend(fetch_wales(session))
+        new_beaches.extend(fetch_wales())
         time.sleep(0.3)
 
     if args.country in ("scotland", "all"):
-        new_beaches.extend(fetch_scotland(session))
+        new_beaches.extend(fetch_scotland())
 
     if not new_beaches:
         print("\nNo new beaches fetched. bathing-waters.json updated with country fields only.")
