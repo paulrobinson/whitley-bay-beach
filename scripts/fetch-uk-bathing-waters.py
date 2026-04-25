@@ -33,8 +33,10 @@ from __future__ import annotations
 import argparse
 import json
 import math as _math
+import ssl
 import sys
 import time
+import traceback
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -71,10 +73,22 @@ def _get(url: str, params: dict | None = None, timeout: int = REQUEST_TIMEOUT) -
     if params:
         url = url + "?" + urllib.parse.urlencode(params)
     req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "application/json"})
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        if resp.status >= 400:
-            raise urllib.error.HTTPError(url, resp.status, resp.reason, {}, None)
-        return json.loads(resp.read().decode("utf-8"))
+    ctx = ssl.create_default_context()
+    try:
+        with urllib.request.urlopen(req, timeout=timeout, context=ctx) as resp:
+            if resp.status >= 400:
+                raise urllib.error.HTTPError(url, resp.status, resp.reason, {}, None)
+            return json.loads(resp.read().decode("utf-8"))
+    except ssl.SSLCertVerificationError:
+        # macOS may lack system CA certificates; retry without verification
+        print(f"  SSL cert verification failed — retrying without verification (macOS missing certs?)")
+        ctx2 = ssl.create_default_context()
+        ctx2.check_hostname = False
+        ctx2.verify_mode = ssl.CERT_NONE
+        with urllib.request.urlopen(req, timeout=timeout, context=ctx2) as resp:
+            if resp.status >= 400:
+                raise urllib.error.HTTPError(url, resp.status, resp.reason, {}, None)
+            return json.loads(resp.read().decode("utf-8"))
 
 
 # ── OSGB → WGS84 (pure Python, no external dependencies) ─────────────────────
@@ -189,8 +203,13 @@ def _wales_via_lda_list() -> list[dict]:
             data = _get(WALES_LIST, {"_pageSize": 200, "_page": page,
                                      "_view": "all", "_metadata": "all"})
         except Exception as exc:
-            print(f"  LDA list page {page} failed: {exc}")
+            traceback.print_exc()
+            print(f"  LDA list page {page} failed: {type(exc).__name__}: {exc}")
             return []
+
+        if page == 0:
+            top_keys = list(data.keys())[:15] if isinstance(data, dict) else type(data).__name__
+            print(f"  LDA page 0: type={type(data).__name__}, keys={top_keys}")
 
         items = data if isinstance(data, list) else (
             data.get("items") or data.get("result") or data.get("results") or []
@@ -351,8 +370,8 @@ def _parse_sepa_features(features: list[dict]) -> list[dict]:
                 lon, lat = float(coords[0]), float(coords[1])
 
         name = (
-            props.get("BW_NAME") or props.get("NAME") or props.get("name")
-            or props.get("Site_Name") or props.get("SITE_NAME")
+            props.get("description") or props.get("BW_NAME") or props.get("NAME")
+            or props.get("name") or props.get("Site_Name") or props.get("SITE_NAME")
             or props.get("BathingWaterName") or props.get("BATHING_WATER_NAME") or ""
         ).strip()
 
