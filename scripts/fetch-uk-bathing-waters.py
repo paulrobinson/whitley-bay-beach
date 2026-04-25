@@ -18,7 +18,7 @@ Data sources
 
 Usage
 -----
-  pip3 install requests
+  pip3 install requests          # only external dependency
   python3 scripts/fetch-uk-bathing-waters.py              # full update
   python3 scripts/fetch-uk-bathing-waters.py --dry-run    # print counts, no write
   python3 scripts/fetch-uk-bathing-waters.py --country wales    # Wales only
@@ -39,15 +39,6 @@ try:
     import requests
 except ImportError:
     sys.exit("Missing dependency: requests\nInstall with:  pip3 install requests")
-
-# pyproj is used to convert OSGB (easting/northing) → WGS84 (lat/lon).
-# Already a dependency of compute_min_sand.py.
-try:
-    from pyproj import Transformer
-    _osgb_to_wgs84 = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
-    HAS_PYPROJ = True
-except ImportError:
-    HAS_PYPROJ = False
 
 
 SCRIPT_DIR   = Path(__file__).parent
@@ -79,14 +70,88 @@ REQUEST_TIMEOUT  = 30
 INTER_REQUEST_DELAY = 0.15   # seconds between individual-record fetches
 
 
-# ── Coordinate helpers ─────────────────────────────────────────────────────────
+# ── OSGB → WGS84 (pure Python, no external dependencies) ─────────────────────
+# OS algorithm: "Guide to coordinate systems in Great Britain" (2015).
+# Accuracy ~2 m — sufficient for locating bathing waters.
 
-def _osgb_to_latlon(easting: float, northing: float) -> tuple[float, float] | None:
-    """Convert British National Grid (EPSG:27700) to WGS84 (lat, lon)."""
-    if not HAS_PYPROJ:
-        return None
-    lon, lat = _osgb_to_wgs84.transform(easting, northing)
-    return lat, lon
+import math as _math
+
+def _osgb_to_latlon(easting: float, northing: float) -> tuple[float, float]:
+    """Convert BNG (EPSG:27700) easting/northing to WGS84 (lat, lon)."""
+    # Airy 1830 ellipsoid parameters
+    a, b  = 6377563.396, 6356256.909
+    F0    = 0.9996012717
+    phi0  = _math.radians(49.0)
+    lam0  = _math.radians(-2.0)
+    N0, E0 = -100000.0, 400000.0
+    e2    = 1.0 - (b / a) ** 2
+    n     = (a - b) / (a + b)
+    n2, n3 = n * n, n * n * n
+
+    # Meridian arc M(φ)
+    def M(phi):
+        return a * F0 * (
+            (1 + n + 5/4*n2 + 5/4*n3) * (phi - phi0)
+            - (3*n + 3*n2 + 21/8*n3) * _math.sin(phi - phi0) * _math.cos(phi + phi0)
+            + (15/8*n2 + 15/8*n3) * _math.sin(2*(phi-phi0)) * _math.cos(2*(phi+phi0))
+            - 35/24*n3 * _math.sin(3*(phi-phi0)) * _math.cos(3*(phi+phi0))
+        )
+
+    # Iterative latitude from northing
+    phi = phi0
+    for _ in range(100):
+        dp = (northing - N0 - M(phi)) / (a * F0)
+        phi += dp
+        if abs(dp) < 1e-12:
+            break
+
+    sp, cp, tp = _math.sin(phi), _math.cos(phi), _math.tan(phi)
+    nu   = a * F0 / _math.sqrt(1 - e2 * sp**2)
+    rho  = a * F0 * (1 - e2) / (1 - e2 * sp**2)**1.5
+    eta2 = nu / rho - 1.0
+    dE   = easting - E0
+    sec  = 1.0 / cp
+    t2, t4 = tp**2, tp**4
+
+    # Latitude and longitude on OSGB36
+    phi36 = (phi
+        - tp / (2*rho*nu)          * dE**2
+        + tp / (24*rho*nu**3)      * (5 + 3*t2 + eta2 - 9*t2*eta2) * dE**4
+        - tp / (720*rho*nu**5)     * (61 + 90*t2 + 45*t4) * dE**6)
+    lam36 = (lam0
+        + sec / nu                 * dE
+        - sec / (6*nu**3)          * (nu/rho + 2*t2) * dE**3
+        + sec / (120*nu**5)        * (5 + 28*t2 + 24*t4) * dE**5
+        - sec / (5040*nu**7)       * (61 + 662*t2 + 1320*t4 + 720*t2*t4) * dE**7)
+
+    # Helmert transformation: OSGB36 (Airy 1830) → WGS84 (GRS80)
+    tx, ty, tz = 446.448, -125.157, 542.060          # metres
+    arcsec = _math.pi / (180 * 3600)
+    rx, ry, rz = 0.1502*arcsec, 0.2470*arcsec, 0.8421*arcsec
+    s = -20.4894e-6
+
+    x = nu * cp * _math.cos(lam36)
+    y = nu * cp * _math.sin(lam36)
+    z = nu * (1 - e2) * sp
+
+    x2 = tx + (1+s)*x  - rz*y  + ry*z
+    y2 = ty + rz*x  + (1+s)*y  - rx*z
+    z2 = tz - ry*x  + rx*y  + (1+s)*z
+
+    # Cartesian → geographic on GRS80
+    a2, b2 = 6378137.0, 6356752.314
+    e22 = 1.0 - (b2 / a2)**2
+    p   = _math.sqrt(x2**2 + y2**2)
+    lam_wgs = _math.atan2(y2, x2)
+    phi_wgs = _math.atan2(z2, p * (1 - e22))
+    for _ in range(10):
+        nu2 = a2 / _math.sqrt(1 - e22 * _math.sin(phi_wgs)**2)
+        phi_new = _math.atan2(z2 + e22 * nu2 * _math.sin(phi_wgs), p)
+        if abs(phi_new - phi_wgs) < 1e-12:
+            break
+        phi_wgs = phi_new
+
+    return _math.degrees(phi_new), _math.degrees(lam_wgs)
 
 
 # ── Type normalisation ─────────────────────────────────────────────────────────
