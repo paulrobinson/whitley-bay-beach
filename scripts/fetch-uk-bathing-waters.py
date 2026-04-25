@@ -9,15 +9,16 @@ Data sources
   England  Environment Agency (EA) — data already present; gains country field.
 
   Wales    Natural Resources Wales (NRW) via the Defra Linked Data platform.
+           Resource class: bathing-water-profile
            https://environment.data.gov.uk/wales/bathing-waters/
 
   Scotland Scottish Environment Protection Agency (SEPA) via their ArcGIS
-           MapServer (Open data, no key required).
-           https://map.sepa.org.uk/server/rest/services/Open/
+           Environmental_Monitoring MapServer, layer 1 (bathing water points).
+           https://map.sepa.org.uk/server/rest/services/Open/Environmental_Monitoring/
 
 Usage
 -----
-  pip3 install requests beautifulsoup4
+  pip3 install requests
   python3 scripts/fetch-uk-bathing-waters.py              # full update
   python3 scripts/fetch-uk-bathing-waters.py --dry-run    # print counts, no write
   python3 scripts/fetch-uk-bathing-waters.py --country wales    # Wales only
@@ -30,48 +31,43 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 import time
 from pathlib import Path
-from urllib.parse import urljoin
 
 try:
     import requests
 except ImportError:
-    sys.exit("Missing dependency: requests\nInstall with:  pip3 install requests beautifulsoup4")
+    sys.exit("Missing dependency: requests\nInstall with:  pip3 install requests")
 
+# pyproj is used to convert OSGB (easting/northing) → WGS84 (lat/lon).
+# Already a dependency of compute_min_sand.py.
 try:
-    from bs4 import BeautifulSoup
-    HAS_BS4 = True
+    from pyproj import Transformer
+    _osgb_to_wgs84 = Transformer.from_crs("EPSG:27700", "EPSG:4326", always_xy=True)
+    HAS_PYPROJ = True
 except ImportError:
-    HAS_BS4 = False
+    HAS_PYPROJ = False
 
 
 SCRIPT_DIR   = Path(__file__).parent
 BEACHES_JSON = SCRIPT_DIR.parent / "data" / "bathing-waters.json"
 
 # ── Wales (NRW) ────────────────────────────────────────────────────────────────
-WALES_BASE    = "https://environment.data.gov.uk/wales/bathing-waters"
-# LDA list of all BathingWaterProfileFeature resources (includes lat/long)
-WALES_LIST    = f"{WALES_BASE}/doc/BathingWaterProfileFeature.json"
-# Fallback: profiles HTML listing page — site IDs extracted, then individual
-# JSON resources fetched one at a time.
-WALES_PROFILES_HTML = f"{WALES_BASE}/profiles/"
-WALES_DOC_TMPL      = f"{WALES_BASE}/doc/bathing-water/{{site_id}}.json"
+WALES_BASE     = "https://environment.data.gov.uk/wales/bathing-waters"
+# LDA list endpoint — class is "bathing-water-profile" (all lower-case, hyphenated)
+WALES_LIST     = f"{WALES_BASE}/doc/bathing-water-profile.json"
+# Individual resource template (site ID like ukl1402-38800)
+WALES_DOC_TMPL = f"{WALES_BASE}/doc/bathing-water-profile/{{site_id}}.json"
 
 # ── Scotland (SEPA) ────────────────────────────────────────────────────────────
-# ArcGIS MapServer — auto-discovers the bathing-water layer ID.
-SEPA_MAPSERVER_BASE = (
+# Environmental_Monitoring MapServer — layer 1 = "Bathing water points"
+SEPA_MAPSERVER = (
     "https://map.sepa.org.uk/server/rest/services/Open/"
-    "Utility_and_Governmental_Services/MapServer"
+    "Environmental_Monitoring/MapServer"
 )
-# Direct GeoJSON layer query (layer ID discovered at runtime).
-SEPA_QUERY_TMPL = SEPA_MAPSERVER_BASE + "/{layer_id}/query"
-
-# Fallback: old SEPA profiles page (server-rendered ASP.NET, scrapeable).
-SEPA_OLD_PROFILES = "https://www2.sepa.org.uk/BathingWaters/Profiles.aspx"
-SEPA_OLD_DETAIL   = "https://www2.sepa.org.uk/BathingWaters/Default.aspx?id={site_id}"
+SEPA_BW_LAYER  = 1   # "Bathing water points"
+SEPA_QUERY_URL = f"{SEPA_MAPSERVER}/{SEPA_BW_LAYER}/query"
 
 REQUEST_HEADERS = {
     "User-Agent": (
@@ -79,8 +75,18 @@ REQUEST_HEADERS = {
         "+https://github.com/paulrobinson/beach-walk-uk)"
     )
 }
-REQUEST_TIMEOUT = 30
+REQUEST_TIMEOUT  = 30
 INTER_REQUEST_DELAY = 0.15   # seconds between individual-record fetches
+
+
+# ── Coordinate helpers ─────────────────────────────────────────────────────────
+
+def _osgb_to_latlon(easting: float, northing: float) -> tuple[float, float] | None:
+    """Convert British National Grid (EPSG:27700) to WGS84 (lat, lon)."""
+    if not HAS_PYPROJ:
+        return None
+    lon, lat = _osgb_to_wgs84.transform(easting, northing)
+    return lat, lon
 
 
 # ── Type normalisation ─────────────────────────────────────────────────────────
@@ -102,30 +108,17 @@ def _normalise_type(raw: str) -> str:
 
 def fetch_wales(session: requests.Session) -> list[dict]:
     print("Fetching Wales bathing waters…")
-
-    # ── Attempt 1: LDA BathingWaterProfileFeature list ──────────────────────
     beaches = _wales_via_lda_list(session)
     if beaches:
-        print(f"  {len(beaches)} Wales sites via LDA list.")
+        print(f"  {len(beaches)} Wales sites fetched.")
         return beaches
-
-    # ── Attempt 2: scrape profiles HTML → fetch individual JSON docs ─────────
-    if not HAS_BS4:
-        print("  beautifulsoup4 not installed — cannot use HTML-scrape fallback.")
-        print("  Install with:  pip3 install beautifulsoup4")
-    else:
-        beaches = _wales_via_html_scrape(session)
-        if beaches:
-            print(f"  {len(beaches)} Wales sites via HTML scrape + individual JSON.")
-            return beaches
-
-    print("  All Wales fetch strategies failed.")
+    print("  Wales fetch failed.")
     _print_manual_hint("Wales", WALES_LIST)
     return []
 
 
 def _wales_via_lda_list(session: requests.Session) -> list[dict]:
-    """Try the LDA bulk list endpoint for all BathingWaterProfileFeature resources."""
+    """Fetch the bathing-water-profile LDA list, paginating until complete."""
     page, beaches = 0, []
     while True:
         try:
@@ -143,28 +136,27 @@ def _wales_via_lda_list(session: requests.Session) -> list[dict]:
         items = data if isinstance(data, list) else (
             data.get("items") or data.get("result") or data.get("results") or []
         )
+
         if not items:
             if page == 0:
-                # Help diagnose unexpected response shapes on first page
-                top_keys = list(data.keys())[:8] if isinstance(data, dict) else type(data).__name__
-                print(f"  LDA list returned no items. Response keys: {top_keys}")
+                top_keys = list(data.keys())[:10] if isinstance(data, dict) else type(data).__name__
+                print(f"  LDA list returned no items. Response top-level keys: {top_keys}")
             break
 
-        # LDA may return items as full dicts or as bare URI strings.
-        # When they are strings, follow each URI to fetch the individual record.
-        uris_to_fetch: list[str] = []
+        # Items may be full dicts OR bare URI strings (LDA returns URIs in some views).
+        uri_items: list[str] = []
         for item in items:
-            if isinstance(item, dict):
+            if isinstance(item, str) and item.startswith("http"):
+                uri_items.append(item)
+            elif isinstance(item, dict):
                 b = _parse_wales_item(item)
                 if b:
                     beaches.append(b)
-            elif isinstance(item, str) and item.startswith("http"):
-                uris_to_fetch.append(item)
 
-        if uris_to_fetch:
-            print(f"  LDA list returned {len(uris_to_fetch)} URI strings; fetching each…")
-            for uri in uris_to_fetch:
-                json_url = uri if uri.endswith(".json") else uri + ".json"
+        if uri_items:
+            print(f"  Page {page}: {len(uri_items)} URI refs — fetching individual docs…")
+            for uri in uri_items:
+                json_url = (uri if uri.endswith(".json") else uri + ".json")
                 try:
                     r = session.get(json_url, params={"_view": "all"}, timeout=REQUEST_TIMEOUT)
                     r.raise_for_status()
@@ -172,10 +164,9 @@ def _wales_via_lda_list(session: requests.Session) -> list[dict]:
                     if b:
                         beaches.append(b)
                 except Exception as exc:
-                    print(f"    {uri} failed: {exc}")
+                    print(f"    {uri} → {exc}")
                 time.sleep(INTER_REQUEST_DELAY)
 
-        # LDA pagination: stop when fewer items than page size
         if len(items) < 200:
             break
         page += 1
@@ -184,75 +175,67 @@ def _wales_via_lda_list(session: requests.Session) -> list[dict]:
     return beaches
 
 
-def _wales_via_html_scrape(session: requests.Session) -> list[dict]:
-    """Scrape the profiles HTML listing to collect site IDs, then fetch each JSON doc."""
-    try:
-        resp = session.get(WALES_PROFILES_HTML, timeout=REQUEST_TIMEOUT)
-        resp.raise_for_status()
-    except Exception as exc:
-        print(f"  Profiles HTML fetch failed: {exc}")
-        return []
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-    # Site IDs appear in links like ?site=ukl1402-38800
-    site_ids = list(dict.fromkeys(
-        m.group(1)
-        for a in soup.find_all("a", href=True)
-        for m in [re.search(r"[?&]site=(ukl[\w-]+)", a["href"])]
-        if m
-    ))
-    if not site_ids:
-        print("  No site IDs found in profiles HTML.")
-        return []
-
-    print(f"  Found {len(site_ids)} site IDs in HTML; fetching individual JSON docs…")
-    beaches: list[dict] = []
-    for i, site_id in enumerate(site_ids):
-        url = WALES_DOC_TMPL.format(site_id=site_id)
-        try:
-            resp = session.get(url, params={"_view": "all"}, timeout=REQUEST_TIMEOUT)
-            resp.raise_for_status()
-            item = resp.json()
-            b = _parse_wales_item(item)
-            if b:
-                beaches.append(b)
-        except Exception as exc:
-            print(f"  [{i+1}/{len(site_ids)}] {site_id} failed: {exc}")
-        time.sleep(INTER_REQUEST_DELAY)
-
-    return beaches
-
-
 def _parse_wales_item(item: dict) -> dict | None:
-    """Extract a beach record from an NRW LDA JSON item."""
-    # Coordinates may live under several key names depending on LDA view
+    """Extract a beach record from an NRW LDA bathing-water-profile JSON item."""
+    # --- Coordinates: try WGS84 directly first, then convert from OSGB --------
     lat = _float(
         item.get("lat") or item.get("latitude") or item.get("wgs84Lat")
-        or (item.get("samplingPoint") or {}).get("lat")
+        or _nested(item, "samplingPoint", "lat")
+        or _nested(item, "bathingWater", "lat")
     )
     lon = _float(
         item.get("long") or item.get("lon") or item.get("longitude") or item.get("wgs84Long")
-        or (item.get("samplingPoint") or {}).get("long")
+        or _nested(item, "samplingPoint", "long")
+        or _nested(item, "bathingWater", "long")
     )
-    # Geometry block — some LDA responses embed a GeoJSON-style geometry
+
+    # GeoJSON-style geometry block
     if (lat is None or lon is None) and isinstance(item.get("geometry"), dict):
         coords = item["geometry"].get("coordinates")
         if coords and len(coords) >= 2:
             lon, lat = float(coords[0]), float(coords[1])
 
+    # OSGB easting/northing → WGS84 (coordinates often stored as BNG in NRW data)
+    if lat is None or lon is None:
+        easting  = _float(
+            item.get("easting") or item.get("samplingPoint.easting")
+            or _nested(item, "samplingPoint", "easting")
+            or _nested(item, "bathingWater", "envelope", "lowerCorner", "easting")
+        )
+        northing = _float(
+            item.get("northing") or item.get("samplingPoint.northing")
+            or _nested(item, "samplingPoint", "northing")
+            or _nested(item, "bathingWater", "envelope", "lowerCorner", "northing")
+        )
+        if easting is not None and northing is not None:
+            result = _osgb_to_latlon(easting, northing)
+            if result:
+                lat, lon = result
+
+    # --- Name -----------------------------------------------------------------
     name = (
-        item.get("name") or item.get("label")
-        or item.get("http://www.w3.org/2000/01/rdf-schema#label", [{}])[0].get("@value", "")
-        if isinstance(item.get("http://www.w3.org/2000/01/rdf-schema#label"), list)
-        else item.get("http://www.w3.org/2000/01/rdf-schema#label", "")
-    ) or ""
-    name = name.strip()
+        item.get("name") or item.get("label") or item.get("bathingWaterName")
+        or _nested(item, "bathingWater", "name")
+        or _nested(item, "bathingWater", "label")
+        or ""
+    )
+    if isinstance(name, list):
+        name = name[0] if name else ""
+    name = str(name).strip()
 
     if not name or lat is None or lon is None:
         return None
 
-    raw_type = item.get("siteType") or item.get("type") or item.get("waterBodyType") or "Coastal"
-    region   = item.get("region") or item.get("catchment") or item.get("RiverBasinDistrict") or ""
+    raw_type = (
+        item.get("siteType") or item.get("type") or item.get("waterBodyType")
+        or _nested(item, "bathingWater", "siteType")
+        or "Coastal"
+    )
+    region = (
+        item.get("region") or item.get("catchment") or item.get("RiverBasinDistrict")
+        or _nested(item, "bathingWater", "region")
+        or ""
+    )
     return {
         "name":    name,
         "lat":     round(lat, 4),
@@ -268,168 +251,34 @@ def _parse_wales_item(item: dict) -> dict | None:
 def fetch_scotland(session: requests.Session) -> list[dict]:
     print("Fetching Scotland bathing waters from SEPA…")
 
-    # ── Attempt 1: ArcGIS MapServer with auto-discovered layer ───────────────
-    layer_id = _sepa_discover_layer(session)
-    if layer_id is not None:
-        beaches = _sepa_query_layer(session, layer_id)
-        if beaches:
-            print(f"  {len(beaches)} Scotland sites via ArcGIS layer {layer_id}.")
-            return beaches
-
-    # ── Attempt 2: old SEPA profiles page (server-rendered) ─────────────────
-    if HAS_BS4:
-        beaches = _sepa_via_old_site(session)
-        if beaches:
-            print(f"  {len(beaches)} Scotland sites via old SEPA site scrape.")
-            return beaches
-    else:
-        print("  beautifulsoup4 not installed — cannot use HTML-scrape fallback.")
-        print("  Install with:  pip3 install beautifulsoup4")
-
-    print("  All Scotland fetch strategies failed.")
-    _print_manual_hint("Scotland", SEPA_MAPSERVER_BASE + "/layers?f=json")
-    return []
-
-
-def _sepa_discover_layer(session: requests.Session) -> int | None:
-    """Query the SEPA MapServer layers endpoint to find the bathing-water layer ID."""
     try:
         resp = session.get(
-            SEPA_MAPSERVER_BASE + "/layers",
-            params={"f": "json"},
-            timeout=REQUEST_TIMEOUT,
-        )
-        resp.raise_for_status()
-        data = resp.json()
-    except Exception as exc:
-        print(f"  SEPA MapServer layer discovery failed: {exc}")
-        return None
-
-    layers = data.get("layers") or []
-    for layer in layers:
-        name = (layer.get("name") or "").lower()
-        if "bathing" in name or "swimming" in name:
-            layer_id = layer.get("id")
-            print(f"  Found SEPA bathing water layer: id={layer_id} name={layer.get('name')!r}")
-            return layer_id
-
-    # Fallback: if no obvious match, list all layers so the user can inspect
-    if layers:
-        print("  No 'bathing' layer found. Available layers:")
-        for layer in layers:
-            print(f"    id={layer.get('id')} — {layer.get('name')!r}")
-    return None
-
-
-def _sepa_query_layer(session: requests.Session, layer_id: int) -> list[dict]:
-    """Fetch all features from the given SEPA ArcGIS layer as GeoJSON."""
-    url = SEPA_QUERY_TMPL.format(layer_id=layer_id)
-    try:
-        resp = session.get(
-            url,
+            SEPA_QUERY_URL,
             params={"where": "1=1", "outFields": "*", "f": "geojson", "outSR": "4326"},
             timeout=REQUEST_TIMEOUT,
         )
         resp.raise_for_status()
         geojson = resp.json()
     except Exception as exc:
-        print(f"  ArcGIS layer query failed: {exc}")
+        print(f"  SEPA query failed: {exc}")
+        _print_manual_hint("Scotland", SEPA_QUERY_URL + "?where=1=1&outFields=*&f=geojson&outSR=4326")
         return []
 
     if geojson.get("type") != "FeatureCollection":
-        print(f"  Unexpected GeoJSON response: {list(geojson.keys())[:8]}")
+        print(f"  Unexpected response shape. Keys: {list(geojson.keys())[:10]}")
+        _print_manual_hint("Scotland", SEPA_QUERY_URL)
         return []
 
-    return _parse_sepa_features(geojson["features"])
-
-
-def _sepa_via_old_site(session: requests.Session) -> list[dict]:
-    """Scrape the old SEPA bathing waters profiles page for site IDs, then fetch detail."""
-    try:
-        resp = session.get(SEPA_OLD_PROFILES, timeout=REQUEST_TIMEOUT)
-        resp.raise_for_status()
-    except Exception as exc:
-        print(f"  Old SEPA profiles fetch failed: {exc}")
-        return []
-
-    soup = BeautifulSoup(resp.text, "html.parser")
-    # Site IDs in links like Default.aspx?id=123 or Profiles.aspx?id=123
-    site_ids = list(dict.fromkeys(
-        m.group(1)
-        for a in soup.find_all("a", href=True)
-        for m in [re.search(r"[?&]id=(\d+)", a["href"])]
-        if m
-    ))
-    if not site_ids:
-        print("  No site IDs found in old SEPA profiles page.")
-        return []
-
-    print(f"  Found {len(site_ids)} SEPA site IDs; fetching detail pages…")
-    beaches: list[dict] = []
-    for i, site_id in enumerate(site_ids):
-        url = SEPA_OLD_DETAIL.format(site_id=site_id)
-        try:
-            resp = session.get(url, timeout=REQUEST_TIMEOUT)
-            resp.raise_for_status()
-            b = _parse_sepa_detail_html(resp.text, site_id)
-            if b:
-                beaches.append(b)
-        except Exception as exc:
-            print(f"  [{i+1}/{len(site_ids)}] site {site_id} failed: {exc}")
-        time.sleep(INTER_REQUEST_DELAY)
-
+    beaches = _parse_sepa_features(geojson["features"])
+    if beaches:
+        print(f"  {len(beaches)} Scotland sites fetched.")
+    else:
+        print("  No features parsed from SEPA response.")
+        _print_manual_hint("Scotland", SEPA_QUERY_URL)
     return beaches
 
 
-def _parse_sepa_detail_html(html: str, site_id: str) -> dict | None:
-    """Extract name and lat/lon from a SEPA bathing water detail page."""
-    soup = BeautifulSoup(html, "html.parser")
-    name = ""
-    lat = lon = None
-
-    # SEPA detail pages typically embed coordinates in meta tags or a map script
-    for meta in soup.find_all("meta"):
-        prop = (meta.get("property") or meta.get("name") or "").lower()
-        content = meta.get("content", "")
-        if "latitude" in prop:
-            lat = _float(content)
-        elif "longitude" in prop:
-            lon = _float(content)
-
-    # Fallback: look for lat/lon in inline <script> content
-    if lat is None or lon is None:
-        for script in soup.find_all("script"):
-            text = script.string or ""
-            m_lat = re.search(r"[Ll]at(?:itude)?\s*[=:]\s*([+-]?\d+\.\d+)", text)
-            m_lon = re.search(r"[Ll]on(?:g(?:itude)?)?\s*[=:]\s*([+-]?\d+\.\d+)", text)
-            if m_lat and m_lon:
-                lat, lon = float(m_lat.group(1)), float(m_lon.group(1))
-                break
-
-    # Page title often contains the site name
-    title_tag = soup.find("title")
-    if title_tag:
-        name = re.sub(r"\s*[-|].*", "", title_tag.text).strip()
-    if not name:
-        h1 = soup.find("h1")
-        if h1:
-            name = h1.text.strip()
-
-    if not name or lat is None or lon is None:
-        return None
-
-    return {
-        "name":    name,
-        "lat":     round(lat, 4),
-        "lon":     round(lon, 4),
-        "type":    "Coastal",
-        "region":  "",
-        "country": "Scotland",
-    }
-
-
 def _parse_sepa_features(features: list[dict]) -> list[dict]:
-    """Convert SEPA GeoJSON features to the beach-walk-uk schema."""
     beaches: list[dict] = []
     skipped = 0
     for feat in features:
@@ -446,16 +295,20 @@ def _parse_sepa_features(features: list[dict]) -> list[dict]:
         name = (
             props.get("BW_NAME") or props.get("NAME") or props.get("name")
             or props.get("Site_Name") or props.get("SITE_NAME")
-            or props.get("BathingWaterName") or ""
+            or props.get("BathingWaterName") or props.get("BATHING_WATER_NAME") or ""
         ).strip()
 
         if not name or lat is None or lon is None:
             skipped += 1
             continue
 
-        raw_type = props.get("WATER_TYPE") or props.get("WaterType") or props.get("type") or "Coastal"
-        region   = props.get("REGION") or props.get("Region") or props.get("COUNCIL") or props.get("LocalAuthority") or ""
-
+        raw_type = (
+            props.get("WATER_TYPE") or props.get("WaterType") or props.get("type") or "Coastal"
+        )
+        region = (
+            props.get("REGION") or props.get("Region") or props.get("COUNCIL")
+            or props.get("LocalAuthority") or props.get("LOCAL_AUTHORITY") or ""
+        )
         beaches.append({
             "name":    name,
             "lat":     round(lat, 4),
@@ -478,11 +331,21 @@ def _float(val: object) -> float | None:
         return None
 
 
+def _nested(obj: dict, *keys: str) -> object:
+    """Safely traverse nested dicts: _nested(d, 'a', 'b') → d['a']['b'] or None."""
+    cur = obj
+    for k in keys:
+        if not isinstance(cur, dict):
+            return None
+        cur = cur.get(k)
+    return cur
+
+
 def _print_manual_hint(country: str, url: str) -> None:
     print(f"""
   All automatic fetch strategies for {country} failed.
-  To debug, visit or curl this URL and examine the response:
-    {url}
+  Examine the response to diagnose:
+    curl '{url}' | python3 -m json.tool | head -80
   Then update the endpoint constants near the top of this script.
 """)
 
