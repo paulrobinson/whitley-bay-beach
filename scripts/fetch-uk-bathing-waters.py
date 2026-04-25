@@ -203,13 +203,23 @@ def _wales_via_lda_list() -> list[dict]:
             break
 
         uri_items: list[str] = []
+        dict_items_seen = 0
         for item in items:
             if isinstance(item, str) and item.startswith("http"):
                 uri_items.append(item)
             elif isinstance(item, dict):
+                dict_items_seen += 1
                 b = _parse_wales_item(item)
                 if b:
                     beaches.append(b)
+
+        # Diagnostic: if we got dict items but parsed 0, dump the first one
+        if dict_items_seen > 0 and not beaches and not uri_items and page == 0:
+            first = next(i for i in items if isinstance(i, dict))
+            print(f"  Got {dict_items_seen} dict items but parsed 0 beaches.")
+            print(f"  First item keys: {list(first.keys())[:20]}")
+            sample = {k: v for k, v in list(first.items())[:10]}
+            print(f"  First item sample: {json.dumps(sample, default=str)[:500]}")
 
         if uri_items:
             print(f"  Page {page}: {len(uri_items)} URI refs — fetching individual docs…")
@@ -311,11 +321,18 @@ def fetch_scotland() -> list[dict]:
         _print_manual_hint("Scotland", SEPA_QUERY_URL)
         return []
 
-    beaches = _parse_sepa_features(geojson["features"])
+    features = geojson["features"]
+    beaches = _parse_sepa_features(features)
     if beaches:
         print(f"  {len(beaches)} Scotland sites fetched.")
     else:
-        print("  No features parsed from SEPA response.")
+        print(f"  No features parsed from {len(features)} SEPA features.")
+        if features:
+            props = features[0].get("properties") or {}
+            geom  = features[0].get("geometry") or {}
+            print(f"  First feature property keys: {list(props.keys())[:20]}")
+            print(f"  First feature geometry type: {geom.get('type')!r}")
+            print(f"  First feature sample props: {json.dumps(dict(list(props.items())[:8]), default=str)[:400]}")
         _print_manual_hint("Scotland", SEPA_QUERY_URL)
     return beaches
 
