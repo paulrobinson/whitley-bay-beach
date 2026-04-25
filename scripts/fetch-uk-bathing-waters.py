@@ -144,12 +144,36 @@ def _wales_via_lda_list(session: requests.Session) -> list[dict]:
             data.get("items") or data.get("result") or data.get("results") or []
         )
         if not items:
+            if page == 0:
+                # Help diagnose unexpected response shapes on first page
+                top_keys = list(data.keys())[:8] if isinstance(data, dict) else type(data).__name__
+                print(f"  LDA list returned no items. Response keys: {top_keys}")
             break
 
+        # LDA may return items as full dicts or as bare URI strings.
+        # When they are strings, follow each URI to fetch the individual record.
+        uris_to_fetch: list[str] = []
         for item in items:
-            b = _parse_wales_item(item)
-            if b:
-                beaches.append(b)
+            if isinstance(item, dict):
+                b = _parse_wales_item(item)
+                if b:
+                    beaches.append(b)
+            elif isinstance(item, str) and item.startswith("http"):
+                uris_to_fetch.append(item)
+
+        if uris_to_fetch:
+            print(f"  LDA list returned {len(uris_to_fetch)} URI strings; fetching each…")
+            for uri in uris_to_fetch:
+                json_url = uri if uri.endswith(".json") else uri + ".json"
+                try:
+                    r = session.get(json_url, params={"_view": "all"}, timeout=REQUEST_TIMEOUT)
+                    r.raise_for_status()
+                    b = _parse_wales_item(r.json())
+                    if b:
+                        beaches.append(b)
+                except Exception as exc:
+                    print(f"    {uri} failed: {exc}")
+                time.sleep(INTER_REQUEST_DELAY)
 
         # LDA pagination: stop when fewer items than page size
         if len(items) < 200:
