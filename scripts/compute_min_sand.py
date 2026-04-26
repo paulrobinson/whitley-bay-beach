@@ -7,11 +7,13 @@ minSand is the fraction of each beach that remains exposed even at Highest
 Astronomical Tide (HAT).  Values are stored in bathing-waters.json and used
 by the scoring algorithm so wide, flat beaches are not penalised at high tide.
 
-Data sources (both free, Open Government Licence)
---------------------------------------------------
+Data sources (all free, Open Government Licence)
+-------------------------------------------------
   EA Coastal Flood Boundary 2018 — Extreme Sea Levels shapefile
-    Points along the UK coastline with HAT and MHWS tidal datum values
-    referenced to Ordnance Datum Newlyn (metres above ODN).
+    Points along the England & Wales coastline with HAT and MHWS tidal datum
+    values referenced to Ordnance Datum Newlyn (metres above ODN).
+    For Scotland, falls back to a built-in lookup table of Admiralty standard
+    port datums (NP201) when no CFB point is within 100 km.
 
     MANUAL DOWNLOAD REQUIRED (one-time, ~30 MB):
       1. Visit:
@@ -20,9 +22,17 @@ Data sources (both free, Open Government Licence)
       3. Extract the zip and place ALL extracted files into:
          scripts/.cache/cfb/
 
-  EA LIDAR Composite DTM 1m  (fetched automatically, England only)
+  EA LIDAR Composite DTM 1m  (fetched automatically, England)
     1-metre resolution Digital Terrain Model surveyed at low tide.
     https://environment.data.gov.uk/spatialdata/lidar-composite-digital-terrain-model-dtm-1m/wcs
+
+  NRW LIDAR Composite DTM 1m  (fetched automatically, Wales)
+    Natural Resources Wales 1m DTM via the DataMap Wales GeoServer WCS.
+    https://datamap.gov.wales/geoserver/inspire-nrw/wcs
+
+  JNCC Scottish Remote Sensing Portal DTM  (fetched automatically, Scotland)
+    Scottish 1m LIDAR via the JNCC SRSP OWS endpoint.
+    https://srsp-ows.jncc.gov.uk/ows
 
 Method
 ------
@@ -54,6 +64,7 @@ After running, commit the updated data/bathing-waters.json to the branch.
 
 import argparse
 import json
+import math as _math
 import sys
 import time
 import xml.etree.ElementTree as ET
@@ -82,11 +93,44 @@ BEACHES_JSON = DATA_DIR / "bathing-waters.json"
 CACHE_DIR    = SCRIPT_DIR / ".cache"
 CFB_DIR      = CACHE_DIR / "cfb"
 
-# EA LIDAR Composite DTM 1m WCS
+# EA LIDAR Composite DTM 1m WCS (England)
 LIDAR_WCS = (
     "https://environment.data.gov.uk/spatialdata/"
     "lidar-composite-digital-terrain-model-dtm-1m/wcs"
 )
+
+# NRW LIDAR Composite DTM 1m WCS (Wales)
+NRW_WCS     = "https://datamap.gov.wales/geoserver/inspire-nrw/wcs"
+NRW_COV_100 = "inspire-nrw:NRW_LIDAR_COMPOSITE_DTM_1M"
+NRW_COV_201 = "inspire-nrw:NRW_LIDAR_COMPOSITE_DTM_1M"
+
+# JNCC Scottish Remote Sensing Portal WCS (Scotland)
+# Coverage IDs are discovered at runtime via GetCapabilities.
+SCOT_WCS = "https://srsp-ows.jncc.gov.uk/ows"
+
+# Maximum distance (m) at which CFB tidal datums are trusted.
+# Beyond this the nearest English coastal point is too far to be meaningful
+# (primarily affects Scottish beaches).
+CFB_MAX_DIST_M = 100_000
+
+# Admiralty NP201 standard-port tidal datums for Scotland
+# (HAT and MLWS in metres above/below Ordnance Datum Newlyn).
+# Used when no CFB point is within CFB_MAX_DIST_M.
+_SCOT_PORTS: list[tuple[float, float, float, float]] = [
+    # lat,    lon,    HAT,  MLWS
+    (55.98, -3.18,  5.60, -0.60),  # Leith (Firth of Forth)
+    (56.46, -2.86,  5.80, -0.40),  # Dundee
+    (57.15, -2.07,  4.30, -0.50),  # Aberdeen
+    (57.50, -4.24,  4.70, -0.30),  # Invergordon (Cromarty Firth)
+    (58.44, -3.09,  3.60, -0.30),  # Wick
+    (60.15, -1.15,  1.80, -0.20),  # Lerwick (Shetland)
+    (57.60, -5.68,  5.50, -0.50),  # Portree (Skye)
+    (56.41, -5.48,  4.60, -0.50),  # Oban
+    (55.89, -4.70,  4.00, -0.30),  # Greenock (Firth of Clyde)
+    (55.47, -4.61,  3.60, -0.30),  # Ayr
+    (55.07, -3.71,  6.00, -0.70),  # Kirkcudbright (Solway Firth)
+    (56.10, -3.73,  5.00, -0.40),  # Burntisland (Fife)
+]
 
 # Analysis parameters
 PATCH_SIZE_M     = 400    # Side length (metres, BNG) of the LIDAR query patch
@@ -168,16 +212,24 @@ def load_cfb() -> tuple[gpd.GeoDataFrame, str, str, str | None]:
 def nearest_datums(
     lon: float, lat: float,
     cfb_bng: gpd.GeoDataFrame,
-    hat_field: str, mhws_field: str | None, mlws_field: str | None
+    hat_field: str, mhws_field: str | None, mlws_field: str | None,
+    country: str = "England",
 ) -> tuple[float, float]:
     """
     Return (hat, mlws) for the nearest CFB point to (lon, lat).
     cfb_bng must be in EPSG:27700 so distance is in metres.
-    MLWS is derived as −MHWS if not directly available (ODN ≈ MSL assumption).
+    For Scotland, if the nearest CFB point is beyond CFB_MAX_DIST_M, fall back
+    to the nearest Admiralty standard port in _SCOT_PORTS.
     """
     easting, northing = to_bng(lon, lat)
-    pt   = Point(easting, northing)
-    idx  = cfb_bng.geometry.distance(pt).idxmin()
+    pt       = Point(easting, northing)
+    dists    = cfb_bng.geometry.distance(pt)
+    idx      = dists.idxmin()
+    min_dist = dists[idx]
+
+    if min_dist > CFB_MAX_DIST_M and country == "Scotland":
+        return _nearest_scot_port_datums(lat, lon)
+
     row  = cfb_bng.loc[idx]
     hat  = float(row[hat_field])
     if mlws_field:
@@ -189,11 +241,26 @@ def nearest_datums(
     return hat, mlws
 
 
+def _nearest_scot_port_datums(lat: float, lon: float) -> tuple[float, float]:
+    """Return (hat, mlws) from the nearest Admiralty standard port for Scotland."""
+    best_dist = float("inf")
+    best_hat, best_mlws = 4.0, -0.4  # sensible Scotland-wide fallback
+    for p_lat, p_lon, p_hat, p_mlws in _SCOT_PORTS:
+        d = _math.sqrt((lat - p_lat) ** 2 + (lon - p_lon) ** 2)
+        if d < best_dist:
+            best_dist, best_hat, best_mlws = d, p_hat, p_mlws
+    return best_hat, best_mlws
+
+
 # ── LIDAR WCS helpers ──────────────────────────────────────────────────────────
 
-def _discover_coverage(session: requests.Session, debug: bool = False) -> tuple[str, str]:
+def _discover_coverage(
+    session: requests.Session,
+    wcs_url: str = LIDAR_WCS,
+    debug: bool = False,
+) -> tuple[str, str]:
     """
-    Query WCS 1.0.0 GetCapabilities to find the coverage name.
+    Query WCS GetCapabilities to find the first coverage name.
     Returns (coverage_name_1_0, coverage_id_2_0_1).
     """
     cov_100  = None
@@ -202,7 +269,7 @@ def _discover_coverage(session: requests.Session, debug: bool = False) -> tuple[
     for version in ("1.0.0", "2.0.1"):
         try:
             r = session.get(
-                LIDAR_WCS,
+                wcs_url,
                 params={"service": "WCS", "version": version, "request": "GetCapabilities"},
                 timeout=30,
             )
@@ -254,6 +321,7 @@ def fetch_lidar_patch(
     easting: float, northing: float,
     cov_100: str, cov_201: str,
     session: requests.Session,
+    wcs_url: str = LIDAR_WCS,
     debug: bool = False,
 ) -> np.ndarray | None:
     """
@@ -307,7 +375,7 @@ def fetch_lidar_patch(
 
     for ver, params, desc in attempts:
         try:
-            r = session.get(LIDAR_WCS, params=params, timeout=45)
+            r = session.get(wcs_url, params=params, timeout=45)
             ct = r.headers.get("Content-Type", "")
             if debug:
                 body_preview = r.content[:200].decode("utf-8", errors="replace").replace("\n", " ")
@@ -379,9 +447,28 @@ def main() -> None:
     session = requests.Session()
     session.headers["User-Agent"] = "beach-walk-uk/compute-min-sand"
 
-    print("Querying LIDAR WCS coverage…")
-    cov_100, cov_201 = _discover_coverage(session, debug=args.debug)
-    print(f"  WCS 1.0.0: {cov_100!r}   WCS 2.0.1: {cov_201!r}")
+    # Discover coverage names for each LIDAR source
+    print("Querying EA LIDAR WCS (England)…")
+    ea_cov_100, ea_cov_201 = _discover_coverage(session, LIDAR_WCS, debug=args.debug)
+    print(f"  1.0.0: {ea_cov_100!r}   2.0.1: {ea_cov_201!r}")
+
+    print("Querying NRW LIDAR WCS (Wales)…")
+    nrw_cov_100, nrw_cov_201 = _discover_coverage(session, NRW_WCS, debug=args.debug)
+    if nrw_cov_100 == "LidarComposite_DTM_1m":
+        # Fallback name not discovered — use known NRW coverage name
+        nrw_cov_100, nrw_cov_201 = NRW_COV_100, NRW_COV_201
+    print(f"  1.0.0: {nrw_cov_100!r}   2.0.1: {nrw_cov_201!r}")
+
+    print("Querying JNCC LIDAR WCS (Scotland)…")
+    scot_cov_100, scot_cov_201 = _discover_coverage(session, SCOT_WCS, debug=args.debug)
+    print(f"  1.0.0: {scot_cov_100!r}   2.0.1: {scot_cov_201!r}")
+
+    # Map country → (wcs_url, cov_100, cov_201)
+    lidar_sources: dict[str, tuple[str, str, str]] = {
+        "England":  (LIDAR_WCS, ea_cov_100,   ea_cov_201),
+        "Wales":    (NRW_WCS,   nrw_cov_100,  nrw_cov_201),
+        "Scotland": (SCOT_WCS,  scot_cov_100, scot_cov_201),
+    }
 
     subset   = beaches[: args.limit] if args.limit else beaches
     total    = len(subset)
@@ -390,10 +477,13 @@ def main() -> None:
     for i, beach in enumerate(subset):
         name      = beach["name"]
         lon, lat  = beach["lon"], beach["lat"]
+        country   = beach.get("country", "England")
         label     = f"[{i+1}/{total}] {name}"
 
         try:
-            hat, mlws = nearest_datums(lon, lat, cfb, hat_field, mhws_field, mlws_field)
+            hat, mlws = nearest_datums(
+                lon, lat, cfb, hat_field, mhws_field, mlws_field, country=country,
+            )
         except Exception as exc:
             print(f"{label}  ERROR (datum lookup): {exc}")
             counters["errors"] += 1
@@ -402,7 +492,12 @@ def main() -> None:
         easting, northing = to_bng(lon, lat)
         if args.debug:
             print(f"  BNG: E={easting:.0f} N={northing:.0f}")
-        patch = fetch_lidar_patch(easting, northing, cov_100, cov_201, session, debug=args.debug)
+
+        wcs_url, cov_100, cov_201 = lidar_sources.get(country, lidar_sources["England"])
+        patch = fetch_lidar_patch(
+            easting, northing, cov_100, cov_201, session,
+            wcs_url=wcs_url, debug=args.debug,
+        )
 
         if patch is None:
             print(f"{label}  — no LIDAR data")
