@@ -52,8 +52,8 @@ UA = (
 )
 
 # ── Wales (NRW) ────────────────────────────────────────────────────────────────
-WALES_BASE = "https://environment.data.gov.uk/wales/bathing-waters"
-WALES_LIST = f"{WALES_BASE}/doc/bathing-water-profile.json"
+WALES_BASE         = "https://environment.data.gov.uk/wales/bathing-waters"
+WALES_PROFILE_LIST = f"{WALES_BASE}/doc/bathing-water-profile.json"
 
 # ── Scotland (SEPA) ────────────────────────────────────────────────────────────
 # Environmental_Monitoring MapServer — layer 1 = "Bathing water points"
@@ -187,89 +187,121 @@ def _normalise_type(raw: str) -> str:
 
 def fetch_wales() -> list[dict]:
     print("Fetching Wales bathing waters…")
-    beaches = _wales_via_lda_list()
+    beaches = _wales_via_profiles()
     if beaches:
         print(f"  {len(beaches)} Wales sites fetched.")
         return beaches
     print("  Wales fetch failed.")
-    _print_manual_hint("Wales", WALES_LIST)
+    _print_manual_hint("Wales", WALES_PROFILE_LIST)
     return []
 
 
-def _wales_via_lda_list() -> list[dict]:
-    page, beaches = 0, []
+def _lda_items(data: dict | list, page: int) -> list:
+    """Extract the items list from an LDA API response (handles nested result.items)."""
+    if isinstance(data, list):
+        return data
+    result = data.get("result") if isinstance(data, dict) else None
+    if isinstance(result, dict):
+        items = result.get("items")
+        if items is not None:
+            return items if isinstance(items, list) else []
+    items = data.get("items") if isinstance(data, dict) else None
+    if items is not None:
+        return items if isinstance(items, list) else []
+    if page == 0:
+        top_keys = list(data.keys())[:15] if isinstance(data, dict) else type(data).__name__
+        print(f"  No items key found. type={type(data).__name__}, keys={top_keys}")
+    return []
+
+
+def _lda_unwrap(data: dict) -> dict:
+    """Unwrap an LDA single-resource response to the inner item dict."""
+    result = data.get("result") if isinstance(data, dict) else None
+    if isinstance(result, dict):
+        # Individual doc endpoint: result may have primaryTopic or items[0]
+        pt = result.get("primaryTopic")
+        if isinstance(pt, dict):
+            return pt
+        items = result.get("items")
+        if isinstance(items, list) and items and isinstance(items[0], dict):
+            return items[0]
+        return result
+    return data if isinstance(data, dict) else {}
+
+
+def _wales_via_profiles() -> list[dict]:
+    """Collect unique bathing-water URIs from the profile list, then fetch each."""
+    page = 0
+    bw_uris: set[str] = set()
     while True:
         try:
-            data = _get(WALES_LIST, {"_pageSize": 200, "_page": page,
-                                     "_view": "all", "_metadata": "all"})
+            data = _get(WALES_PROFILE_LIST, {"_pageSize": 200, "_page": page})
         except Exception as exc:
             traceback.print_exc()
-            print(f"  LDA list page {page} failed: {type(exc).__name__}: {exc}")
+            print(f"  Profile list page {page} failed: {type(exc).__name__}: {exc}")
             return []
-
-        if page == 0:
-            top_keys = list(data.keys())[:15] if isinstance(data, dict) else type(data).__name__
-            print(f"  LDA page 0: type={type(data).__name__}, keys={top_keys}")
-
-        items = data if isinstance(data, list) else (
-            data.get("items") or data.get("result") or data.get("results") or []
-        )
-
+        items = _lda_items(data, page)
         if not items:
             if page == 0:
-                top_keys = list(data.keys())[:10] if isinstance(data, dict) else type(data).__name__
-                print(f"  LDA list returned no items. Top-level keys: {top_keys}")
+                print("  Profile list returned no items on page 0.")
             break
-
-        uri_items: list[str] = []
-        dict_items_seen = 0
         for item in items:
-            if isinstance(item, str) and item.startswith("http"):
-                uri_items.append(item)
-            elif isinstance(item, dict):
-                dict_items_seen += 1
-                b = _parse_wales_item(item)
-                if b:
-                    beaches.append(b)
-
-        # Diagnostic: if we got dict items but parsed 0, dump the first one
-        if dict_items_seen > 0 and not beaches and not uri_items and page == 0:
-            first = next(i for i in items if isinstance(i, dict))
-            print(f"  Got {dict_items_seen} dict items but parsed 0 beaches.")
-            print(f"  First item keys: {list(first.keys())[:20]}")
-            sample = {k: v for k, v in list(first.items())[:10]}
-            print(f"  First item sample: {json.dumps(sample, default=str)[:500]}")
-
-        if uri_items:
-            print(f"  Page {page}: {len(uri_items)} URI refs — fetching individual docs…")
-            for uri in uri_items:
-                json_url = uri if uri.endswith(".json") else uri + ".json"
-                try:
-                    b = _parse_wales_item(_get(json_url, {"_view": "all"}))
-                    if b:
-                        beaches.append(b)
-                except Exception as exc:
-                    print(f"    {uri} → {exc}")
-                time.sleep(INTER_REQUEST_DELAY)
-
+            if isinstance(item, dict):
+                bw = item.get("bathingWater")
+                if isinstance(bw, str) and bw.startswith("http"):
+                    bw_uris.add(bw)
         if len(items) < 200:
             break
         page += 1
         time.sleep(INTER_REQUEST_DELAY)
 
+    if not bw_uris:
+        return []
+
+    print(f"  {len(bw_uris)} unique bathing water URIs — fetching each…")
+    beaches: list[dict] = []
+    failed = 0
+    for uri in sorted(bw_uris):
+        json_url = uri + ".json"
+        try:
+            resource = _get(json_url, {"_view": "all"})
+            b = _parse_wales_item(_lda_unwrap(resource))
+            if b:
+                beaches.append(b)
+            elif not beaches and len(bw_uris) > 1:
+                # Dump first failed parse for diagnostics
+                inner = _lda_unwrap(resource)
+                print(f"  First resource parse failed. Keys: {list(inner.keys())[:20]}")
+                print(f"  Sample: {json.dumps(dict(list(inner.items())[:8]), default=str)[:500]}")
+        except Exception as exc:
+            failed += 1
+            if failed <= 3:
+                print(f"    {uri} → {exc}")
+        time.sleep(INTER_REQUEST_DELAY)
+
+    if failed:
+        print(f"  ({failed} individual fetches failed)")
     return beaches
+
+
+def _lda_str(val: object) -> str:
+    """Extract a plain string from an LDA value that may be {_value: '...'}."""
+    if isinstance(val, dict):
+        return str(val.get("_value", ""))
+    if isinstance(val, list):
+        first = val[0] if val else ""
+        return _lda_str(first)
+    return str(val or "")
 
 
 def _parse_wales_item(item: dict) -> dict | None:
     lat = _float(
         item.get("lat") or item.get("latitude") or item.get("wgs84Lat")
         or _nested(item, "samplingPoint", "lat")
-        or _nested(item, "bathingWater", "lat")
     )
     lon = _float(
         item.get("long") or item.get("lon") or item.get("longitude") or item.get("wgs84Long")
         or _nested(item, "samplingPoint", "long")
-        or _nested(item, "bathingWater", "long")
     )
 
     if (lat is None or lon is None) and isinstance(item.get("geometry"), dict):
@@ -281,43 +313,34 @@ def _parse_wales_item(item: dict) -> dict | None:
         easting  = _float(
             item.get("easting")
             or _nested(item, "samplingPoint", "easting")
-            or _nested(item, "bathingWater", "envelope", "lowerCorner", "easting")
         )
         northing = _float(
             item.get("northing")
             or _nested(item, "samplingPoint", "northing")
-            or _nested(item, "bathingWater", "envelope", "lowerCorner", "northing")
         )
         if easting is not None and northing is not None:
             lat, lon = _osgb_to_latlon(easting, northing)
 
-    name = (
-        item.get("name") or item.get("label") or item.get("bathingWaterName")
-        or _nested(item, "bathingWater", "name")
-        or _nested(item, "bathingWater", "label")
-        or ""
+    raw_name = (
+        item.get("name") or item.get("label") or item.get("bathingWaterName") or ""
     )
-    if isinstance(name, list):
-        name = name[0] if name else ""
-    name = str(name).strip()
+    name = _lda_str(raw_name).strip()
 
     if not name or lat is None or lon is None:
         return None
 
-    raw_type = (
-        item.get("siteType") or item.get("type") or item.get("waterBodyType")
-        or _nested(item, "bathingWater", "siteType") or "Coastal"
+    raw_type = _lda_str(
+        item.get("siteType") or item.get("type") or item.get("waterBodyType") or "Coastal"
     )
-    region = (
-        item.get("region") or item.get("catchment") or item.get("RiverBasinDistrict")
-        or _nested(item, "bathingWater", "region") or ""
+    region = _lda_str(
+        item.get("region") or item.get("catchment") or item.get("RiverBasinDistrict") or ""
     )
     return {
         "name":    name,
         "lat":     round(lat, 4),
         "lon":     round(lon, 4),
-        "type":    _normalise_type(str(raw_type)),
-        "region":  str(region),
+        "type":    _normalise_type(raw_type),
+        "region":  region,
         "country": "Wales",
     }
 
