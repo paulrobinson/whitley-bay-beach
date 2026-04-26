@@ -261,18 +261,28 @@ def _wales_via_profiles() -> list[dict]:
     print(f"  {len(bw_uris)} unique bathing water URIs — fetching each…")
     beaches: list[dict] = []
     failed = 0
+    first_diag_done = False
     for uri in sorted(bw_uris):
-        json_url = uri + ".json"
+        # Convert id/ URI to doc/ URL directly so ?_view=all is preserved
+        # (the id/ → doc/ redirect from the server drops query parameters)
+        if "/id/" in uri:
+            doc_url = uri.replace("/id/", "/doc/", 1) + ".json"
+        else:
+            doc_url = uri + ".json"
         try:
-            resource = _get(json_url, {"_view": "all"})
+            resource = _get(doc_url, {"_view": "all"})
             b = _parse_wales_item(_lda_unwrap(resource))
             if b:
                 beaches.append(b)
-            elif not beaches and len(bw_uris) > 1:
-                # Dump first failed parse for diagnostics
+            elif not first_diag_done:
+                first_diag_done = True
                 inner = _lda_unwrap(resource)
-                print(f"  First resource parse failed. Keys: {list(inner.keys())[:20]}")
-                print(f"  Sample: {json.dumps(dict(list(inner.items())[:8]), default=str)[:500]}")
+                print(f"  Parse failed. Keys: {list(inner.keys())}")
+                for field in ("name", "label", "samplingPoint", "easting", "northing",
+                              "lat", "long", "envelope", "type"):
+                    val = inner.get(field)
+                    if val is not None:
+                        print(f"  {field}: {json.dumps(val, default=str)[:400]}")
         except Exception as exc:
             failed += 1
             if failed <= 3:
@@ -313,14 +323,17 @@ def _parse_wales_item(item: dict) -> dict | None:
         easting  = _float(
             item.get("easting")
             or _nested(item, "samplingPoint", "easting")
+            or _nested(item, "envelope", "lowerCorner", "easting")
         )
         northing = _float(
             item.get("northing")
             or _nested(item, "samplingPoint", "northing")
+            or _nested(item, "envelope", "lowerCorner", "northing")
         )
         if easting is not None and northing is not None:
             lat, lon = _osgb_to_latlon(easting, northing)
 
+    # LDA name values may be {"_value": "Beach Name"} or an array thereof
     raw_name = (
         item.get("name") or item.get("label") or item.get("bathingWaterName") or ""
     )
