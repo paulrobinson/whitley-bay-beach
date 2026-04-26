@@ -258,13 +258,15 @@ def _discover_coverage(
     session: requests.Session,
     wcs_url: str = LIDAR_WCS,
     debug: bool = False,
+    prefer_dtm: bool = False,
 ) -> tuple[str, str]:
     """
-    Query WCS GetCapabilities to find the first coverage name.
+    Query WCS GetCapabilities to find a suitable coverage name.
     Returns (coverage_name_1_0, coverage_id_2_0_1).
+    If prefer_dtm=True, coverages containing 'dtm' are ranked above 'dsm'.
     """
-    cov_100  = None
-    cov_201  = None
+    all_100: list[str] = []
+    all_201: list[str] = []
 
     for version in ("1.0.0", "2.0.1"):
         try:
@@ -279,19 +281,17 @@ def _discover_coverage(
                 print("  " + r.text[:2000].replace("\n", " "))
             root = ET.fromstring(r.content)
             if version == "1.0.0":
-                # Must search inside CoverageOfferingBrief to avoid picking up
-                # the service-level <wcs:name> element.
                 WCS_NS = "http://www.opengis.net/wcs"
-                el = root.find(
+                for el in root.findall(
                     f".//{{{WCS_NS}}}CoverageOfferingBrief/{{{WCS_NS}}}name"
-                )
-                if el is None:
-                    # No-namespace fallback
-                    el = root.find(".//CoverageOfferingBrief/name")
-                if el is not None and el.text:
-                    cov_100 = el.text.strip()
+                ):
+                    if el.text:
+                        all_100.append(el.text.strip())
+                if not all_100:
+                    for el in root.findall(".//CoverageOfferingBrief/name"):
+                        if el.text:
+                            all_100.append(el.text.strip())
             else:
-                # ows namespace varies between 1.1 and 2.0 depending on server
                 ns_variants = [
                     {"wcs": "http://www.opengis.net/wcs/2.0", "ows": "http://www.opengis.net/ows/2.0"},
                     {"wcs": "http://www.opengis.net/wcs/2.0", "ows": "http://www.opengis.net/ows/1.1"},
@@ -303,15 +303,28 @@ def _discover_coverage(
                 )
                 for ns in ns_variants:
                     for tag in id_tags:
-                        el = root.find(f".//{tag}", ns)
-                        if el is not None and el.text:
-                            cov_201 = el.text.strip()
-                            break
-                    if cov_201:
+                        for el in root.findall(f".//{tag}", ns):
+                            if el.text:
+                                all_201.append(el.text.strip())
+                    if all_201:
                         break
         except Exception as exc:
             print(f"  GetCapabilities {version} failed: {exc}")
 
+    def _pick(names: list[str]) -> str | None:
+        if not names:
+            return None
+        if prefer_dtm:
+            dtm = [n for n in names if "dtm" in n.lower()]
+            if dtm:
+                return dtm[0]
+        return names[0]
+
+    cov_100 = _pick(all_100)
+    cov_201 = _pick(all_201)
+    if debug or all_100 or all_201:
+        print(f"  Coverages 1.0.0: {all_100[:5]}")
+        print(f"  Coverages 2.0.1: {all_201[:5]}")
     print(f"  WCS 1.0.0 coverage name: {cov_100!r}")
     print(f"  WCS 2.0.1 coverage ID:   {cov_201!r}")
     return (cov_100 or "LidarComposite_DTM_1m"), (cov_201 or "LidarComposite_DTM_1m")
@@ -425,6 +438,10 @@ def main() -> None:
                         help="Print CFB shapefile columns and exit")
     parser.add_argument("--debug", action="store_true",
                         help="Print raw WCS response details for each request")
+    parser.add_argument("--country",
+                        choices=["England", "Wales", "Scotland"],
+                        metavar="COUNTRY",
+                        help="Process only beaches in this country (England/Wales/Scotland)")
     args = parser.parse_args()
 
     CACHE_DIR.mkdir(exist_ok=True)
@@ -460,7 +477,9 @@ def main() -> None:
     print(f"  1.0.0: {nrw_cov_100!r}   2.0.1: {nrw_cov_201!r}")
 
     print("Querying JNCC LIDAR WCS (Scotland)…")
-    scot_cov_100, scot_cov_201 = _discover_coverage(session, SCOT_WCS, debug=args.debug)
+    scot_cov_100, scot_cov_201 = _discover_coverage(
+        session, SCOT_WCS, debug=args.debug, prefer_dtm=True,
+    )
     print(f"  1.0.0: {scot_cov_100!r}   2.0.1: {scot_cov_201!r}")
 
     # Map country → (wcs_url, cov_100, cov_201)
@@ -470,7 +489,12 @@ def main() -> None:
         "Scotland": (SCOT_WCS,  scot_cov_100, scot_cov_201),
     }
 
-    subset   = beaches[: args.limit] if args.limit else beaches
+    country_filter = args.country.lower() if args.country else None
+    all_beaches    = beaches
+    if country_filter:
+        all_beaches = [b for b in beaches if b.get("country", "England").lower() == country_filter]
+        print(f"  Filtering to {len(all_beaches)} {args.country} beaches.")
+    subset   = all_beaches[: args.limit] if args.limit else all_beaches
     total    = len(subset)
     counters = {"computed": 0, "no_lidar": 0, "sparse": 0, "errors": 0}
 
