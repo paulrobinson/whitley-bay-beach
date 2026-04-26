@@ -271,13 +271,20 @@ def _wales_via_profiles() -> list[dict]:
             doc_url = uri + ".json"
         try:
             resource = _get(doc_url, {"_view": "all"})
-            b = _parse_wales_item(_lda_unwrap(resource))
+            inner = _lda_unwrap(resource)
+            b = _parse_wales_item(inner)
+
+            if b is None:
+                # Coordinates are in the samplingPoint sub-resource (so/ URI).
+                # Fetch it by converting so/Type/ID → doc/Type/ID.json
+                b = _wales_fetch_sp_coords(inner)
+
             if b:
                 beaches.append(b)
             elif not first_diag_done:
                 first_diag_done = True
-                inner = _lda_unwrap(resource)
-                print(f"  Parse failed. Keys: {list(inner.keys())}")
+                print(f"  Parse failed (including samplingPoint fallback).")
+                print(f"  Keys: {list(inner.keys())}")
                 for field in ("name", "label", "samplingPoint", "easting", "northing",
                               "lat", "long", "envelope", "type"):
                     val = inner.get(field)
@@ -292,6 +299,48 @@ def _wales_via_profiles() -> list[dict]:
     if failed:
         print(f"  ({failed} individual fetches failed)")
     return beaches
+
+
+def _wales_fetch_sp_coords(bw_inner: dict) -> dict | None:
+    """Follow the samplingPoint sub-resource to get easting/northing."""
+    sp = bw_inner.get("samplingPoint")
+    sp_uri = sp.get("_about") if isinstance(sp, dict) else (sp if isinstance(sp, str) else None)
+    if not sp_uri:
+        return None
+
+    # so/Type/ID → doc/Type/ID conversion (sub-objects → fetchable doc)
+    urls: list[str] = []
+    if "/so/" in sp_uri:
+        urls.append(sp_uri.replace("/so/", "/doc/", 1) + ".json")
+    urls.append(sp_uri + ".json")
+    # Also try the main EA (non-Wales) endpoint as a fallback
+    bw_about = bw_inner.get("_about", "")
+    if bw_about:
+        bw_id = bw_about.rstrip("/").split("/")[-1]
+        urls.append(f"https://environment.data.gov.uk/doc/bathing-water/{bw_id}.json")
+
+    for url in urls:
+        try:
+            data = _get(url, {"_view": "all"})
+            sub = _lda_unwrap(data)
+            # Merge any new coordinates into a copy of the bathing water dict
+            augmented = dict(bw_inner)
+            for k in ("easting", "northing", "lat", "long",
+                      "wgs84Lat", "wgs84Long", "latitude", "longitude"):
+                if k in sub and k not in augmented:
+                    augmented[k] = sub[k]
+            # Also check inside a nested samplingPoint if present
+            nested_sp = sub.get("samplingPoint")
+            if isinstance(nested_sp, dict):
+                for k in ("easting", "northing", "lat", "long"):
+                    if k in nested_sp and k not in augmented:
+                        augmented[k] = nested_sp[k]
+            b = _parse_wales_item(augmented)
+            if b:
+                return b
+        except Exception:
+            continue
+    return None
 
 
 def _lda_str(val: object) -> str:
