@@ -7,6 +7,7 @@ Live at: **[paulrobinson.github.io/beach-walk-uk](https://paulrobinson.github.io
 
 ---
 
+
 ## What it does
 
 Beach Walk UK is a mobile-first, single-page web app that helps you decide the best time to head to the beach. For any of the **451 official UK Environment Agency bathing water locations**, it shows:
