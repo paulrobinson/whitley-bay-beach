@@ -470,18 +470,13 @@ def main() -> None:
     print(f"  1.0.0: {ea_cov_100!r}   2.0.1: {ea_cov_201!r}")
 
     print("Skipping NRW LIDAR WCS (Wales) — WCS service has empty Contents; minSand will be null for Welsh beaches.")
+    print("Skipping JNCC LIDAR WCS (Scotland) — only HES archaeological surveys available, not coastal; minSand will be null for Scottish beaches.")
 
-    print("Querying JNCC LIDAR WCS (Scotland)…")
-    scot_cov_100, scot_cov_201 = _discover_coverage(
-        session, SCOT_WCS, debug=args.debug, prefer_dtm=True,
-    )
-    print(f"  1.0.0: {scot_cov_100!r}   2.0.1: {scot_cov_201!r}")
-
-    # Map country → (wcs_url, cov_100, cov_201) — Wales has no WCS so uses None sentinel
+    # Map country → (wcs_url, cov_100, cov_201) — only England has a working LIDAR WCS
     lidar_sources: dict[str, tuple[str, str, str] | None] = {
-        "England":  (LIDAR_WCS, ea_cov_100,   ea_cov_201),
+        "England":  (LIDAR_WCS, ea_cov_100, ea_cov_201),
         "Wales":    None,
-        "Scotland": (SCOT_WCS,  scot_cov_100, scot_cov_201),
+        "Scotland": None,
     }
 
     country_filter = args.country.lower() if args.country else None
