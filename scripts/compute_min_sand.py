@@ -469,12 +469,7 @@ def main() -> None:
     ea_cov_100, ea_cov_201 = _discover_coverage(session, LIDAR_WCS, debug=args.debug)
     print(f"  1.0.0: {ea_cov_100!r}   2.0.1: {ea_cov_201!r}")
 
-    print("Querying NRW LIDAR WCS (Wales)…")
-    nrw_cov_100, nrw_cov_201 = _discover_coverage(session, NRW_WCS, debug=args.debug)
-    if nrw_cov_100 == "LidarComposite_DTM_1m":
-        # Fallback name not discovered — use known NRW coverage name
-        nrw_cov_100, nrw_cov_201 = NRW_COV_100, NRW_COV_201
-    print(f"  1.0.0: {nrw_cov_100!r}   2.0.1: {nrw_cov_201!r}")
+    print("Skipping NRW LIDAR WCS (Wales) — WCS service has empty Contents; minSand will be null for Welsh beaches.")
 
     print("Querying JNCC LIDAR WCS (Scotland)…")
     scot_cov_100, scot_cov_201 = _discover_coverage(
@@ -482,10 +477,10 @@ def main() -> None:
     )
     print(f"  1.0.0: {scot_cov_100!r}   2.0.1: {scot_cov_201!r}")
 
-    # Map country → (wcs_url, cov_100, cov_201)
-    lidar_sources: dict[str, tuple[str, str, str]] = {
+    # Map country → (wcs_url, cov_100, cov_201) — Wales has no WCS so uses None sentinel
+    lidar_sources: dict[str, tuple[str, str, str] | None] = {
         "England":  (LIDAR_WCS, ea_cov_100,   ea_cov_201),
-        "Wales":    (NRW_WCS,   nrw_cov_100,  nrw_cov_201),
+        "Wales":    None,
         "Scotland": (SCOT_WCS,  scot_cov_100, scot_cov_201),
     }
 
@@ -513,11 +508,17 @@ def main() -> None:
             counters["errors"] += 1
             continue
 
+        lidar_src = lidar_sources.get(country, lidar_sources["England"])
+        if lidar_src is None:
+            print(f"{label}  — no LIDAR source for {country}")
+            counters["no_lidar"] += 1
+            continue
+
         easting, northing = to_bng(lon, lat)
         if args.debug:
             print(f"  BNG: E={easting:.0f} N={northing:.0f}")
 
-        wcs_url, cov_100, cov_201 = lidar_sources.get(country, lidar_sources["England"])
+        wcs_url, cov_100, cov_201 = lidar_src
         patch = fetch_lidar_patch(
             easting, northing, cov_100, cov_201, session,
             wcs_url=wcs_url, debug=args.debug,
